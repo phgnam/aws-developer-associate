@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Khả năng mở rộng (Scalability) và Tính sẵn sàng cao (High Availability)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+        .mindmap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .central-node {
+            background-color: #4c51bf;
+            color: white;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        .branches {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 40px;
+            position: relative;
+        }
+        .branch {
+            width: 45%;
+            position: relative;
+        }
+        .branch-title {
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 5;
+            margin-bottom: 30px;
+        }
+        .scalability-title {
+            background-color: #4299e1;
+            color: white;
+        }
+        .availability-title {
+            background-color: #48bb78;
+            color: white;
+        }
+        .sub-branches {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .sub-branch {
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .vertical-scale {
+            background-color: #bee3f8;
+            border-left: 5px solid #3182ce;
+        }
+        .horizontal-scale {
+            background-color: #c6f6d5;
+            border-left: 5px solid #38a169;
+        }
+        .high-availability {
+            background-color: #fefcbf;
+            border-left: 5px solid #d69e2e;
+        }
+        .example {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .connector {
+            position: absolute;
+            background-color: #a0aec0;
+            z-index: 1;
+        }
+        .vertical-connector {
+            width: 4px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 30px;
+        }
+        .horizontal-connector {
+            height: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            color: white;
+        }
+        .up-icon {
+            background-color: #3182ce;
+        }
+        .side-icon {
+            background-color: #38a169;
+        }
+        .building-icon {
+            background-color: #d69e2e;
+        }
+        .aws-example {
+            border-top: 1px dashed #cbd5e0;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .mindmap {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="py-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold text-center mb-10 text-gray-800">Mind Map: Khả năng mở rộng (Scalability) và Tính sẵn sàng cao (High Availability)</h1>
+        
+        <div class="mindmap">
+            <!-- Central Node -->
+            <div class="central-node text-xl">
+                Scalability & High Availability
+            </div>
+            
+            <!-- Connect central to branches -->
+            <div class="connector vertical-connector" style="height: 40px;"></div>
+            
+            <!-- Main Branches -->
+            <div class="branches">
+                <!-- Scalability Branch -->
+                <div class="branch">
+                    <div class="branch-title scalability-title text-lg">
+                        Khả năng mở rộng (Scalability)
+                    </div>
+                    <div class="connector vertical-connector"></div>
+                    
+                    <div class="sub-branches">
+                        <!-- Vertical Scalability -->
+                        <div class="sub-branch vertical-scale">
+                            <div class="flex items-center">
+                                <span class="icon up-icon"><i class="fas fa-arrow-up"></i></span>
+                                <h3 class="font-bold text-lg">Vertical Scalability (Mở rộng theo chiều dọc)</h3>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <p>Tăng kích thước của instance (scale up/down)</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>Tăng cấu hình của 1 instance đơn lẻ</li>
+                                    <li>Áp dụng khi có hệ thống không phân tán (non-distributed)</li>
+                                    <li>Có giới hạn phần cứng</li>
+                                </ul>
+                                
+                                <div class="example">
+                                    <p class="font-bold">Ví dụ Call Center:</p>
+                                    <p>Nâng cấp từ nhân viên junior (5 cuộc gọi/phút) lên nhân viên senior (10 cuộc gọi/phút)</p>
+                                    
+                                    <div class="aws-example">
+                                        <p class="font-bold">Ví dụ AWS:</p>
+                                        <p>Nâng cấp từ EC2 t2.micro lên t2.large</p>
+                                        <p>Phổ biến với: RDS, ElastiCache</p>
+                                        <p>Giới hạn: t2.nano (0.5GB RAM, 1 vCPU) → u-t12tb1.metal (12.3TB RAM, 450 vCPU)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Horizontal Scalability -->
+                        <div class="sub-branch horizontal-scale">
+                            <div class="flex items-center">
+                                <span class="icon side-icon"><i class="fas fa-arrows-alt-h"></i></span>
+                                <h3 class="font-bold text-lg">Horizontal Scalability (Mở rộng theo chiều ngang)</h3>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <p>Tăng số lượng instances/hệ thống (scale out/in)</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>Thêm nhiều instance cho ứng dụng</li>
+                                    <li>Yêu cầu hệ thống phân tán (distributed systems)</li>
+                                    <li>Còn gọi là tính đàn hồi (elasticity)</li>
+                                </ul>
+                                
+                                <div class="example">
+                                    <p class="font-bold">Ví dụ Call Center:</p>
+                                    <p>Thuê thêm nhân viên thứ hai, thứ ba, thậm chí tới sáu người để tăng năng suất</p>
+                                    
+                                    <div class="aws-example">
+                                        <p class="font-bold">Ví dụ AWS:</p>
+                                        <p>Thêm nhiều instance EC2</p>
+                                        <p>Scale out: tăng số lượng instance</p>
+                                        <p>Scale in: giảm số lượng instance</p>
+                                        <p>Phổ biến với: Auto Scaling Groups, Load Balancers</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- High Availability Branch -->
+                <div class="branch">
+                    <div class="branch-title availability-title text-lg">
+                        Tính sẵn sàng cao (High Availability)
+                    </div>
+                    <div class="connector vertical-connector"></div>
+                    
+                    <div class="sub-branches">
+                        <div class="sub-branch high-availability">
+                            <div class="flex items-center">
+                                <span class="icon building-icon"><i class="fas fa-building"></i></span>
+                                <h3 class="font-bold text-lg">High Availability</h3>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <p>Chạy ứng dụng ở ít nhất 2 data center/availability zones</p>
+                                <ul class="list-disc pl-6 mt-2">
+                                    <li>Mục tiêu: Duy trì hoạt động khi một data center bị lỗi</li>
+                                    <li>Thường đi kèm với horizontal scaling (nhưng không phải lúc nào cũng vậy)</li>
+                                    <li>Có hai dạng: Chủ động (active) và Bị động (passive)</li>
+                                </ul>
+                                
+                                <div class="example">
+                                    <p class="font-bold">Ví dụ Call Center:</p>
+                                    <p>- 3 nhân viên ở tòa nhà New York</p>
+                                    <p>- 3 nhân viên ở tòa nhà San Francisco</p>
+                                    <p>→ Nếu một tòa nhà mất kết nối, tòa nhà còn lại vẫn tiếp tục hoạt động</p>
+                                    
+                                    <div class="aws-example">
+                                        <p class="font-bold">Ví dụ AWS:</p>
+                                        <p>- Passive: RDS Multi-AZ</p>
+                                        <p>- Active: Auto Scaling Group với multi-AZ enabled</p>
+                                        <p>- Active: Load Balancer với multi-AZ enabled</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom section explaining the relationship -->
+            <div class="mt-12 bg-gray-100 p-6 rounded-lg shadow w-full max-w-3xl">
+                <h3 class="font-bold text-lg text-center mb-4">Mối quan hệ giữa Scalability và High Availability</h3>
+                <p class="text-center">Scalability và High Availability có liên quan nhưng khác biệt.</p>
+                <ul class="list-disc pl-8 mt-4">
+                    <li>Scalability tập trung vào việc đáp ứng tải cao hơn bằng cách thay đổi cấu hình hoặc số lượng resources</li>
+                    <li>High Availability tập trung vào việc đảm bảo hệ thống luôn hoạt động, ngay cả khi một phần bị lỗi</li>
+                    <li>Horizontal Scalability thường hỗ trợ High Availability do có nhiều instance có thể thay thế lẫn nhau</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
