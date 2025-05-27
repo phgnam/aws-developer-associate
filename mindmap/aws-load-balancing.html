@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Load Balancing trên AWS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .mindmap {
+            overflow: visible;
+            padding: 20px;
+        }
+        
+        .node {
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .main-node {
+            background-color: #1a365d;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            max-width: 250px;
+            margin: 20px auto;
+        }
+        
+        .branch-node {
+            background-color: #2b6cb0;
+            color: white;
+            font-weight: 500;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .sub-node {
+            background-color: #4299e1;
+            color: white;
+            width: 85%;
+            max-width: 350px;
+        }
+        
+        .leaf-node {
+            background-color: #63b3ed;
+            color: white;
+            width: 80%;
+            max-width: 320px;
+        }
+        
+        .detail-node {
+            background-color: #ebf8ff;
+            color: #2c5282;
+            border-left: 4px solid #4299e1;
+            width: 75%;
+            max-width: 300px;
+        }
+        
+        .branch {
+            padding-left: 30px;
+            position: relative;
+            border-left: 2px solid #cbd5e0;
+            margin-left: 20px;
+        }
+        
+        .branch::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 2px;
+            background-color: #cbd5e0;
+        }
+        
+        .icon {
+            margin-right: 8px;
+            width: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+        
+        .lb-types {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .lb-type {
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+            background-color: #ebf8ff;
+            border-radius: 8px;
+            padding: 15px;
+            border-top: 4px solid #4299e1;
+        }
+        
+        .lb-type h3 {
+            font-weight: bold;
+            color: #2b6cb0;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .lb-type .year {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .lb-type .protocols {
+            color: #4a5568;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mind Map: Load Balancing trên AWS</h1>
+            <p class="text-gray-600">Tổng quan về khái niệm, lợi ích, loại load balancer và cơ chế hoạt động</p>
+        </div>
+        
+        <div class="mindmap">
+            <!-- Main Node -->
+            <div class="node main-node">
+                <i class="fas fa-balance-scale icon"></i>Load Balancing trên AWS
+            </div>
+            
+            <!-- Branch 1: Definition -->
+            <div class="branch">
+                <div class="node branch-node">
+                    <i class="fas fa-info-circle icon"></i>Định nghĩa
+                </div>
+                <div class="branch">
+                    <div class="node leaf-node">
+                        Một server hoặc tập hợp các servers chuyển hướng lưu lượng truy cập đến nhiều EC2 instances hoặc servers phía sau
+                    </div>
+                    <div class="node detail-node">
+                        <i class="fas fa-users icon"></i>Người dùng chỉ kết nối đến một điểm truy cập duy nhất (Elastic Load Balancer)
+                    </div>
+                    <div class="node detail-node">
+                        <i class="fas fa-random icon"></i>Lưu lượng truy cập được phân phối đến nhiều EC2 instances
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 2: Benefits -->
+            <div class="branch">
+                <div class="node branch-node">
+                    <i class="fas fa-check-circle icon"></i>Lợi ích của Load Balancer
+                </div>
+                <div class="branch">
+                    <div class="node sub-node">
+                        <i class="fas fa-external-link-alt icon"></i>Cung cấp một điểm truy cập duy nhất cho ứng dụng
+                    </div>
+                    <div class="node sub-node">
+                        <i class="fas fa-exclamation-triangle icon"></i>Xử lý lỗi của các instances một cách liền mạch
+                    </div>
+                    <div class="node sub-node">
+                        <i class="fas fa-heartbeat icon"></i>Kiểm tra sức khỏe (Health check) của instances
+                    </div>
+                    <div class="node sub-node">
+                        <i class="fas fa-lock icon"></i>Cung cấp SSL termination
+                    </div>
+                    <div class="node sub-node">
+                        <i class="fas fa-cookie icon"></i>Áp dụng tính liên tục (stickiness) với cookies
+                    </div>
+                    <div class="node sub-node">
+                        <i class="fas fa-globe icon"></i>Tính sẵn sàng cao (High availability) trên nhiều zones
+                    </div>
+                    <div class="node sub-node">
+                        <i class="fas fa-shield-alt icon"></i>Tách biệt traffic công khai và riêng tư
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 3: ELB Management -->
+            <div class="branch">
+                <div class="node branch-node">
+                    <i class="fas fa-cogs icon"></i>Elastic Load Balancer (ELB)
+                </div>
+                <div class="branch">
+                    <div class="node leaf-node">
+                        <i class="fas fa-cloud icon"></i>Được quản lý bởi AWS
+                    </div>
+                    <div class="branch">
+                        <div class="node detail-node">AWS đảm bảo hoạt động ổn định</div>
+                        <div class="node detail-node">AWS xử lý việc nâng cấp, bảo trì và tính sẵn sàng cao</div>
+                        <div class="node detail-node">Cung cấp các nút cấu hình để điều chỉnh hành vi</div>
+                    </div>
+                    <div class="node leaf-node">
+                        <i class="fas fa-dollar-sign icon"></i>Chi phí thấp hơn so với tự quản lý load balancer
+                    </div>
+                    <div class="node leaf-node">
+                        <i class="fas fa-puzzle-piece icon"></i>Tích hợp với nhiều dịch vụ AWS khác
+                    </div>
+                    <div class="branch">
+                        <div class="node detail-node">EC2, Auto Scaling Groups, Amazon ECS</div>
+                        <div class="node detail-node">Certificate Manager, CloudWatch, Route 53</div>
+                        <div class="node detail-node">WAF, Global Accelerator và nhiều dịch vụ khác</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 4: Health Checks -->
+            <div class="branch">
+                <div class="node branch-node">
+                    <i class="fas fa-heartbeat icon"></i>Health Checks
+                </div>
+                <div class="branch">
+                    <div class="node leaf-node">
+                        Xác minh EC2 instance có hoạt động đúng không
+                    </div>
+                    <div class="node leaf-node">
+                        Thực hiện thông qua port và route cụ thể
+                    </div>
+                    <div class="node detail-node">
+                        Ví dụ: Protocol: HTTP, Port: 4567, Endpoint: /health
+                    </div>
+                    <div class="node leaf-node">
+                        <i class="fas fa-times-circle icon"></i>Nếu instance không trả về status 200 (OK), sẽ được đánh dấu là unhealthy
+                    </div>
+                    <div class="node leaf-node">
+                        <i class="fas fa-ban icon"></i>ELB sẽ không gửi traffic đến instance unhealthy
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 5: Types of Load Balancers -->
+            <div class="branch">
+                <div class="node branch-node">
+                    <i class="fas fa-sitemap icon"></i>Các loại Load Balancer trên AWS
+                </div>
+                
+                <div class="lb-types">
+                    <div class="lb-type">
+                        <h3>Classic Load Balancer (CLB)</h3>
+                        <div class="year">2009 - Thế hệ cũ (v1)</div>
+                        <div class="protocols">Hỗ trợ: HTTP, HTTPS, TCP, SSL</div>
+                        <div class="text-red-500 mt-2">Đã lỗi thời, không được khuyến nghị sử dụng</div>
+                    </div>
+                    
+                    <div class="lb-type">
+                        <h3>Application Load Balancer (ALB)</h3>
+                        <div class="year">2016 - Thế hệ mới</div>
+                        <div class="protocols">Hỗ trợ: HTTP, HTTPS, WebSocket</div>
+                        <div class="text-green-600 mt-2">Khuyến nghị cho ứng dụng web</div>
+                    </div>
+                    
+                    <div class="lb-type">
+                        <h3>Network Load Balancer (NLB)</h3>
+                        <div class="year">2017 - Thế hệ mới</div>
+                        <div class="protocols">Hỗ trợ: TCP, TLS, UDP</div>
+                        <div class="text-green-600 mt-2">Hiệu suất cao, độ trễ thấp</div>
+                    </div>
+                    
+                    <div class="lb-type">
+                        <h3>Gateway Load Balancer (GWLB)</h3>
+                        <div class="year">2020 - Thế hệ mới nhất</div>
+                        <div class="protocols">Hoạt động ở tầng Network (Layer 3), Giao thức IP</div>
+                    </div>
+                </div>
+                
+                <div class="node leaf-node mt-4 ml-6">
+                    <i class="fas fa-arrow-right icon"></i>Các load balancer thế hệ mới cung cấp nhiều tính năng hơn
+                </div>
+                <div class="node leaf-node ml-6">
+                    <i class="fas fa-network-wired icon"></i>Load balancer có thể là internal (private) hoặc external (public)
+                </div>
+            </div>
+            
+            <!-- Branch 6: Security -->
+            <div class="branch">
+                <div class="node branch-node">
+                    <i class="fas fa-shield-alt icon"></i>Bảo mật Load Balancer
+                </div>
+                <div class="branch">
+                    <div class="node sub-node">
+                        <i class="fas fa-users icon"></i>Bảo mật cho người dùng đến Load Balancer:
+                    </div>
+                    <div class="node detail-node">
+                        Security Group: Port 80/443 (HTTP/HTTPS), Source: 0.0.0.0/0 (Anywhere)
+                    </div>
+                    
+                    <div class="node sub-node">
+                        <i class="fas fa-server icon"></i>Bảo mật từ Load Balancer đến EC2 Instances:
+                    </div>
+                    <div class="node detail-node">
+                        Security Group: Port 80, Source: Load Balancer Security Group
+                    </div>
+                    
+                    <div class="node leaf-node">
+                        <i class="fas fa-lock icon"></i>EC2 chỉ cho phép traffic từ Load Balancer (không cho phép traffic trực tiếp)
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
