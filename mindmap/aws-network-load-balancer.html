@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Network Load Balancer (NLB) trên AWS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+        }
+        .mindmap-container {
+            overflow: visible;
+            padding: 30px;
+        }
+        .node {
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .node:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .root-node {
+            background-color: #232f3e;
+            color: white;
+            font-weight: bold;
+            max-width: 400px;
+            margin: 0 auto 30px auto;
+        }
+        .main-node {
+            background-color: #ff9900;
+            color: #232f3e;
+            font-weight: bold;
+        }
+        .sub-node {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+        }
+        .branches {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .branch {
+            flex: 1 1 300px;
+            max-width: 350px;
+            margin: 0 15px 20px;
+        }
+        .connector {
+            height: 2px;
+            background-color: #d3d3d3;
+            width: 50%;
+            margin: 0 auto;
+        }
+        .vertical-connector {
+            width: 2px;
+            background-color: #d3d3d3;
+            height: 20px;
+            margin: 0 auto;
+        }
+        .aws-icon {
+            color: #ff9900;
+            margin-right: 10px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #232f3e;
+            color: white;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            margin-top: 40px;
+            border-top: 1px solid #eaeaea;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .note-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid #0073bb;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .mindmap-container {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="text-2xl font-bold">Mind Map: Network Load Balancer (NLB) trên AWS</h1>
+        <p class="mt-2 text-sm opacity-80">Sơ đồ tư duy về đặc điểm, khả năng, target groups và tình huống sử dụng</p>
+    </div>
+
+    <div class="content">
+        <div class="mindmap-container">
+            <!-- Root Node -->
+            <div class="node root-node">
+                <i class="fab fa-aws aws-icon"></i> Network Load Balancer (NLB)
+            </div>
+            
+            <div class="vertical-connector"></div>
+            
+            <!-- Main Branches -->
+            <div class="branches">
+                <!-- Branch 1: Definition & Layer -->
+                <div class="branch">
+                    <div class="node main-node">
+                        <i class="fas fa-layer-group aws-icon"></i> Định nghĩa & Tầng
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Tầng 4 (Layer 4) Load Balancer</strong></p>
+                        <p class="mt-2">Xử lý lưu lượng TCP và UDP</p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p>Hoạt động ở tầng thấp hơn Application Load Balancer (tầng 7)</p>
+                    </div>
+                </div>
+                
+                <!-- Branch 2: Performance -->
+                <div class="branch">
+                    <div class="node main-node">
+                        <i class="fas fa-tachometer-alt aws-icon"></i> Hiệu năng
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Hiệu năng cực cao</strong></p>
+                        <p class="mt-2">Xử lý hàng triệu request mỗi giây</p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p>Độ trễ cực thấp (ultra-low latency)</p>
+                    </div>
+                </div>
+                
+                <!-- Branch 3: IP Configuration -->
+                <div class="branch">
+                    <div class="node main-node">
+                        <i class="fas fa-network-wired aws-icon"></i> Cấu hình IP
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Một Static IP cho mỗi Availability Zone</strong></p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p>Có thể gán Elastic IP cho mỗi AZ</p>
+                        <p class="mt-2">Phù hợp cho ứng dụng yêu cầu các IP tĩnh</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="branches">
+                <!-- Branch 4: Target Groups -->
+                <div class="branch">
+                    <div class="node main-node">
+                        <i class="fas fa-bullseye aws-icon"></i> Target Groups
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>EC2 instances</strong></p>
+                        <p class="mt-2">Chuyển tiếp lưu lượng TCP hoặc UDP</p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>IP Addresses</strong></p>
+                        <p class="mt-2">Phải là Private IP</p>
+                        <p class="mt-1">Có thể là IP của EC2 hoặc server trong data center riêng</p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Application Load Balancer</strong></p>
+                        <p class="mt-2">NLB có thể đặt trước ALB để kết hợp lợi ích</p>
+                    </div>
+                </div>
+                
+                <!-- Branch 5: Health Checks -->
+                <div class="branch">
+                    <div class="node main-node">
+                        <i class="fas fa-heartbeat aws-icon"></i> Health Checks
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Hỗ trợ 3 giao thức:</strong></p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <ul class="list-disc pl-5 text-left">
+                            <li>TCP protocol</li>
+                            <li>HTTP protocol</li>
+                            <li>HTTPS protocol</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Branch 6: Use Cases -->
+                <div class="branch">
+                    <div class="node main-node">
+                        <i class="fas fa-lightbulb aws-icon"></i> Tình huống sử dụng
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Khi cần hiệu năng cực cao</strong></p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Khi làm việc với lưu lượng TCP hoặc UDP</strong></p>
+                    </div>
+                    <div class="vertical-connector"></div>
+                    <div class="node sub-node">
+                        <p><strong>Khi yêu cầu Static IP</strong></p>
+                        <p class="mt-2">Ứng dụng chỉ có thể truy cập qua một số IP nhất định</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Notes -->
+            <div class="note-box mt-10">
+                <h3 class="font-bold text-lg">Ghi chú quan trọng cho kỳ thi AWS:</h3>
+                <ul class="list-disc pl-5 mt-3">
+                    <li>Khi thấy đề cập đến UDP hoặc TCP trong bài thi, hãy nghĩ đến Network Load Balancer.</li>
+                    <li>Khi cần hiệu năng cực cao, độ trễ thấp hoặc IP tĩnh, NLB là lựa chọn phù hợp.</li>
+                    <li>NLB không nằm trong AWS Free Tier.</li>
+                    <li>Có thể kết hợp NLB với ALB: NLB cung cấp IP tĩnh, ALB xử lý các quy tắc HTTP.</li>
+                </ul>
+            </div>
+
+            <!-- Example Diagram -->
+            <h3 class="text-xl font-bold mt-10 mb-5 text-center">Mô hình ví dụ: NLB kết hợp với ALB</h3>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex flex-col items-center">
+                    <div class="node sub-node bg-blue-100 mb-3">
+                        <p><strong>Clients</strong> (Truy cập qua Static IPs)</p>
+                    </div>
+                    <i class="fas fa-arrow-down text-gray-400 my-2"></i>
+                    <div class="node sub-node bg-yellow-100 mb-3">
+                        <p><strong>Network Load Balancer</strong> (Layer 4 - TCP)</p>
+                        <p class="mt-1 text-sm">Cung cấp Static IPs</p>
+                    </div>
+                    <i class="fas fa-arrow-down text-gray-400 my-2"></i>
+                    <div class="node sub-node bg-green-100 mb-3">
+                        <p><strong>Application Load Balancer</strong> (Layer 7 - HTTP)</p>
+                        <p class="mt-1 text-sm">Xử lý routing dựa trên URL path, headers, ...</p>
+                    </div>
+                    <i class="fas fa-arrow-down text-gray-400 my-2"></i>
+                    <div class="flex justify-center">
+                        <div class="node sub-node bg-purple-100 mx-2">
+                            <p><strong>Target Group 1</strong></p>
+                            <p class="text-sm">(/users)</p>
+                        </div>
+                        <div class="node sub-node bg-purple-100 mx-2">
+                            <p><strong>Target Group 2</strong></p>
+                            <p class="text-sm">(/search)</p>
+                        </div>
+                        <div class="node sub-node bg-purple-100 mx-2">
+                            <p><strong>Target Group 3</strong></p>
+                            <p class="text-sm">(/api)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Mind Map: Network Load Balancer (NLB) trên AWS</p>
+    </div>
+
+</body>
+</html>
