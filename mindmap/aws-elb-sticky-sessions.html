@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Sticky Sessions (Session Affinity) trên Elastic Load Balancer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .mindmap-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .mindmap {
+            width: 100%;
+            max-width: 1200px;
+        }
+        .node {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .node-title {
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 10px 15px;
+        }
+        .node-content {
+            padding: 15px;
+        }
+        .connection {
+            width: 3px;
+            background-color: #dee2e6;
+            margin: 0 auto;
+            height: 20px;
+        }
+        .aws-orange {
+            background-color: #ff9900;
+            color: white;
+        }
+        .aws-blue {
+            background-color: #232f3e;
+            color: white;
+        }
+        .aws-light-blue {
+            background-color: #1a73e8;
+            color: white;
+        }
+        .aws-teal {
+            background-color: #007b8c;
+            color: white;
+        }
+        .aws-purple {
+            background-color: #545b64;
+            color: white;
+        }
+        .content-box {
+            border-left: 4px solid #ff9900;
+            background-color: #fff;
+            margin-bottom: 15px;
+        }
+        .note {
+            background-color: #fffde7;
+            border-left: 4px solid #ffd600;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #232f3e 0%, #007bff 100%);
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="page-header text-center">
+        <h1 class="text-3xl font-bold mb-2">Mind Map: Sticky Sessions (Session Affinity)</h1>
+        <p class="text-xl">trên Elastic Load Balancer AWS</p>
+    </div>
+
+    <div class="container mx-auto px-4 mb-10">
+        <div class="mindmap-container">
+            <div class="mindmap">
+                <!-- Main Node: Sticky Sessions -->
+                <div class="node bg-white">
+                    <div class="node-title aws-orange text-xl text-center"><i class="fas fa-cookie mr-2"></i> Sticky Sessions (Session Affinity)</div>
+                    <div class="node-content">
+                        <p class="mb-4">Còn được gọi là Session Affinity, là tính năng giúp đảm bảo các request liên tiếp từ cùng một client sẽ được chuyển đến cùng một EC2 instance trong backend.</p>
+                        
+                        <div class="mb-4 bg-gray-100 p-4 rounded">
+                            <h4 class="font-semibold mb-2"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Ví dụ:</h4>
+                            <p>Khi Client 1 gửi request đến ALB và được chuyển đến EC2 Instance 1, thì tất cả các request tiếp theo từ Client 1 sẽ tiếp tục được chuyển đến EC2 Instance 1.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap -mx-2">
+                            <div class="w-full md:w-1/2 px-2 mb-4">
+                                <div class="content-box p-4">
+                                    <h4 class="font-semibold mb-2"><i class="fas fa-check-circle text-green-500 mr-2"></i>Hỗ trợ trên:</h4>
+                                    <ul class="list-disc ml-6">
+                                        <li>Classic Load Balancer (CLB)</li>
+                                        <li>Application Load Balancer (ALB)</li>
+                                        <li>Network Load Balancer (NLB)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/2 px-2 mb-4">
+                                <div class="content-box p-4">
+                                    <h4 class="font-semibold mb-2"><i class="fas fa-info-circle text-blue-500 mr-2"></i>Lợi ích:</h4>
+                                    <ul class="list-disc ml-6">
+                                        <li>Duy trì dữ liệu session của người dùng</li>
+                                        <li>Giữ thông tin đăng nhập</li>
+                                        <li>Cải thiện trải nghiệm người dùng</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="note p-4 rounded mb-4">
+                            <h4 class="font-semibold mb-2"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>Lưu ý:</h4>
+                            <p>Khi bật Sticky Sessions có thể gây mất cân bằng tải giữa các EC2 instances nếu một số instance phải xử lý quá nhiều "sticky users".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connection"></div>
+
+                <!-- Node: Cookie Types -->
+                <div class="node bg-white">
+                    <div class="node-title aws-light-blue text-lg"><i class="fas fa-cookie-bite mr-2"></i> Các loại Cookie trong Sticky Sessions</div>
+                    <div class="node-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Application-based Cookie -->
+                            <div class="border rounded p-4 bg-blue-50">
+                                <h4 class="font-bold text-blue-700 mb-3">1. Application-based Cookie</h4>
+                                <div class="mb-3">
+                                    <h5 class="font-semibold">Custom Cookie:</h5>
+                                    <ul class="list-disc ml-6 mt-2">
+                                        <li>Được tạo bởi target (ứng dụng)</li>
+                                        <li>Có thể bao gồm các thuộc tính tùy chỉnh</li>
+                                        <li>Tên cookie phải được chỉ định riêng cho từng target group</li>
+                                        <li>Không được sử dụng các tên đã được đặt trước: AWSALB, AWSALBAPP, AWSALBTG</li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h5 class="font-semibold">Application Cookie:</h5>
+                                    <ul class="list-disc ml-6 mt-2">
+                                        <li>Được tạo bởi load balancer</li>
+                                        <li>Tên cookie được sử dụng bởi ALB: AWSALBAPP</li>
+                                        <li>Thời gian hết hạn có thể được chỉ định bởi ứng dụng</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Duration-based Cookie -->
+                            <div class="border rounded p-4 bg-green-50">
+                                <h4 class="font-bold text-green-700 mb-3">2. Duration-based Cookie</h4>
+                                <ul class="list-disc ml-6">
+                                    <li>Được tạo bởi load balancer</li>
+                                    <li>Tên cookie:
+                                        <ul class="ml-6 mt-1">
+                                            <li>AWSALB cho Application Load Balancer</li>
+                                            <li>AWSELB cho Classic Load Balancer</li>
+                                        </ul>
+                                    </li>
+                                    <li>Thời gian hết hạn dựa trên khoảng thời gian cụ thể</li>
+                                    <li>Thời gian được tạo bởi load balancer</li>
+                                    <li>Thời gian có thể từ 1 giây đến 7 ngày</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connection"></div>
+
+                <!-- Node: How it works -->
+                <div class="node bg-white">
+                    <div class="node-title aws-teal"><i class="fas fa-cogs mr-2"></i> Cơ chế hoạt động</div>
+                    <div class="node-content">
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="border rounded p-4 bg-gray-50">
+                                <h4 class="font-bold mb-3">Quy trình hoạt động</h4>
+                                <ol class="list-decimal ml-6 space-y-3">
+                                    <li>
+                                        <span class="font-semibold">Request đầu tiên</span>: Khi client gửi request lần đầu đến Load Balancer, Load Balancer chọn một EC2 instance để xử lý request.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Tạo Cookie</span>: Load Balancer tạo cookie và gửi kèm trong response về cho client.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Lưu trữ Cookie</span>: Browser của client lưu trữ cookie này.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Request tiếp theo</span>: Khi client gửi request tiếp theo, browser tự động gửi kèm cookie đã lưu trữ.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Phân tích Cookie</span>: Load Balancer phân tích cookie và xác định EC2 instance đã xử lý request trước đó.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Chuyển tiếp Request</span>: Load Balancer chuyển tiếp request đến cùng một EC2 instance.
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Hết hạn Cookie</span>: Khi cookie hết hạn, client có thể được chuyển hướng đến một EC2 instance khác.
+                                    </li>
+                                </ol>
+                            </div>
+
+                            <div class="border rounded p-4 bg-blue-50">
+                                <h4 class="font-bold mb-3">Cookie trong Network Flow</h4>
+                                <div class="flex flex-col md:flex-row">
+                                    <div class="w-full md:w-1/2 pr-0 md:pr-3 mb-4 md:mb-0">
+                                        <div class="border rounded p-3 bg-white">
+                                            <h5 class="font-semibold text-blue-700 mb-2">Response Cookie</h5>
+                                            <p class="mb-2">Load Balancer gửi cookie trong response header:</p>
+                                            <div class="bg-gray-100 p-2 rounded text-sm font-mono">
+                                                Set-Cookie: AWSALB=value; Expires=tomorrow; Path=/
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-full md:w-1/2 pl-0 md:pl-3">
+                                        <div class="border rounded p-3 bg-white">
+                                            <h5 class="font-semibold text-green-700 mb-2">Request Cookie</h5>
+                                            <p class="mb-2">Browser gửi cookie trong request header:</p>
+                                            <div class="bg-gray-100 p-2 rounded text-sm font-mono">
+                                                Cookie: AWSALB=value
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connection"></div>
+
+                <!-- Node: Configuration -->
+                <div class="node bg-white">
+                    <div class="node-title aws-purple"><i class="fas fa-sliders-h mr-2"></i> Cấu hình Sticky Sessions</div>
+                    <div class="node-content">
+                        <div class="space-y-4">
+                            <p class="mb-2">Sticky Sessions được cấu hình ở cấp <strong>Target Group</strong>:</p>
+
+                            <div class="border rounded p-4 bg-gray-50">
+                                <h4 class="font-bold mb-3">Các bước cấu hình</h4>
+                                <ol class="list-decimal ml-6 space-y-2">
+                                    <li>Truy cập AWS Management Console và mở EC2 Dashboard</li>
+                                    <li>Chọn "Target Groups" từ menu bên trái</li>
+                                    <li>Chọn Target Group mong muốn</li>
+                                    <li>Nhấp vào "Actions" sau đó chọn "Edit attributes"</li>
+                                    <li>Tìm mục "Stickiness" và chuyển "Stickiness" từ "Disabled" sang "Enabled"</li>
+                                    <li>Chọn loại Stickiness:
+                                        <ul class="list-disc ml-6 mt-1">
+                                            <li><strong>Load balancer generated cookie</strong>: Để load balancer tạo và quản lý cookie</li>
+                                            <li><strong>Application-based cookie</strong>: Để cấu hình cookie tùy chỉnh</li>
+                                        </ul>
+                                    </li>
+                                    <li>Nếu sử dụng Load balancer generated cookie: Cấu hình thời gian tồn tại của cookie (1 giây đến 7 ngày)</li>
+                                    <li>Nếu sử dụng Application-based cookie: Nhập tên cookie tùy chỉnh (không sử dụng các tên đã được đặt trước)</li>
+                                    <li>Nhấp "Save changes"</li>
+                                </ol>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border rounded p-4 bg-blue-50">
+                                    <h4 class="font-bold text-blue-700 mb-3">Cấu hình Load balancer generated cookie</h4>
+                                    <ul class="list-disc ml-6">
+                                        <li>Chỉ cần cấu hình thời gian tồn tại (Duration)</li>
+                                        <li>Mặc định là 1 ngày</li>
+                                        <li>Thời gian tối thiểu: 1 giây</li>
+                                        <li>Thời gian tối đa: 7 ngày</li>
+                                    </ul>
+                                </div>
+
+                                <div class="border rounded p-4 bg-green-50">
+                                    <h4 class="font-bold text-green-700 mb-3">Cấu hình Application-based cookie</h4>
+                                    <ul class="list-disc ml-6">
+                                        <li>Cần cung cấp tên cookie (Cookie Name)</li>
+                                        <li>Ví dụ: MYCUSTOMCOOKIEAPP</li>
+                                        <li>Tên cookie phải được chỉ định riêng cho từng target group</li>
+                                        <li>Không được sử dụng các tên cookie đã được đặt trước</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="note p-4 rounded">
+                                <h4 class="font-semibold mb-2"><i class="fas fa-tools text-yellow-600 mr-2"></i>Công cụ debug:</h4>
+                                <p>Sử dụng "Web Developer Tools" trong trình duyệt (Chrome, Firefox) để quan sát và debug cookies:</p>
+                                <ul class="list-disc ml-6 mt-2">
+                                    <li>Chrome/Firefox: F12 hoặc right-click → Inspect</li>
+                                    <li>Chọn tab "Network"</li>
+                                    <li>Refresh trang để xem requests</li>
+                                    <li>Kiểm tra cookies trong request/response headers</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="border rounded p-4 bg-red-50">
+                                <h4 class="font-bold text-red-700 mb-3"><i class="fas fa-power-off mr-2"></i> Tắt Sticky Sessions</h4>
+                                <ol class="list-decimal ml-6">
+                                    <li>Truy cập Target Group</li>
+                                    <li>Chọn "Actions" → "Edit attributes"</li>
+                                    <li>Chuyển "Stickiness" từ "Enabled" sang "Disabled"</li>
+                                    <li>Nhấp "Save changes"</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-6 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-xl font-bold mb-2">Mind Map: Sticky Sessions (Session Affinity) trên Elastic Load Balancer</h2>
+            <p>© AWS Learning Resources</p>
+        </div>
+    </footer>
+</body>
+</html>
