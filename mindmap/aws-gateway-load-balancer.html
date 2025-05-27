@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Gateway Load Balancer (GWLB) trên AWS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .mindmap-container {
+            overflow: visible;
+        }
+        
+        .central-node {
+            background-color: #232F3E;
+            color: white;
+        }
+        
+        .primary-node {
+            background-color: #FF9900;
+            color: #232F3E;
+        }
+        
+        .secondary-node {
+            background-color: #1A73E8;
+            color: white;
+        }
+        
+        .tertiary-node {
+            background-color: #f8f9fa;
+            color: #232F3E;
+            border: 2px solid #FF9900;
+        }
+        
+        .node {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        .connector {
+            border-top: 3px solid #ddd;
+            position: relative;
+        }
+        
+        .connector::before {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: -7px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #ddd;
+        }
+        
+        @media print {
+            .page-break {
+                display: none;
+            }
+            
+            html, body {
+                width: 100%;
+                height: auto;
+                overflow: visible;
+            }
+            
+            .mindmap-container {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <header class="mb-10 text-center">
+        <h1 class="text-4xl font-bold text-gray-800 mb-3">Mind Map: Gateway Load Balancer (GWLB) trên AWS</h1>
+        <p class="text-lg text-gray-600">Tổng quan về đặc điểm, chức năng và ứng dụng của Gateway Load Balancer</p>
+    </header>
+
+    <div class="mindmap-container max-w-6xl mx-auto">
+        <!-- Central Node -->
+        <div class="central-node node p-5 mb-8 text-center mx-auto max-w-md">
+            <h2 class="text-2xl font-bold mb-2">Gateway Load Balancer (GWLB)</h2>
+            <p>Loại load balancer mới nhất trên AWS để quản lý và mở rộng thiết bị mạng của bên thứ ba</p>
+        </div>
+
+        <!-- Main Branches -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+            <!-- Branch 1: Đặc điểm chính -->
+            <div class="branch">
+                <div class="primary-node node p-4 mb-6 text-center">
+                    <h3 class="text-xl font-bold">Đặc điểm chính</h3>
+                </div>
+                
+                <div class="ml-6 space-y-4">
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Layer 3 Load Balancer</h4>
+                            <p>Hoạt động ở tầng mạng (Network layer) cho các gói IP</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Giao thức GENEVE</h4>
+                            <p>Sử dụng giao thức GENEVE trên cổng 6081</p>
+                            <p class="text-xs italic mt-1">(Dấu hiệu nhận biết GWLB trong kỳ thi)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Chức năng kép</h4>
+                            <ul class="list-disc ml-4 mt-2">
+                                <li>Transparent network gateway</li>
+                                <li>Load balancer phân phối traffic</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch 2: Luồng hoạt động -->
+            <div class="branch">
+                <div class="primary-node node p-4 mb-6 text-center">
+                    <h3 class="text-xl font-bold">Luồng hoạt động</h3>
+                </div>
+                
+                <div class="ml-6 space-y-4">
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Cập nhật Route Tables</h4>
+                            <p>Route tables trong VPC được cập nhật tự động</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Quy trình xử lý traffic</h4>
+                            <ol class="list-decimal ml-4 mt-2">
+                                <li>User gửi traffic đến GWLB</li>
+                                <li>GWLB phân phối traffic đến các virtual appliances</li>
+                                <li>Appliances phân tích/kiểm tra traffic</li>
+                                <li>Nếu được chấp nhận, traffic quay lại GWLB</li>
+                                <li>GWLB chuyển tiếp traffic đến ứng dụng đích</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Single entry/exit point</h4>
+                            <p>Tất cả traffic trong VPC đi qua một điểm vào/ra duy nhất</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <!-- Branch 3: Target Groups -->
+            <div class="branch">
+                <div class="primary-node node p-4 mb-6 text-center">
+                    <h3 class="text-xl font-bold">Target Groups</h3>
+                </div>
+                
+                <div class="ml-6 space-y-4">
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">EC2 Instances</h4>
+                            <p>Đăng ký bằng instance ID</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">IP Addresses</h4>
+                            <p>Phải là private IPs</p>
+                            <div class="ml-4 mt-2">
+                                <div class="tertiary-node node p-2 mb-2">
+                                    <p>Virtual appliances trong EC2</p>
+                                </div>
+                                <div class="tertiary-node node p-2">
+                                    <p>Virtual appliances trong data center riêng</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch 4: Ứng dụng thực tế -->
+            <div class="branch">
+                <div class="primary-node node p-4 mb-6 text-center">
+                    <h3 class="text-xl font-bold">Ứng dụng thực tế</h3>
+                </div>
+                
+                <div class="ml-6 space-y-4">
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Firewall</h4>
+                            <p>Bảo vệ mạng bằng cách phân tích và lọc traffic</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Intrusion Detection & Prevention (IDPS)</h4>
+                            <p>Phát hiện và ngăn chặn xâm nhập mạng</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Deep Packet Inspection</h4>
+                            <p>Kiểm tra chuyên sâu nội dung của các gói tin</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="connector w-10 mt-4 mr-2"></div>
+                        <div class="secondary-node node p-3 flex-1">
+                            <h4 class="font-bold">Payload Modification</h4>
+                            <p>Sửa đổi nội dung gói tin ở cấp độ mạng</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagram Section -->
+    <div class="mt-16 p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Mô hình luồng hoạt động của GWLB</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-center">
+            <!-- Users -->
+            <div class="text-center">
+                <div class="w-24 h-24 mx-auto bg-gray-200 rounded-full flex items-center justify-center">
+                    <i class="fas fa-users text-4xl text-gray-600"></i>
+                </div>
+                <p class="mt-2 font-bold">Users</p>
+            </div>
+            
+            <!-- Arrow -->
+            <div class="flex justify-center">
+                <i class="fas fa-long-arrow-alt-right text-4xl text-gray-500"></i>
+            </div>
+            
+            <!-- GWLB -->
+            <div class="text-center">
+                <div class="w-32 h-24 mx-auto bg-blue-100 border-2 border-blue-500 rounded-lg flex items-center justify-center">
+                    <p class="font-bold text-blue-800">Gateway<br>Load Balancer</p>
+                </div>
+                <p class="mt-2 font-bold">GWLB</p>
+            </div>
+            
+            <!-- Arrow -->
+            <div class="flex justify-center">
+                <i class="fas fa-long-arrow-alt-right text-4xl text-gray-500"></i>
+            </div>
+            
+            <!-- Application -->
+            <div class="text-center">
+                <div class="w-24 h-24 mx-auto bg-green-100 border-2 border-green-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-server text-4xl text-green-600"></i>
+                </div>
+                <p class="mt-2 font-bold">Application</p>
+            </div>
+        </div>
+        
+        <!-- Virtual Appliances -->
+        <div class="mt-10 relative">
+            <div class="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                <i class="fas fa-arrow-down text-4xl text-gray-500"></i>
+            </div>
+            
+            <div class="p-4 bg-yellow-100 border-2 border-yellow-500 rounded-lg">
+                <h3 class="text-xl font-bold text-center mb-4">Virtual Appliances Target Group</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-3 bg-white rounded-lg shadow text-center">
+                        <i class="fas fa-shield-alt text-3xl text-red-500 mb-2"></i>
+                        <p class="font-bold">Firewall</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg shadow text-center">
+                        <i class="fas fa-search text-3xl text-blue-500 mb-2"></i>
+                        <p class="font-bold">IDPS</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg shadow text-center">
+                        <i class="fas fa-microscope text-3xl text-purple-500 mb-2"></i>
+                        <p class="font-bold">Deep Packet Inspection</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-16 text-center text-gray-600">
+        <p>Gateway Load Balancer (GWLB) - Loại load balancer mới nhất trên AWS</p>
+    </footer>
+</body>
+</html>
