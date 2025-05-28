@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Cross Zone Load Balancing trên AWS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .mind-map-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .mind-map {
+            position: relative;
+            width: 100%;
+        }
+        .node {
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .root {
+            background-color: #2563eb;
+            color: white;
+            text-align: center;
+        }
+        .level-1 {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .level-2 {
+            background-color: #60a5fa;
+            color: white;
+        }
+        .level-3 {
+            background-color: #93c5fd;
+            color: #1e3a8a;
+        }
+        .level-4 {
+            background-color: #dbeafe;
+            color: #1e3a8a;
+            border: 1px solid #bfdbfe;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        .comparison-table th {
+            background-color: #f3f4f6;
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .diagram {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9fafb;
+        }
+        .aws-box {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px;
+            background-color: white;
+        }
+        .aws-load-balancer {
+            background-color: #f59e0b;
+            color: white;
+        }
+        .aws-instance {
+            background-color: #10b981;
+            color: white;
+        }
+        .aws-traffic {
+            color: #6366f1;
+            font-weight: bold;
+        }
+        .aws-az {
+            border: 1px dashed #6b7280;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #f3f4f6;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .header-container {
+            position: relative;
+            background-color: #1e40af;
+            color: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        .header-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 49px;
+        }
+        .header-wave .shape-fill {
+            fill: #FFFFFF;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="header-container">
+        <h1 class="text-4xl font-bold text-center">Mind Map: Cross Zone Load Balancing trên AWS</h1>
+        <p class="text-xl text-center mt-4">Phân phối lưu lượng đồng đều giữa các Availability Zone</p>
+        <div class="header-wave">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-blue-700 border-b-2 border-blue-200 pb-2">1. Khái niệm Cross Zone Load Balancing</h2>
+            <div class="bg-blue-50 p-6 rounded-lg mb-8">
+                <p class="text-lg mb-4"><strong>Cross Zone Load Balancing</strong> là tính năng cho phép các load balancer phân phối lưu lượng truy cập đồng đều giữa tất cả các EC2 instances đã đăng ký, bất kể các instances đó thuộc Availability Zone nào.</p>
+                <p class="text-lg mb-4">Mục đích chính là đảm bảo tất cả các EC2 instances nhận được lưu lượng truy cập tương đương nhau, ngay cả khi số lượng instances không cân bằng giữa các Availability Zone.</p>
+            </div>
+            
+            <div class="grid-container">
+                <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-center text-blue-700">
+                        <i class="fas fa-check-circle text-green-600 mr-2"></i>Khi BẬT Cross Zone Load Balancing
+                    </h3>
+                    <p class="mb-4">Mỗi node load balancer phân phối lưu lượng truy cập đồng đều đến <strong>tất cả</strong> các instances đã đăng ký trong <strong>tất cả</strong> các Availability Zone.</p>
+                    <p class="mb-4">Điều này đảm bảo các instances có tải công bằng, ngay cả khi số lượng instances trong mỗi AZ khác nhau.</p>
+                    <div class="aws-az mt-6">
+                        <p class="font-bold">AZ-1 (2 instances)</p>
+                        <div class="aws-box aws-load-balancer">Load Balancer Node (nhận 50% tổng traffic)</div>
+                        <div class="flex justify-around">
+                            <div class="aws-box aws-instance">EC2 Instance<br>Nhận 10% traffic</div>
+                            <div class="aws-box aws-instance">EC2 Instance<br>Nhận 10% traffic</div>
+                        </div>
+                        <p class="aws-traffic text-center">↓ Cross-Zone Traffic ↓</p>
+                    </div>
+                    <div class="aws-az">
+                        <p class="font-bold">AZ-2 (8 instances)</p>
+                        <div class="aws-box aws-load-balancer">Load Balancer Node (nhận 50% tổng traffic)</div>
+                        <div class="flex flex-wrap justify-around">
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                            <div class="aws-box aws-instance">EC2<br>10%</div>
+                        </div>
+                        <p class="aws-traffic text-center">↑ Cross-Zone Traffic ↑</p>
+                    </div>
+                    <div class="mt-4 text-center font-bold">
+                        Tổng cộng: Mỗi instance nhận 10% tổng traffic
+                    </div>
+                </div>
+                
+                <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-center text-blue-700">
+                        <i class="fas fa-times-circle text-red-600 mr-2"></i>Khi TẮT Cross Zone Load Balancing
+                    </h3>
+                    <p class="mb-4">Mỗi node load balancer chỉ phân phối lưu lượng truy cập đến các instances thuộc <strong>cùng</strong> Availability Zone với node đó.</p>
+                    <p class="mb-4">Điều này có thể dẫn đến việc phân phối tải không đồng đều nếu số lượng instances khác nhau giữa các AZ.</p>
+                    <div class="aws-az mt-6">
+                        <p class="font-bold">AZ-1 (2 instances)</p>
+                        <div class="aws-box aws-load-balancer">Load Balancer Node (nhận 50% tổng traffic)</div>
+                        <div class="flex justify-around">
+                            <div class="aws-box aws-instance">EC2 Instance<br>Nhận 25% traffic</div>
+                            <div class="aws-box aws-instance">EC2 Instance<br>Nhận 25% traffic</div>
+                        </div>
+                    </div>
+                    <div class="aws-az">
+                        <p class="font-bold">AZ-2 (8 instances)</p>
+                        <div class="aws-box aws-load-balancer">Load Balancer Node (nhận 50% tổng traffic)</div>
+                        <div class="flex flex-wrap justify-around">
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                            <div class="aws-box aws-instance">EC2<br>6.25%</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center font-bold">
+                        Không đồng đều: AZ-1 mỗi instance nhận 25%, AZ-2 mỗi instance chỉ nhận 6.25%
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-blue-700 border-b-2 border-blue-200 pb-2">2. So sánh giữa các loại Load Balancer</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Loại Load Balancer</th>
+                            <th>Cấu hình mặc định</th>
+                            <th>Vị trí cấu hình</th>
+                            <th>Chi phí dữ liệu liên AZ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Application Load Balancer (ALB)</strong></td>
+                            <td><span class="bg-green-100 text-green-800 px-2 py-1 rounded">Luôn BẬT</span></td>
+                            <td>
+                                <ul class="list-disc ml-5">
+                                    <li>Không thể tắt ở cấp ALB</li>
+                                    <li>Có thể tắt ở cấp Target Group</li>
+                                </ul>
+                            </td>
+                            <td><span class="bg-green-100 text-green-800 px-2 py-1 rounded">Không mất phí</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network Load Balancer (NLB)</strong></td>
+                            <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">TẮT</span></td>
+                            <td>
+                                <ul class="list-disc ml-5">
+                                    <li>Cấu hình ở cấp Load Balancer</li>
+                                </ul>
+                            </td>
+                            <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">Mất phí khi bật</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gateway Load Balancer (GWLB)</strong></td>
+                            <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">TẮT</span></td>
+                            <td>
+                                <ul class="list-disc ml-5">
+                                    <li>Cấu hình ở cấp Load Balancer</li>
+                                </ul>
+                            </td>
+                            <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">Mất phí khi bật</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Classic Load Balancer (CLB)</strong>
+                                <div class="text-sm text-gray-500">(Đã cũ, sắp bị loại bỏ)</div>
+                            </td>
+                            <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">TẮT</span></td>
+                            <td>
+                                <ul class="list-disc ml-5">
+                                    <li>Cấu hình ở cấp Load Balancer</li>
+                                </ul>
+                            </td>
+                            <td><span class="bg-green-100 text-green-800 px-2 py-1 rounded">Không mất phí</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-blue-700 border-b-2 border-blue-200 pb-2">3. Chi tiết cấu hình theo từng loại Load Balancer</h2>
+            
+            <div class="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-blue-600 text-white p-4">
+                    <h3 class="text-2xl font-bold">Application Load Balancer (ALB)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình mặc định</h4>
+                        <p>Cross Zone Load Balancing luôn được bật ở cấp ALB và không thể tắt.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình ở Target Group</h4>
+                        <ol class="list-decimal ml-6 space-y-2">
+                            <li>Đi đến Target Group đã được tạo cho ALB</li>
+                            <li>Chọn "Attributes" (Thuộc tính)</li>
+                            <li>Chọn "Edit" (Chỉnh sửa)</li>
+                            <li>Tại mục Cross Zone Load Balancing, bạn có thể chọn:
+                                <ul class="list-disc ml-6 mt-2">
+                                    <li><strong>Inherit from load balancer</strong> (Kế thừa từ load balancer) - Mặc định là ON</li>
+                                    <li><strong>Force ON</strong> - Bắt buộc bật</li>
+                                    <li><strong>Force OFF</strong> - Bắt buộc tắt</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-semibold mb-2">Chi phí</h4>
+                        <p>AWS không tính phí cho dữ liệu truyền giữa các Availability Zone khi sử dụng ALB với Cross Zone Load Balancing.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-blue-600 text-white p-4">
+                    <h3 class="text-2xl font-bold">Network Load Balancer (NLB)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình mặc định</h4>
+                        <p>Cross Zone Load Balancing mặc định bị tắt cho NLB.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình ở Load Balancer</h4>
+                        <ol class="list-decimal ml-6 space-y-2">
+                            <li>Chọn Network Load Balancer</li>
+                            <li>Cuộn xuống phần "Attributes" (Thuộc tính)</li>
+                            <li>Chọn "Edit" (Chỉnh sửa)</li>
+                            <li>Tìm mục "Cross Zone Load Balancing" và bật nó lên</li>
+                            <li>Lưu ý: Sẽ có cảnh báo về phí dữ liệu giữa các AZ</li>
+                        </ol>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-semibold mb-2">Chi phí</h4>
+                        <p class="text-red-600"><i class="fas fa-exclamation-triangle mr-2"></i> AWS sẽ tính phí cho dữ liệu truyền giữa các Availability Zone khi bật Cross Zone Load Balancing cho NLB.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-blue-600 text-white p-4">
+                    <h3 class="text-2xl font-bold">Gateway Load Balancer (GWLB)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình mặc định</h4>
+                        <p>Cross Zone Load Balancing mặc định bị tắt cho GWLB.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình ở Load Balancer</h4>
+                        <ol class="list-decimal ml-6 space-y-2">
+                            <li>Chọn Gateway Load Balancer</li>
+                            <li>Cuộn xuống phần "Attributes" (Thuộc tính)</li>
+                            <li>Chọn "Edit" (Chỉnh sửa)</li>
+                            <li>Tìm mục "Cross Zone Load Balancing" và bật nó lên</li>
+                            <li>Lưu ý: Sẽ có cảnh báo về phí dữ liệu giữa các AZ</li>
+                        </ol>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-semibold mb-2">Chi phí</h4>
+                        <p class="text-red-600"><i class="fas fa-exclamation-triangle mr-2"></i> AWS sẽ tính phí cho dữ liệu truyền giữa các Availability Zone khi bật Cross Zone Load Balancing cho GWLB.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-blue-600 text-white p-4">
+                    <h3 class="text-2xl font-bold">Classic Load Balancer (CLB)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Cấu hình mặc định</h4>
+                        <p>Cross Zone Load Balancing mặc định bị tắt cho CLB.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold mb-2">Lưu ý quan trọng</h4>
+                        <p class="text-amber-600"><i class="fas fa-info-circle mr-2"></i> Classic Load Balancer là thế hệ cũ và sẽ sớm bị loại bỏ. AWS khuyến nghị sử dụng ALB, NLB hoặc GWLB thay thế.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-semibold mb-2">Chi phí</h4>
+                        <p>AWS không tính phí cho dữ liệu truyền giữa các Availability Zone khi bật Cross Zone Load Balancing cho CLB.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-blue-700 border-b-2 border-blue-200 pb-2">4. Cân nhắc khi sử dụng Cross Zone Load Balancing</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-xl font-bold mb-4 text-green-700"><i class="fas fa-thumbs-up mr-2"></i>Ưu điểm</h3>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li>Phân phối lưu lượng đồng đều giữa tất cả các instances</li>
+                        <li>Tận dụng tốt nhất tất cả các instances đã đăng ký</li>
+                        <li>Giảm thời gian phản hồi khi một số AZ có ít instances hơn</li>
+                        <li>Đơn giản hóa việc quản lý cân bằng tải</li>
+                        <li>Tăng tính sẵn sàng của ứng dụng</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
+                    <h3 class="text-xl font-bold mb-4 text-red-700"><i class="fas fa-thumbs-down mr-2"></i>Nhược điểm</h3>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li>Có thể phát sinh chi phí dữ liệu truyền giữa các AZ (cho NLB và GWLB)</li>
+                        <li>Tăng độ trễ mạng do dữ liệu phải di chuyển giữa các AZ</li>
+                        <li>Phụ thuộc vào kết nối mạng giữa các AZ</li>
+                        <li>Không phù hợp cho các ứng dụng nhạy cảm về vùng địa lý</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4 text-blue-700"><i class="fas fa-lightbulb mr-2"></i>Khi nào nên sử dụng?</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-2">Nên bật Cross Zone Load Balancing khi:</h4>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li>Số lượng instances không cân bằng giữa các AZ</li>
+                            <li>Tất cả các instances cần nhận lưu lượng đồng đều</li>
+                            <li>Sử dụng ALB (vì không mất phí dữ liệu liên AZ)</li>
+                            <li>Ưu tiên phân phối tải đồng đều hơn chi phí dữ liệu</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-2">Nên tắt Cross Zone Load Balancing khi:</h4>
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li>Cần tối ưu hóa chi phí dữ liệu liên AZ (cho NLB và GWLB)</li>
+                            <li>EC2 instances đã được phân phối đồng đều giữa các AZ</li>
+                            <li>Cần giảm độ trễ mạng</li>
+                            <li>Các ứng dụng cần phục vụ người dùng gần nhất theo vùng địa lý</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2 class="text-3xl font-bold mb-6 text-blue-700 border-b-2 border-blue-200 pb-2">5. Tổng kết</h2>
+            
+            <div class="bg-gray-100 p-6 rounded-lg">
+                <ul class="list-disc ml-6 space-y-4">
+                    <li><strong>Cross Zone Load Balancing</strong> cho phép phân phối lưu lượng đồng đều đến tất cả các instances đăng ký, bất kể Availability Zone.</li>
+                    <li><strong>Application Load Balancer (ALB)</strong>: Mặc định bật, không tính phí dữ liệu liên AZ, có thể tắt ở cấp Target Group.</li>
+                    <li><strong>Network Load Balancer (NLB)</strong>: Mặc định tắt, tính phí dữ liệu liên AZ khi bật, cấu hình ở cấp Load Balancer.</li>
+                    <li><strong>Gateway Load Balancer (GWLB)</strong>: Mặc định tắt, tính phí dữ liệu liên AZ khi bật, cấu hình ở cấp Load Balancer.</li>
+                    <li><strong>Classic Load Balancer (CLB)</strong>: Mặc định tắt, không tính phí dữ liệu liên AZ, sắp bị loại bỏ.</li>
+                    <li>Quyết định bật/tắt tính năng này nên dựa trên cân nhắc giữa phân phối tải đồng đều và chi phí dữ liệu liên AZ.</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-blue-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-lg">Mind Map: Cross Zone Load Balancing trên AWS</p>
+            <p class="text-sm mt-2">© 2023 AWS Mind Maps</p>
+        </div>
+    </footer>
+</body>
+</html>
