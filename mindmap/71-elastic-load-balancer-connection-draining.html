@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Connection Draining/Deregistration Delay trên AWS Load Balancer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .mind-map-container {
+            width: 100%;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .node {
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+        .main-node {
+            background-color: #1e40af;
+            color: white;
+        }
+        .definition-node {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .operation-node {
+            background-color: #60a5fa;
+            color: white;
+        }
+        .config-node {
+            background-color: #93c5fd;
+            color: #1e3a8a;
+        }
+        .considerations-node {
+            background-color: #bfdbfe;
+            color: #1e3a8a;
+        }
+        .sub-node {
+            background-color: #f3f4f6;
+            border-left: 4px solid #3b82f6;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+        .connection-line {
+            border-top: 2px solid #64748b;
+            width: 30px;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        .branch {
+            margin-left: 30px;
+            position: relative;
+        }
+        .branch:before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            width: 20px;
+            border-top: 2px solid #64748b;
+        }
+        .branch-container {
+            position: relative;
+            padding-left: 30px;
+        }
+        .branch-container:before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            height: 100%;
+            border-left: 2px solid #64748b;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        .aws-blue {
+            color: #232F3E;
+        }
+        .aws-orange {
+            color: #FF9900;
+        }
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #4b5563;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container mx-auto max-w-6xl bg-white p-6 rounded-lg shadow-lg">
+        <h1>Mind Map: Connection Draining/Deregistration Delay<br>trên AWS Load Balancer</h1>
+        
+        <div class="intro">
+            <p>Tổng quan về tính năng Connection Draining (CLB) hay Deregistration Delay (ALB/NLB) trên AWS Load Balancer</p>
+        </div>
+
+        <!-- Main Mind Map Structure -->
+        <div class="mind-map-container">
+            <!-- Center Node -->
+            <div class="flex justify-center">
+                <div class="node main-node text-center" style="min-width: 300px;">
+                    <i class="fas fa-sync-alt mr-2"></i>Connection Draining / Deregistration Delay
+                </div>
+            </div>
+
+            <!-- Main Branches -->
+            <div class="flex flex-col md:flex-row flex-wrap justify-center mt-6">
+                <!-- Branch 1: Definition -->
+                <div class="w-full md:w-1/2 lg:w-1/2 p-2">
+                    <div class="node definition-node">
+                        <h2><i class="fas fa-info-circle mr-2"></i>Định nghĩa</h2>
+                    </div>
+                    <div class="branch-container mt-2">
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Connection Draining</strong>: Tên gọi trên Classic Load Balancer (CLB)
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Deregistration Delay</strong>: Tên gọi trên Application Load Balancer (ALB) và Network Load Balancer (NLB)
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Mục đích</strong>: Cho phép instances hoàn thành các request đang xử lý khi đang bị deregister hoặc đánh dấu là không khỏe mạnh
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch 2: Operation Mechanism -->
+                <div class="w-full md:w-1/2 lg:w-1/2 p-2">
+                    <div class="node operation-node">
+                        <h2><i class="fas fa-cogs mr-2"></i>Cơ chế hoạt động</h2>
+                    </div>
+                    <div class="branch-container mt-2">
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Khi EC2 instance trong trạng thái "draining"</strong>:
+                                <ul class="list-disc pl-5 mt-2">
+                                    <li>ELB sẽ dừng gửi request mới đến instance đó</li>
+                                    <li>Các connections hiện tại được phép hoàn thành trong khoảng thời gian đã cấu hình</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Hành vi với người dùng mới</strong>: Các kết nối mới sẽ được chuyển hướng đến các instances khỏe mạnh khác
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Sau khi hết thời gian "draining"</strong>: Mọi kết nối đến instance sẽ bị đóng hoàn toàn
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch 3: Configuration Parameters -->
+                <div class="w-full md:w-1/2 lg:w-1/2 p-2">
+                    <div class="node config-node">
+                        <h2><i class="fas fa-sliders-h mr-2"></i>Tham số cấu hình</h2>
+                    </div>
+                    <div class="branch-container mt-2">
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Phạm vi thời gian</strong>: 1 đến 3,600 giây (1 giờ)
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Giá trị mặc định</strong>: 300 giây (5 phút)
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Tắt tính năng</strong>: Đặt giá trị là 0 (không có thời gian draining)
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Cấu hình</strong>:
+                                <ul class="list-disc pl-5 mt-2">
+                                    <li>CLB: Connection Draining setting</li>
+                                    <li>ALB/NLB: Deregistration Delay trong Target Group attributes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch 4: Considerations for Time Settings -->
+                <div class="w-full md:w-1/2 lg:w-1/2 p-2">
+                    <div class="node considerations-node">
+                        <h2><i class="fas fa-balance-scale mr-2"></i>Cân nhắc khi thiết lập thời gian</h2>
+                    </div>
+                    <div class="branch-container mt-2">
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Giá trị thấp (ví dụ: 30 giây)</strong>:
+                                <ul class="list-disc pl-5 mt-2">
+                                    <li><span class="text-green-600">Ưu điểm</span>: EC2 instance được dọn dẹp nhanh chóng, thay thế nhanh</li>
+                                    <li><span class="text-green-600">Phù hợp với</span>: Các request ngắn (dưới 1 giây)</li>
+                                    <li><span class="text-red-600">Nhược điểm</span>: Có thể dẫn đến việc cắt đứt các request dài hơn</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Giá trị cao (ví dụ: 1200 giây)</strong>:
+                                <ul class="list-disc pl-5 mt-2">
+                                    <li><span class="text-green-600">Ưu điểm</span>: Đảm bảo hoàn thành các request dài (upload file lớn, streaming)</li>
+                                    <li><span class="text-green-600">Phù hợp với</span>: Long-lived connections, các request tốn nhiều thời gian</li>
+                                    <li><span class="text-red-600">Nhược điểm</span>: Instance sẽ mất nhiều thời gian hơn để được thay thế hoặc cập nhật</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="branch">
+                            <div class="node sub-node">
+                                <strong>Tắt tính năng (0 giây)</strong>:
+                                <ul class="list-disc pl-5 mt-2">
+                                    <li><span class="text-green-600">Ưu điểm</span>: Dọn dẹp instance ngay lập tức</li>
+                                    <li><span class="text-red-600">Nhược điểm</span>: Các request đang xử lý sẽ bị ngắt kết nối đột ngột</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Representation -->
+            <div class="mt-10">
+                <h2 class="text-center aws-blue">Minh họa Connection Draining/Deregistration Delay</h2>
+                <div class="p-4 bg-gray-100 rounded-lg my-4">
+                    <div class="flex flex-col md:flex-row items-center justify-center">
+                        <!-- Users -->
+                        <div class="text-center p-4">
+                            <div class="bg-blue-100 p-4 rounded-lg">
+                                <i class="fas fa-users text-4xl text-blue-600"></i>
+                                <p class="font-bold mt-2">Users</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Arrow -->
+                        <div class="transform rotate-90 md:rotate-0 my-2 md:my-0">
+                            <i class="fas fa-long-arrow-alt-right text-2xl text-gray-600"></i>
+                        </div>
+                        
+                        <!-- Load Balancer -->
+                        <div class="text-center p-4">
+                            <div class="bg-orange-100 p-4 rounded-lg">
+                                <i class="fas fa-balance-scale-right text-4xl aws-orange"></i>
+                                <p class="font-bold mt-2">Elastic Load Balancer</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Arrows to instances -->
+                        <div class="flex flex-col items-center">
+                            <div class="transform rotate-90 md:rotate-45 my-2 md:my-0">
+                                <i class="fas fa-long-arrow-alt-right text-2xl text-gray-600"></i>
+                            </div>
+                            <div class="hidden md:block transform -rotate-45">
+                                <i class="fas fa-long-arrow-alt-right text-2xl text-gray-600"></i>
+                            </div>
+                            <div class="transform rotate-90 md:rotate-0 my-2 md:my-0">
+                                <i class="fas fa-long-arrow-alt-right text-2xl text-gray-600"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- EC2 Instances -->
+                        <div class="flex flex-col md:flex-row">
+                            <div class="text-center p-2">
+                                <div class="bg-green-100 p-3 rounded-lg">
+                                    <i class="fas fa-server text-3xl text-green-600"></i>
+                                    <p class="font-bold mt-2">EC2 Healthy</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center p-2">
+                                <div class="bg-yellow-100 p-3 rounded-lg border-2 border-dashed border-yellow-400">
+                                    <i class="fas fa-server text-3xl text-yellow-600"></i>
+                                    <p class="font-bold mt-2">EC2 Draining</p>
+                                    <p class="text-sm">(Hoàn thành requests hiện tại)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center p-2">
+                                <div class="bg-green-100 p-3 rounded-lg">
+                                    <i class="fas fa-server text-3xl text-green-600"></i>
+                                    <p class="font-bold mt-2">EC2 Healthy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Explanation -->
+                    <div class="mt-8 bg-white p-4 rounded-lg">
+                        <h3 class="font-bold mb-2">Tiến trình Draining:</h3>
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold mr-3">1</div>
+                            <div>EC2 instance bắt đầu được deregister hoặc đánh dấu không khỏe mạnh</div>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold mr-3">2</div>
+                            <div>Load Balancer dừng gửi request mới đến instance đang trong trạng thái draining</div>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold mr-3">3</div>
+                            <div>Các request hiện tại được phép hoàn thành trong thời gian Connection Draining/Deregistration Delay</div>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-500 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold mr-3">4</div>
+                            <div>Sau khi hết thời gian, mọi kết nối đến instance bị đóng và instance hoàn toàn bị loại khỏi pool</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h2 class="aws-blue"><i class="fas fa-lightbulb mr-2"></i>Ví dụ thực tế</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="p-4 bg-white rounded shadow">
+                    <h3 class="font-bold text-lg mb-2">Ứng dụng web với request ngắn</h3>
+                    <p><strong>Cấu hình tối ưu:</strong> 30-60 giây</p>
+                    <p><strong>Lý do:</strong> Hầu hết request API hoặc page load cơ bản hoàn thành trong vài giây. Thời gian draining ngắn cho phép scale down/replacement nhanh chóng.</p>
+                </div>
+                <div class="p-4 bg-white rounded shadow">
+                    <h3 class="font-bold text-lg mb-2">Ứng dụng upload file</h3>
+                    <p><strong>Cấu hình tối ưu:</strong> 300-600 giây</p>
+                    <p><strong>Lý do:</strong> Upload file lớn có thể mất nhiều phút để hoàn thành. Thời gian draining dài hơn giúp tránh việc upload bị hủy giữa chừng.</p>
+                </div>
+                <div class="p-4 bg-white rounded shadow">
+                    <h3 class="font-bold text-lg mb-2">Ứng dụng streaming video</h3>
+                    <p><strong>Cấu hình tối ưu:</strong> 600-1800 giây</p>
+                    <p><strong>Lý do:</strong> Các phiên streaming kéo dài cần thời gian draining lớn để người dùng không bị ngắt kết nối đột ngột.</p>
+                </div>
+                <div class="p-4 bg-white rounded shadow">
+                    <h3 class="font-bold text-lg mb-2">Môi trường phát triển (Development)</h3>
+                    <p><strong>Cấu hình tối ưu:</strong> 0-30 giây</p>
+                    <p><strong>Lý do:</strong> Trong môi trường test, việc thay đổi nhanh chóng instances quan trọng hơn việc duy trì kết nối người dùng.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AWS Exam Tips -->
+        <div class="mt-6 p-4 bg-yellow-50 rounded-lg">
+            <h2 class="aws-orange"><i class="fas fa-graduation-cap mr-2"></i>Lưu ý cho Kỳ thi AWS</h2>
+            <ul class="list-disc pl-6 mt-3">
+                <li>Nhớ các tên khác nhau: <strong>Connection Draining</strong> (CLB) vs <strong>Deregistration Delay</strong> (ALB/NLB)</li>
+                <li>Hiểu rằng tính năng này giúp hoàn thành các request đang xử lý khi instances bị deregister</li>
+                <li>Nhớ giá trị mặc định là <strong>300 giây</strong> (5 phút)</li>
+                <li>Hiểu các trường hợp sử dụng khác nhau cho việc thiết lập giá trị ngắn vs dài</li>
+                <li>Biết cách tắt tính năng này (đặt giá trị bằng 0)</li>
+            </ul>
+        </div>
+
+        <div class="footer mt-8">
+            <p>Mind Map: Connection Draining/Deregistration Delay trên AWS Load Balancer</p>
+        </div>
+    </div>
+</body>
+</html>
