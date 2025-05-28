@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: SSL/TLS Certificates trên AWS Load Balancer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .mindmap-container {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .mindmap {
+            position: relative;
+            width: 100%;
+        }
+        
+        .central-topic {
+            background-color: #1e40af;
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            width: 300px;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .branch-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .branch {
+            width: 23%;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .branch::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background-color: #9ca3af;
+        }
+        
+        .branch-header {
+            padding: 12px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .branch-content {
+            padding: 15px;
+            background-color: white;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        
+        .sub-branch {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #f3f4f6;
+            position: relative;
+        }
+        
+        .sub-branch::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 2px;
+            height: 10px;
+            background-color: #9ca3af;
+        }
+        
+        .sub-branch-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+        
+        .info-list li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .info-list li::before {
+            content: '\f105';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #4b5563;
+        }
+        
+        .bg-aws-blue {
+            background-color: #232F3E;
+        }
+        
+        .bg-aws-orange {
+            background-color: #FF9900;
+        }
+        
+        .bg-aws-teal {
+            background-color: #01A88D;
+        }
+        
+        .bg-aws-purple {
+            background-color: #7D50F6;
+        }
+        
+        .connector-line {
+            position: absolute;
+            width: 70%;
+            height: 2px;
+            background-color: #9ca3af;
+            top: 80px;
+            left: 15%;
+            z-index: 1;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        
+        @media print {
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .branch-container {
+                break-inside: avoid;
+            }
+            
+            .branch {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold text-center mb-2">Mind Map: SSL/TLS Certificates trên AWS Load Balancer</h1>
+        <p class="text-center text-gray-600 mb-8">Cách thức hoạt động, SNI và tích hợp với các loại Load Balancer</p>
+        
+        <div class="mindmap-container">
+            <div class="mindmap">
+                <div class="connector-line"></div>
+                
+                <div class="central-topic">
+                    <h2 class="text-xl font-bold">SSL/TLS Certificates trên AWS Load Balancer</h2>
+                </div>
+                
+                <div class="branch-container">
+                    <!-- Branch 1: Khái niệm cơ bản -->
+                    <div class="branch">
+                        <div class="branch-header bg-aws-blue">
+                            <i class="fas fa-book mr-2"></i> Khái niệm cơ bản
+                        </div>
+                        <div class="branch-content">
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">SSL và TLS là gì?</div>
+                                <ul class="info-list">
+                                    <li>SSL: Secure Sockets Layer</li>
+                                    <li>TLS: Transport Layer Security (phiên bản mới hơn của SSL)</li>
+                                    <li>Thường vẫn được gọi chung là SSL</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Mục đích</div>
+                                <ul class="info-list">
+                                    <li>Mã hóa dữ liệu khi truyền (in-flight encryption)</li>
+                                    <li>Bảo vệ thông tin giữa người dùng và máy chủ</li>
+                                    <li>Hiển thị biểu tượng khóa xanh trên trình duyệt</li>
+                                    <li>Ngăn chặn đánh cắp thông tin nhạy cảm</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Chứng chỉ SSL</div>
+                                <ul class="info-list">
+                                    <li>Cấp bởi Certificate Authorities (CA)</li>
+                                    <li>Ví dụ: Comodo, Symantec, GoDaddy, Letsencrypt...</li>
+                                    <li>Có thời hạn và cần gia hạn định kỳ</li>
+                                    <li>Định dạng X.509</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 2: Hoạt động trên Load Balancer -->
+                    <div class="branch">
+                        <div class="branch-header bg-aws-orange">
+                            <i class="fas fa-cogs mr-2"></i> Hoạt động trên Load Balancer
+                        </div>
+                        <div class="branch-content">
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">SSL Termination</div>
+                                <ul class="info-list">
+                                    <li>Người dùng kết nối qua HTTPS (mã hóa)</li>
+                                    <li>Load Balancer thực hiện SSL termination</li>
+                                    <li>Giao tiếp nội bộ đến EC2 có thể qua HTTP</li>
+                                    <li>Traffic nội bộ đi qua VPC (mạng riêng)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Quản lý chứng chỉ</div>
+                                <ul class="info-list">
+                                    <li>Sử dụng AWS Certificate Manager (ACM)</li>
+                                    <li>Có thể tải lên chứng chỉ riêng</li>
+                                    <li>HTTPS listener cần chứng chỉ mặc định</li>
+                                    <li>Có thể thêm danh sách chứng chỉ cho nhiều domain</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Security Policy</div>
+                                <ul class="info-list">
+                                    <li>Hỗ trợ các phiên bản SSL/TLS khác nhau</li>
+                                    <li>Có thể thiết lập để hỗ trợ legacy clients</li>
+                                    <li>Tùy chỉnh cấu hình bảo mật theo nhu cầu</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 3: SNI (Server Name Indication) -->
+                    <div class="branch">
+                        <div class="branch-header bg-aws-teal">
+                            <i class="fas fa-server mr-2"></i> SNI (Server Name Indication)
+                        </div>
+                        <div class="branch-content">
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Vấn đề cần giải quyết</div>
+                                <ul class="info-list">
+                                    <li>Làm thế nào để tải nhiều chứng chỉ SSL lên một máy chủ web?</li>
+                                    <li>Phục vụ nhiều website khác nhau trên cùng một máy chủ</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Cách hoạt động</div>
+                                <ul class="info-list">
+                                    <li>Giao thức mới yêu cầu client chỉ định hostname</li>
+                                    <li>Client gửi tên website trong SSL handshake ban đầu</li>
+                                    <li>Máy chủ biết cần tải chứng chỉ nào</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Ví dụ thực tế</div>
+                                <ul class="info-list">
+                                    <li>ALB có 2 chứng chỉ: example.com và mycorp.com</li>
+                                    <li>Client yêu cầu mycorp.com trong SNI</li>
+                                    <li>ALB sử dụng chứng chỉ phù hợp và định tuyến đến target group tương ứng</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Giới hạn</div>
+                                <ul class="info-list">
+                                    <li>Không phải tất cả client đều hỗ trợ SNI</li>
+                                    <li>Protocol mới hơn so với SSL thông thường</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch 4: Hỗ trợ trên các Load Balancer -->
+                    <div class="branch">
+                        <div class="branch-header bg-aws-purple">
+                            <i class="fas fa-tasks mr-2"></i> Hỗ trợ trên các Load Balancer
+                        </div>
+                        <div class="branch-content">
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Classic Load Balancer (CLB)</div>
+                                <ul class="info-list">
+                                    <li>Chỉ hỗ trợ 1 chứng chỉ SSL</li>
+                                    <li>Không hỗ trợ SNI</li>
+                                    <li>Cần nhiều CLB cho nhiều hostname/chứng chỉ</li>
+                                    <li><span class="tag">Thế hệ cũ</span></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Application Load Balancer (ALB)</div>
+                                <ul class="info-list">
+                                    <li>Hỗ trợ nhiều listener với nhiều chứng chỉ SSL</li>
+                                    <li>Hỗ trợ SNI đầy đủ</li>
+                                    <li>Có thể định tuyến dựa trên hostname</li>
+                                    <li><span class="tag">Thế hệ mới</span> <span class="tag">Khuyên dùng</span></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Network Load Balancer (NLB)</div>
+                                <ul class="info-list">
+                                    <li>Hỗ trợ nhiều listener với nhiều chứng chỉ SSL</li>
+                                    <li>Hỗ trợ SNI đầy đủ</li>
+                                    <li>Hoạt động ở layer 4 (TCP/TLS)</li>
+                                    <li><span class="tag">Thế hệ mới</span> <span class="tag">Hiệu năng cao</span></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="sub-branch">
+                                <div class="sub-branch-title">Dịch vụ AWS khác</div>
+                                <ul class="info-list">
+                                    <li>CloudFront hỗ trợ SNI đầy đủ</li>
+                                    <li>Tích hợp tốt với ACM</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center text-gray-600">
+                    <p><strong>Lưu ý khi ôn thi AWS:</strong> Khi thấy yêu cầu về nhiều chứng chỉ SSL trên một Load Balancer, hãy nghĩ đến ALB hoặc NLB với SNI.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
