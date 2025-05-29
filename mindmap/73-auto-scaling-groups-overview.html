@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Auto Scaling Group (ASG) trên AWS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .mind-map-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        .mind-map {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .central-topic {
+            background-color: #0078d7;
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            width: 200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .branches-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 50px;
+            position: relative;
+        }
+        
+        .branch {
+            width: 300px;
+            margin: 15px;
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 5px solid #0078d7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .branch-title {
+            background-color: #0078d7;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .branch-title i {
+            margin-right: 10px;
+        }
+        
+        .sub-topics {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .sub-topics li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .sub-topics li:before {
+            content: "\f105";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #0078d7;
+            background-color: #e0edff;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .highlight {
+            background-color: #fff4e5;
+            padding: 3px 5px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .connector {
+            position: absolute;
+            height: 3px;
+            background-color: #0078d7;
+            top: -25px;
+            left: 50%;
+            width: 3px;
+            height: 25px;
+        }
+        
+        .diagram {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .diagram-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .diagram-item {
+            background-color: #e9f2fe;
+            border: 1px solid #c9defa;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            width: calc(33.33% - 10px);
+            text-align: center;
+            position: relative;
+        }
+        
+        .instance {
+            background-color: #d1e7ff;
+            border-radius: 5px;
+            padding: 8px;
+            margin: 5px;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .arrow {
+            color: #0078d7;
+            font-size: 24px;
+        }
+        
+        .footnote {
+            font-style: italic;
+            font-size: 0.9em;
+            margin-top: 10px;
+            color: #666;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .mind-map-container {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mind-map-container">
+        <div class="header">
+            <h1 class="text-2xl font-bold text-center my-4 text-blue-700">Mind Map: Auto Scaling Group (ASG) trên AWS</h1>
+            <div class="text-sm text-gray-600">Tối ưu cho xuất PDF</div>
+        </div>
+        
+        <div class="mind-map">
+            <div class="central-topic">
+                <h2 class="text-xl font-bold">Auto Scaling Group (ASG)</h2>
+            </div>
+        </div>
+        
+        <div class="branches-container">
+            <!-- Branch 1 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-info-circle"></i> Định nghĩa & Mục đích
+                </div>
+                <ul class="sub-topics">
+                    <li>Tự động điều chỉnh số lượng EC2 instances theo nhu cầu</li>
+                    <li><span class="highlight">Scale out</span>: Thêm EC2 instances khi tải tăng</li>
+                    <li><span class="highlight">Scale in</span>: Giảm EC2 instances khi tải giảm</li>
+                    <li>Kích thước ASG thay đổi theo thời gian</li>
+                    <li>Miễn phí (chỉ trả tiền cho EC2 instances được tạo)</li>
+                </ul>
+            </div>
+            
+            <!-- Branch 2 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-cogs"></i> Thuộc tính cấu hình
+                </div>
+                <ul class="sub-topics">
+                    <li><span class="highlight">Minimum capacity</span>: Số lượng instances tối thiểu</li>
+                    <li><span class="highlight">Desired capacity</span>: Số lượng instances mong muốn</li>
+                    <li><span class="highlight">Maximum capacity</span>: Số lượng instances tối đa</li>
+                </ul>
+                
+                <div class="diagram">
+                    <strong>Ví dụ cấu hình ASG:</strong>
+                    <div class="diagram-grid">
+                        <div class="diagram-item">Min: 2</div>
+                        <div class="diagram-item">Desired: 4</div>
+                        <div class="diagram-item">Max: 7</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 3 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-file-alt"></i> Launch Template
+                </div>
+                <ul class="sub-topics">
+                    <li>Thay thế cho Launch Configurations (đã lỗi thời)</li>
+                    <li>Chứa thông tin để khởi chạy EC2 instances:</li>
+                    <li>- AMI và Instance type</li>
+                    <li>- EC2 User Data</li>
+                    <li>- EBS Volumes</li>
+                    <li>- Security Groups</li>
+                    <li>- SSH Key Pair</li>
+                    <li>- IAM Roles</li>
+                    <li>- Thông tin Network và Subnet</li>
+                    <li>- Thông tin Load Balancer</li>
+                </ul>
+            </div>
+            
+            <!-- Branch 4 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-balance-scale"></i> Tích hợp Load Balancer
+                </div>
+                <ul class="sub-topics">
+                    <li>EC2 instances trong ASG tự động đăng ký với Load Balancer</li>
+                    <li>ELB phân phối traffic đến tất cả instances trong ASG</li>
+                    <li>Health checks từ ELB có thể được chuyển đến ASG</li>
+                    <li>ASG có thể terminate instances không khỏe mạnh</li>
+                </ul>
+                
+                <div class="diagram">
+                    <strong>Hoạt động với Load Balancer:</strong>
+                    <div style="margin: 15px 0;">
+                        <div style="margin-bottom: 10px;">
+                            <i class="fas fa-users"></i> Users
+                            <i class="fas fa-arrow-down mx-2"></i>
+                        </div>
+                        <div style="background-color: #ffe8cc; padding: 8px; border-radius: 5px; margin-bottom: 15px;">
+                            <i class="fas fa-random"></i> Load Balancer
+                        </div>
+                        <div style="display: flex; justify-content: space-around;">
+                            <div class="instance">EC2 #1</div>
+                            <div class="instance">EC2 #2</div>
+                            <div class="instance">EC2 #3</div>
+                            <div class="instance">EC2 #4</div>
+                        </div>
+                        <div style="margin-top: 5px; font-style: italic; font-size: 0.85em;">
+                            Auto Scaling Group
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 5 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-chart-line"></i> Chính sách mở rộng
+                </div>
+                <ul class="sub-topics">
+                    <li><span class="highlight">Scale-out policies</span>: Tăng số lượng instances</li>
+                    <li><span class="highlight">Scale-in policies</span>: Giảm số lượng instances</li>
+                    <li>Có thể dựa trên các chỉ số như CPU, Memory, Network...</li>
+                    <li>Có thể tùy chỉnh theo lịch (scheduled scaling)</li>
+                    <li>Có thể dựa trên chỉ số tự định nghĩa (custom metrics)</li>
+                </ul>
+            </div>
+            
+            <!-- Branch 6 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-cloud"></i> Tích hợp CloudWatch
+                </div>
+                <ul class="sub-topics">
+                    <li>CloudWatch Alarms kích hoạt các hoạt động mở rộng</li>
+                    <li>Giám sát các chỉ số như Average CPU</li>
+                    <li>Trigger scale-out khi vượt ngưỡng trên</li>
+                    <li>Trigger scale-in khi dưới ngưỡng</li>
+                </ul>
+                
+                <div class="diagram">
+                    <strong>Mô hình tích hợp:</strong>
+                    <div style="margin: 15px 0;">
+                        <div style="background-color: #e0f7fa; padding: 8px; border-radius: 5px; margin-bottom: 15px;">
+                            <i class="fas fa-bell"></i> CloudWatch Alarm
+                            <div class="text-sm">(Ví dụ: CPU > 70%)</div>
+                        </div>
+                        <i class="fas fa-arrow-down mx-2"></i>
+                        <div style="background-color: #e8f5e9; padding: 8px; border-radius: 5px; margin: 10px 0;">
+                            <i class="fas fa-cogs"></i> Scaling Policy
+                            <div class="text-sm">(Ví dụ: Thêm 2 instances)</div>
+                        </div>
+                        <i class="fas fa-arrow-down mx-2"></i>
+                        <div style="background-color: #e3f2fd; padding: 8px; border-radius: 5px;">
+                            <i class="fas fa-server"></i> Auto Scaling Group
+                            <div class="text-sm">(Thực hiện mở rộng)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Branch 7 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-shield-alt"></i> Tính năng bảo vệ
+                </div>
+                <ul class="sub-topics">
+                    <li>Tự động thay thế instances không khỏe mạnh</li>
+                    <li>Đảm bảo duy trì số lượng instances mong muốn</li>
+                    <li>Phân phối instances qua nhiều AZs để tăng tính sẵn sàng</li>
+                    <li>Termination policies để kiểm soát các instances bị loại bỏ</li>
+                </ul>
+            </div>
+            
+            <!-- Branch 8 -->
+            <div class="branch">
+                <div class="connector"></div>
+                <div class="branch-title">
+                    <i class="fas fa-lightbulb"></i> Ứng dụng thực tế
+                </div>
+                <ul class="sub-topics">
+                    <li>Websites với lưu lượng thay đổi</li>
+                    <li>Ứng dụng có peak theo thời gian (ngày/đêm)</li>
+                    <li>Xử lý batch và queues với khối lượng biến động</li>
+                    <li>Micro-services cần khả năng mở rộng độc lập</li>
+                    <li>Tiết kiệm chi phí bằng cách chỉ sử dụng resources khi cần</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footnote mt-6 text-center">
+            <p>Auto Scaling Group là một dịch vụ miễn phí trên AWS, bạn chỉ trả tiền cho các EC2 instances được tạo ra.</p>
+            <p class="mt-2">Để tối ưu hóa chi phí và hiệu năng, hãy kết hợp ASG với Elastic Load Balancer và CloudWatch Alarms.</p>
+        </div>
+    </div>
+</body>
+</html>
