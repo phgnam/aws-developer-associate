@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: AWS RDS (Relational Database Service)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .mind-map-container {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .mind-map {
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .main-node {
+            background-color: #0073bb;
+            color: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            width: 300px;
+        }
+        
+        .level-1-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        .level-1-node {
+            background-color: #2ca3dc;
+            color: white;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 48%;
+            margin-bottom: 1.5rem;
+        }
+        
+        .level-2-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .level-2-node {
+            background-color: #79c2e3;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            margin: 0.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            flex: 1 0 45%;
+        }
+        
+        .level-3-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        
+        .level-3-node {
+            background-color: #b6e0f3;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            margin: 0.25rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            flex: 1 0 45%;
+        }
+        
+        .note {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #0073bb;
+        }
+        
+        .connector {
+            height: 2px;
+            background-color: #0073bb;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        
+        .engine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .engine-item {
+            background-color: #79c2e3;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background-color: #0073bb;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        /* Connection lines between nodes */
+        .connections {
+            position: relative;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .mind-map-container {
+                padding: 0;
+            }
+            
+            .level-1-node, .level-2-node, .level-3-node, .engine-item {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="text-3xl font-bold">Mind Map: AWS RDS (Relational Database Service)</h1>
+        <p class="mt-2">Tổng quan về dịch vụ cơ sở dữ liệu quan hệ quản lý của AWS</p>
+    </div>
+    
+    <div class="mind-map-container">
+        <div class="mind-map">
+            <!-- Main Node -->
+            <div class="main-node">
+                <h2 class="text-xl font-bold">AWS RDS</h2>
+                <p>Relational Database Service</p>
+            </div>
+            
+            <!-- Connection Line -->
+            <div class="connector"></div>
+            
+            <!-- Definition Section -->
+            <div class="bg-white rounded-lg p-4 shadow mb-6">
+                <h3 class="section-title"><i class="fas fa-info-circle mr-2"></i>Định nghĩa</h3>
+                <p>RDS là dịch vụ cơ sở dữ liệu quan hệ được quản lý bởi AWS dành cho các database sử dụng SQL làm ngôn ngữ truy vấn.</p>
+                <p class="mt-2">SQL (Structured Query Language) là ngôn ngữ chuẩn được sử dụng để tương tác với các database quan hệ.</p>
+                <p class="mt-2">RDS cho phép bạn tạo, vận hành và mở rộng database quan hệ trên đám mây mà không phải lo lắng về các tác vụ quản lý cơ bản.</p>
+            </div>
+            
+            <!-- Database Engines Section -->
+            <div class="bg-white rounded-lg p-4 shadow mb-6">
+                <h3 class="section-title"><i class="fas fa-database mr-2"></i>Database Engines được hỗ trợ</h3>
+                <div class="engine-grid">
+                    <div class="engine-item">
+                        <div class="font-bold">PostgreSQL</div>
+                    </div>
+                    <div class="engine-item">
+                        <div class="font-bold">MySQL</div>
+                    </div>
+                    <div class="engine-item">
+                        <div class="font-bold">MariaDB</div>
+                    </div>
+                    <div class="engine-item">
+                        <div class="font-bold">Oracle</div>
+                    </div>
+                    <div class="engine-item">
+                        <div class="font-bold">Microsoft SQL Server</div>
+                    </div>
+                    <div class="engine-item">
+                        <div class="font-bold">IBM DB2</div>
+                    </div>
+                    <div class="engine-item">
+                        <div class="font-bold">Aurora</div>
+                        <div class="note">Database độc quyền của AWS</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Benefits Section -->
+            <div class="bg-white rounded-lg p-4 shadow mb-6">
+                <h3 class="section-title"><i class="fas fa-check-circle mr-2"></i>Lợi ích của RDS so với tự triển khai trên EC2</h3>
+                
+                <div class="level-1-container">
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Tự động hóa quản lý</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Cung cấp tự động</div>
+                                <div class="note">Tự động hóa việc khởi tạo database</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Vá lỗi hệ điều hành</div>
+                                <div class="note">Tự động cập nhật OS để bảo mật</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Cửa sổ bảo trì</div>
+                                <div class="note">Để nâng cấp database engine</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Không cần SSH</div>
+                                <div class="note">Không thể truy cập trực tiếp vào máy chủ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Sao lưu và khôi phục</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Sao lưu liên tục</div>
+                                <div class="note">Tự động sao lưu dữ liệu</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Point in Time Restore</div>
+                                <div class="note">Khôi phục theo thời điểm cụ thể</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Tính sẵn sàng cao</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Multi AZ</div>
+                                <div class="note">Khả năng phục hồi sau thảm họa</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Read Replicas</div>
+                                <div class="note">Tăng hiệu suất đọc</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Giám sát và mở rộng</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Bảng điều khiển giám sát</div>
+                                <div class="note">Theo dõi hiệu suất database</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Mở rộng theo chiều dọc</div>
+                                <div class="note">Tăng loại instance</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Mở rộng theo chiều ngang</div>
+                                <div class="note">Thêm Read Replicas</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Lưu trữ trên EBS</div>
+                                <div class="note">Elastic Block Storage</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Storage Auto Scaling Section -->
+            <div class="bg-white rounded-lg p-4 shadow mb-6">
+                <h3 class="section-title"><i class="fas fa-expand-arrows-alt mr-2"></i>Storage Auto Scaling</h3>
+                
+                <div class="level-1-container">
+                    <div class="level-1-node" style="width: 100%;">
+                        <h4 class="font-bold">Khái niệm Storage Auto Scaling</h4>
+                        <p class="mt-2">Tính năng tự động mở rộng lưu trữ cho RDS khi sắp hết dung lượng mà không cần can thiệp thủ công.</p>
+                        <p class="mt-1">Cho phép ứng dụng hoạt động liên tục mà không bị gián đoạn do hết dung lượng lưu trữ.</p>
+                    </div>
+                    
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Điều kiện kích hoạt</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Dung lượng trống < 10%</div>
+                                <div class="note">Của dung lượng đã cấp phát</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Thời gian dung lượng thấp</div>
+                                <div class="note">Kéo dài trên 5 phút</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Thời gian sau lần thay đổi</div>
+                                <div class="note">Tối thiểu 6 giờ kể từ lần sửa đổi cuối</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Cấu hình</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Maximum Storage Threshold</div>
+                                <div class="note">Giới hạn tối đa cho phép mở rộng</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Hỗ trợ tất cả database engines</div>
+                                <div class="note">Áp dụng cho mọi loại database RDS</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-1-node">
+                        <h4 class="font-bold">Lợi ích</h4>
+                        <div class="level-2-container">
+                            <div class="level-2-node">
+                                <div class="font-semibold">Tránh thao tác thủ công</div>
+                                <div class="note">Không cần ngưng hoạt động để tăng dung lượng</div>
+                            </div>
+                            <div class="level-2-node">
+                                <div class="font-semibold">Phù hợp với workload không dự đoán được</div>
+                                <div class="note">Tự động thích ứng với nhu cầu lưu trữ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
