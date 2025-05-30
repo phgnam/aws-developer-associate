@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: RDS Read Replicas và Multi AZ trong AWS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        
+        .mind-map-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .node {
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .node:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .connector {
+            position: absolute;
+            width: 2px;
+            background-color: #9ca3af;
+            z-index: 0;
+        }
+        
+        .horizontal-connector {
+            height: 2px;
+            background-color: #9ca3af;
+            position: absolute;
+            z-index: 0;
+        }
+        
+        .children {
+            margin-left: 40px;
+            position: relative;
+            padding-left: 15px;
+            border-left: 2px dashed #9ca3af;
+        }
+        
+        .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            color: white;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e5e7eb;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .process-step {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .process-step:before {
+            content: attr(data-step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .mind-map-container {
+                padding: 0;
+            }
+            
+            .node:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mind-map-container">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-700 mb-4">RDS Read Replicas và Multi AZ trong AWS</h1>
+            <p class="text-lg text-gray-600">Mind map toàn diện về các khái niệm, cách thức hoạt động và use cases</p>
+        </div>
+
+        <!-- Main map container -->
+        <div class="flex justify-center mb-10">
+            <div class="bg-blue-600 text-white node text-xl font-bold rounded-lg px-6 py-4">
+                <i class="fas fa-database mr-3"></i>RDS trong AWS
+            </div>
+        </div>
+        
+        <!-- First level branches -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Read Replicas Branch -->
+            <div>
+                <div class="bg-green-500 text-white node text-lg font-bold">
+                    <i class="fas fa-copy mr-2"></i>Read Replicas
+                </div>
+                
+                <div class="children">
+                    <!-- Definition -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Định nghĩa</div>
+                        <p>Các bản sao của database chính, dùng chủ yếu để mở rộng khả năng đọc (Scale Reads)</p>
+                    </div>
+                    
+                    <!-- Replication Method -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Phương thức Replication</div>
+                        <p class="text-green-700 font-semibold"><i class="fas fa-sync-alt mr-2"></i>Asynchronous (Bất đồng bộ)</p>
+                        <ul class="list-disc ml-5 mt-2">
+                            <li>Dữ liệu được sao chép từ database chính sang Read Replica</li>
+                            <li>Đọc dữ liệu theo cơ chế "eventually consistent" (cuối cùng sẽ nhất quán)</li>
+                            <li>Có thể có độ trễ giữa database chính và Read Replica</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Purpose -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Mục đích sử dụng</div>
+                        <ul class="list-disc ml-5">
+                            <li>Mở rộng khả năng đọc (scaling reads)</li>
+                            <li>Giảm tải cho database chính</li>
+                            <li>Cải thiện hiệu năng ứng dụng</li>
+                            <li>Phân tách read traffic từ write traffic</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Use Cases -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Use Cases điển hình</div>
+                        <div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded my-2">
+                            <div class="font-semibold">Reporting & Analytics</div>
+                            <p>Tách biệt workload reporting khỏi database sản phẩm chính</p>
+                        </div>
+                        <div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded">
+                            <div class="font-semibold">Ứng dụng đọc nhiều, ghi ít</div>
+                            <p>Ứng dụng với tỉ lệ đọc/ghi cao</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Limitations -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Hạn chế</div>
+                        <div class="bg-yellow-50 p-3 rounded-md border border-yellow-200">
+                            <p><i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>Chỉ hỗ trợ câu lệnh SELECT (Read)</p>
+                            <p class="mt-2">Không thể sử dụng các câu lệnh:</p>
+                            <div class="grid grid-cols-3 gap-2 mt-1">
+                                <div class="bg-gray-100 p-1 rounded text-center">INSERT</div>
+                                <div class="bg-gray-100 p-1 rounded text-center">UPDATE</div>
+                                <div class="bg-gray-100 p-1 rounded text-center">DELETE</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specifications -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Thông số kỹ thuật</div>
+                        <div class="flex items-center mb-2">
+                            <span class="feature-icon bg-blue-500"><i class="fas fa-layer-group"></i></span>
+                            <span>Tối đa 15 Read Replicas cho mỗi database chính</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="feature-icon bg-purple-500"><i class="fas fa-map-marker-alt"></i></span>
+                            <span>Có thể đặt tại: Same AZ, Cross AZ, Cross Region</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="feature-icon bg-green-500"><i class="fas fa-arrow-up"></i></span>
+                            <span>Có thể promote thành database độc lập</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Network Cost -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Chi phí mạng</div>
+                        <div class="p-3 rounded-md border border-gray-200">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                                <span><strong>Same Region (Different AZ):</strong> Miễn phí replication traffic</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                                <span><strong>Cross Region:</strong> Tính phí replication traffic</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Multi AZ Branch -->
+            <div>
+                <div class="bg-blue-500 text-white node text-lg font-bold">
+                    <i class="fas fa-shield-alt mr-2"></i>Multi AZ
+                </div>
+                
+                <div class="children">
+                    <!-- Definition -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Định nghĩa</div>
+                        <p>Giải pháp High Availability và Disaster Recovery cho RDS</p>
+                    </div>
+                    
+                    <!-- Replication Method -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Phương thức Replication</div>
+                        <p class="text-blue-700 font-semibold"><i class="fas fa-sync mr-2"></i>Synchronous (Đồng bộ)</p>
+                        <ul class="list-disc ml-5 mt-2">
+                            <li>Dữ liệu được sao chép đồng thời từ database Master sang Standby</li>
+                            <li>Write transaction được xác nhận khi đã được ghi vào cả Master và Standby</li>
+                            <li>Đảm bảo dữ liệu nhất quán giữa hai database</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Purpose -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Mục đích sử dụng</div>
+                        <ul class="list-disc ml-5">
+                            <li>Tăng tính sẵn sàng (Availability) của database</li>
+                            <li>Phục hồi sau thảm họa (Disaster Recovery)</li>
+                            <li>Bảo vệ khỏi lỗi AZ, network hoặc storage</li>
+                            <li><strong class="text-red-600">Không dùng để scale reads</strong></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- How it works -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Cách thức hoạt động</div>
+                        <ul class="list-disc ml-5">
+                            <li>Master DB trong AZ chính</li>
+                            <li>Standby DB trong AZ khác</li>
+                            <li>Sử dụng chung một DNS Name</li>
+                            <li>Failover tự động khi có sự cố</li>
+                            <li>Standby không thể truy cập để đọc hoặc ghi</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Failover Process -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Quy trình Failover</div>
+                        <div class="relative p-4 bg-blue-50 rounded-md border border-blue-200">
+                            <div class="mb-3">
+                                <div class="font-semibold">Khi nào xảy ra failover:</div>
+                                <ul class="list-disc ml-5 mt-1">
+                                    <li>Mất toàn bộ AZ</li>
+                                    <li>Lỗi mạng</li>
+                                    <li>Lỗi instance hoặc storage</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="font-semibold">Quá trình failover:</div>
+                                <ul class="list-disc ml-5 mt-1">
+                                    <li>Standby DB được promote thành Master mới</li>
+                                    <li>DNS name tự động trỏ đến Master mới</li>
+                                    <li>Không cần thay đổi connection string trong ứng dụng</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Combination -->
+                    <div class="bg-white node">
+                        <div class="font-bold mb-1">Kết hợp với Read Replicas</div>
+                        <div class="p-3 bg-purple-50 rounded-md border border-purple-200">
+                            <p><i class="fas fa-lightbulb text-purple-500 mr-2"></i><strong>Quan trọng:</strong> Read Replicas có thể được cấu hình thành Multi AZ để tăng tính sẵn sàng</p>
+                            <p class="mt-2 text-sm text-gray-600">(Thường xuất hiện trong các câu hỏi thi AWS)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparison Table -->
+        <div class="mt-10 mb-8">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">So sánh Read Replicas và Multi AZ</h2>
+            <div class="overflow-x-auto">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Tính năng</th>
+                            <th>Read Replicas</th>
+                            <th>Multi AZ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mục đích chính</td>
+                            <td>Scaling Performance</td>
+                            <td>High Availability</td>
+                        </tr>
+                        <tr>
+                            <td>Replication</td>
+                            <td>Asynchronous (Bất đồng bộ)</td>
+                            <td>Synchronous (Đồng bộ)</td>
+                        </tr>
+                        <tr>
+                            <td>Có thể đọc từ replica</td>
+                            <td><i class="fas fa-check text-green-500"></i> Có</td>
+                            <td><i class="fas fa-times text-red-500"></i> Không</td>
+                        </tr>
+                        <tr>
+                            <td>Failover tự động</td>
+                            <td><i class="fas fa-times text-red-500"></i> Không</td>
+                            <td><i class="fas fa-check text-green-500"></i> Có</td>
+                        </tr>
+                        <tr>
+                            <td>Số lượng</td>
+                            <td>Tối đa 15</td>
+                            <td>Chỉ 1 standby</td>
+                        </tr>
+                        <tr>
+                            <td>Location</td>
+                            <td>Same AZ, Cross AZ, Cross Region</td>
+                            <td>Luôn ở Cross AZ (khác AZ)</td>
+                        </tr>
+                        <tr>
+                            <td>Chi phí mạng</td>
+                            <td>Miễn phí cho Same Region, tính phí cho Cross Region</td>
+                            <td>Miễn phí</td>
+                        </tr>
+                        <tr>
+                            <td>Promote thành database độc lập</td>
+                            <td><i class="fas fa-check text-green-500"></i> Có</td>
+                            <td><i class="fas fa-times text-red-500"></i> Không</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Single AZ to Multi AZ -->
+        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Quy trình chuyển đổi từ Single AZ sang Multi AZ</h2>
+            <div class="bg-yellow-50 p-3 mb-4 rounded-md border border-yellow-200">
+                <p><i class="fas fa-exclamation-circle text-yellow-600 mr-2"></i><strong>Đặc điểm quan trọng:</strong> Đây là quy trình <span class="text-red-600 font-bold">Zero Downtime</span> (không cần dừng database)</p>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-bold mb-3">Các bước thực hiện:</h3>
+                <div class="process-step" data-step="1">
+                    <p>Click vào <strong>Modify</strong> cho database</p>
+                </div>
+                <div class="process-step" data-step="2">
+                    <p>Enable tùy chọn <strong>Multi AZ</strong></p>
+                </div>
+                <div class="process-step" data-step="3">
+                    <p>Áp dụng thay đổi</p>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-bold mb-3">Quy trình diễn ra phía sau (Behind the scenes):</h3>
+                <div class="bg-white p-4 rounded-md border border-gray-200">
+                    <div class="process-step" data-step="1">
+                        <p>RDS tự động tạo snapshot của database chính</p>
+                    </div>
+                    <div class="process-step" data-step="2">
+                        <p>Snapshot được restore thành standby database trong AZ khác</p>
+                    </div>
+                    <div class="process-step" data-step="3">
+                        <p>Thiết lập synchronous replication giữa database chính và standby</p>
+                    </div>
+                    <div class="process-step" data-step="4">
+                        <p>Standby database đồng bộ với database chính</p>
+                    </div>
+                    <div class="process-step" data-step="5">
+                        <p>Hoàn tất thiết lập Multi AZ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-6">
+            <h3 class="font-bold mb-2">Lưu ý quan trọng cho kỳ thi AWS:</h3>
+            <ul class="list-disc ml-5">
+                <li>Hiểu rõ sự khác biệt giữa Read Replicas (scaling) và Multi AZ (high availability)</li>
+                <li>Read Replicas có thể được cấu hình thành Multi AZ</li>
+                <li>Chuyển đổi Single AZ sang Multi AZ là quy trình zero downtime</li>
+                <li>Standby instance trong Multi AZ không thể truy cập để đọc</li>
+                <li>Multi AZ sử dụng synchronous replication, Read Replicas sử dụng asynchronous replication</li>
+            </ul>
+        </div>
+        
+    </div>
+</body>
+</html>
