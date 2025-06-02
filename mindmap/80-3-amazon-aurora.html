@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Aurora: Use Cases & Comparisons</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fc;
+            color: #232f3e;
+            overflow: auto;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            margin: 0 auto;
+            position: relative;
+            background: #ffffff;
+            overflow: auto;
+        }
+        .aws-blue {
+            color: #232f3e;
+        }
+        .aws-orange {
+            color: #ff9900;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadein {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container shadow-xl p-8 flex flex-col">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-4xl font-bold aws-blue">
+                <i class="fab fa-aws text-orange-500 mr-2"></i>Aurora: Use Cases & Comparisons
+            </h1>
+            <div class="text-sm text-gray-500">Advanced Database Solutions</div>
+        </div>
+        
+        <!-- Main Content - Two Columns -->
+        <div class="flex gap-6 mb-6">
+            <!-- Left Column - Use Cases -->
+            <div class="w-1/2 animate-fadein delay-100">
+                <h2 class="text-2xl font-bold mb-4 aws-blue">
+                    <i class="fas fa-bullseye aws-orange mr-2"></i>Ideal Use Cases
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="feature-card bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border-l-4 border-blue-500 shadow-md">
+                        <div class="flex items-start">
+                            <div class="rounded-full bg-blue-100 p-3 mr-3 flex-shrink-0">
+                                <i class="fas fa-globe text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg aws-blue">High-Traffic Applications</h3>
+                                <p class="text-sm text-gray-700 mt-1">Ideal for applications requiring thousands of concurrent connections with low latency responses.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border-l-4 border-green-500 shadow-md">
+                        <div class="flex items-start">
+                            <div class="rounded-full bg-green-100 p-3 mr-3 flex-shrink-0">
+                                <i class="fas fa-sync-alt text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg aws-blue">SaaS & Mission-Critical</h3>
+                                <p class="text-sm text-gray-700 mt-1">For SaaS platforms and applications requiring 99.99% uptime with automatic failover capabilities.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border-l-4 border-purple-500 shadow-md">
+                        <div class="flex items-start">
+                            <div class="rounded-full bg-purple-100 p-3 mr-3 flex-shrink-0">
+                                <i class="fas fa-analytics text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg aws-blue">Read-Heavy Workloads</h3>
+                                <p class="text-sm text-gray-700 mt-1">Applications with heavy read access patterns benefit from Aurora's read replicas and fast replication.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg border-l-4 border-yellow-500 shadow-md">
+                        <div class="flex items-start">
+                            <div class="rounded-full bg-yellow-100 p-3 mr-3 flex-shrink-0">
+                                <i class="fas fa-database text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg aws-blue">Unpredictable Workloads</h3>
+                                <p class="text-sm text-gray-700 mt-1">Applications with unpredictable storage growth patterns benefit from automatic scaling from 10GB to 128TB.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Comparison Chart -->
+            <div class="w-1/2 animate-fadein delay-200">
+                <h2 class="text-2xl font-bold mb-4 aws-blue">
+                    <i class="fas fa-chart-bar aws-orange mr-2"></i>Aurora vs Other Databases
+                </h2>
+                
+                <div class="bg-white rounded-lg shadow-md p-5">
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div class="bg-blue-50 p-3 rounded-lg">
+                            <div class="font-semibold text-blue-800">Cost-Performance Benefits</div>
+                            <div class="text-xs text-gray-600 mt-1">20% higher cost than RDS, but 3-5x better performance</div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <div class="font-semibold text-green-800">Compatibility</div>
+                            <div class="text-xs text-gray-600 mt-1">Drop-in replacement for MySQL and PostgreSQL</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 bg-white rounded-lg shadow-md p-5 animate-fadein delay-300">
+                    <h3 class="font-bold text-lg aws-blue mb-3">Unique Advantages</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex items-start">
+                            <div class="text-blue-600 mr-2"><i class="fas fa-check-circle"></i></div>
+                            <div class="text-sm">Instantaneous failover (<30 seconds)</div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-blue-600 mr-2"><i class="fas fa-check-circle"></i></div>
+                            <div class="text-sm">Auto-expanding storage without downtime</div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-blue-600 mr-2"><i class="fas fa-check-circle"></i></div>
+                            <div class="text-sm">Point-in-time recovery with Backtrack</div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-blue-600 mr-2"><i class="fas fa-check-circle"></i></div>
+                            <div class="text-sm">Sub-10ms replication lag</div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-blue-600 mr-2"><i class="fas fa-check-circle"></i></div>
+                            <div class="text-sm">Self-healing storage with peer replication</div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="text-blue-600 mr-2"><i class="fas fa-check-circle"></i></div>
+                            <div class="text-sm">Zero-downtime patching</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Aurora Best Practices -->
+        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-5 shadow-md animate-fadein delay-400">
+            <h2 class="text-2xl font-bold mb-4 aws-blue">
+                <i class="fas fa-lightbulb aws-orange mr-2"></i>Best Practices for Aurora
+            </h2>
+            
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="rounded-full bg-blue-100 p-2 mr-2">
+                            <i class="fas fa-layer-group text-blue-600"></i>
+                        </div>
+                        <h3 class="font-semibold">Architecture</h3>
+                    </div>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li class="flex items-start">
+                            <div class="text-blue-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Use reader endpoint for read operations</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-blue-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Configure auto-scaling for read replicas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-blue-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Deploy across multiple AZs</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="rounded-full bg-green-100 p-2 mr-2">
+                            <i class="fas fa-tachometer-alt text-green-600"></i>
+                        </div>
+                        <h3 class="font-semibold">Performance</h3>
+                    </div>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li class="flex items-start">
+                            <div class="text-green-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Use connection pooling</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-green-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Optimize query patterns for read replicas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-green-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Monitor Performance Insights dashboard</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="rounded-full bg-red-100 p-2 mr-2">
+                            <i class="fas fa-shield-alt text-red-600"></i>
+                        </div>
+                        <h3 class="font-semibold">Backup & Recovery</h3>
+                    </div>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li class="flex items-start">
+                            <div class="text-red-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Enable Backtrack for quick point-in-time recovery</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-red-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Configure automated snapshots</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="text-red-600 mr-2 mt-0.5"><i class="fas fa-circle text-xs"></i></div>
+                            <span>Test recovery procedures regularly</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="mt-6 animate-fadein delay-500">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold aws-blue">
+                    <i class="fas fa-check-double aws-orange mr-2"></i>Key Takeaways
+                </h2>
+                <div class="text-sm text-gray-500">Amazon Aurora: AWS's Cloud-Native Database</div>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-4 mt-3">
+                <div class="bg-gradient-to-b from-blue-100 to-blue-50 rounded-lg p-4 text-center">
+                    <div class="text-3xl text-blue-600 mb-2">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="font-semibold text-blue-800">High Performance</div>
+                    <div class="text-xs text-gray-600 mt-1">3-5x faster than standard RDS</div>
+                </div>
+                
+                <div class="bg-gradient-to-b from-green-100 to-green-50 rounded-lg p-4 text-center">
+                    <div class="text-3xl text-green-600 mb-2">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="font-semibold text-green-800">High Availability</div>
+                    <div class="text-xs text-gray-600 mt-1">6 copies across 3 AZs with instant failover</div>
+                </div>
+                
+                <div class="bg-gradient-to-b from-purple-100 to-purple-50 rounded-lg p-4 text-center">
+                    <div class="text-3xl text-purple-600 mb-2">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <div class="font-semibold text-purple-800">Auto Scaling</div>
+                    <div class="text-xs text-gray-600 mt-1">Storage grows automatically to 128TB</div>
+                </div>
+                
+                <div class="bg-gradient-to-b from-orange-100 to-orange-50 rounded-lg p-4 text-center">
+                    <div class="text-3xl text-orange-600 mb-2">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="font-semibold text-orange-800">Cost Efficiency</div>
+                    <div class="text-xs text-gray-600 mt-1">Better price-performance ratio at scale</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i> Mind Map: Amazon Aurora Use Cases & Comparisons
+            </div>
+            <div class="text-sm">Page 3/3</div>
+        </div>
+    </div>
+    
+    <script>
+        // Radar chart comparing Aurora with other databases
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Performance', 
+                    'Scalability', 
+                    'High Availability', 
+                    'Ease of Management',
+                    'Storage Efficiency',
+                    'Read Scaling'
+                ],
+                datasets: [
+                    {
+                        label: 'Aurora',
+                        data: [95, 90, 95, 85, 90, 95],
+                        backgroundColor: 'rgba(255, 153, 0, 0.2)',
+                        borderColor: 'rgba(255, 153, 0, 1)',
+                        pointBackgroundColor: 'rgba(255, 153, 0, 1)'
+                    },
+                    {
+                        label: 'Standard RDS',
+                        data: [60, 65, 75, 80, 60, 65],
+                        backgroundColor: 'rgba(35, 47, 62, 0.2)',
+                        borderColor: 'rgba(35, 47, 62, 1)',
+                        pointBackgroundColor: 'rgba(35, 47, 62, 1)'
+                    },
+                    {
+                        label: 'Self-Managed DB',
+                        data: [70, 50, 60, 40, 55, 50],
+                        backgroundColor: 'rgba(66, 133, 244, 0.2)',
+                        borderColor: 'rgba(66, 133, 244, 1)',
+                        pointBackgroundColor: 'rgba(66, 133, 244, 1)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

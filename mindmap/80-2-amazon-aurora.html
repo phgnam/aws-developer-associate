@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Aurora Architecture</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fc;
+            color: #232f3e;
+            overflow: auto;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            margin: 0 auto;
+            position: relative;
+            background: #ffffff;
+            overflow: auto;
+        }
+        .aws-blue {
+            background-color: #232f3e;
+        }
+        .aws-orange {
+            background-color: #ff9900;
+        }
+        .aws-blue-text {
+            color: #232f3e;
+        }
+        .aws-orange-text {
+            color: #ff9900;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadein {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .architecture-diagram {
+            position: relative;
+            height: 320px;
+        }
+        .cluster-box {
+            position: relative;
+            border-radius: 12px;
+            background-color: rgba(35, 47, 62, 0.05);
+            border: 2px dashed #232f3e;
+            padding: 20px;
+        }
+        .storage-area {
+            position: relative;
+            border-radius: 12px;
+            background-color: rgba(255, 153, 0, 0.1);
+            border: 2px dashed #ff9900;
+            padding: 15px;
+        }
+        .instance-box {
+            border-radius: 8px;
+            padding: 10px;
+            margin: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .instance-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .storage-block {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            margin: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .storage-block:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container shadow-xl p-8 flex flex-col">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-800">
+                <i class="fab fa-aws text-orange-500 mr-2"></i>Aurora Architecture & Features
+            </h1>
+            <div class="text-sm text-gray-500">Deep Dive: Storage, Clustering & High Availability</div>
+        </div>
+        
+        <!-- Architecture Diagram -->
+        <div class="cluster-box mb-6 animate-fadein delay-100">
+            <h2 class="text-xl font-bold mb-4 aws-blue-text"><i class="fas fa-project-diagram mr-2 aws-orange-text"></i>Aurora Cluster Architecture</h2>
+            <div class="flex justify-around items-center">
+                <!-- Application -->
+                <div class="text-center">
+                    <div class="bg-gray-100 rounded-lg p-3 shadow-md mb-2">
+                        <i class="fas fa-laptop-code text-3xl text-gray-600"></i>
+                        <div class="font-semibold mt-1">Application</div>
+                    </div>
+                    <div class="text-sm text-gray-600">Client Connections</div>
+                </div>
+
+                <!-- Arrows -->
+                <div class="text-3xl text-gray-400">→</div>
+                
+                <!-- Endpoints -->
+                <div class="text-center">
+                    <div class="bg-blue-100 rounded-lg p-3 shadow-md mb-2">
+                        <i class="fas fa-network-wired text-3xl text-blue-600"></i>
+                        <div class="font-semibold mt-1">Aurora Endpoints</div>
+                    </div>
+                    <div class="flex justify-center gap-4">
+                        <div class="bg-blue-50 px-2 py-1 rounded text-xs text-blue-700">Writer Endpoint</div>
+                        <div class="bg-blue-50 px-2 py-1 rounded text-xs text-blue-700">Reader Endpoint</div>
+                    </div>
+                </div>
+                
+                <!-- Arrows -->
+                <div class="text-3xl text-gray-400">→</div>
+                
+                <!-- Instances -->
+                <div class="text-center">
+                    <div class="bg-green-100 rounded-lg p-3 shadow-md mb-2">
+                        <i class="fas fa-server text-3xl text-green-600"></i>
+                        <div class="font-semibold mt-1">Aurora Instances</div>
+                    </div>
+                    <div class="flex">
+                        <div class="bg-green-600 text-white px-2 py-1 rounded text-xs mr-2">Writer (1)</div>
+                        <div class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">Readers (0-15)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Storage Architecture -->
+        <div class="storage-area animate-fadein delay-200">
+            <h2 class="text-xl font-bold mb-4 aws-blue-text"><i class="fas fa-database mr-2 aws-orange-text"></i>Distributed Storage Architecture</h2>
+            
+            <div class="flex mb-4">
+                <div class="w-1/2 pr-4">
+                    <h3 class="font-semibold text-lg mb-3">Storage Replication</h3>
+                    <div class="bg-white p-4 rounded-lg shadow-md">
+                        <div class="text-center mb-3">
+                            <div class="inline-block bg-blue-100 rounded-lg p-2">
+                                <span class="font-semibold text-blue-800">6 copies of data across 3 AZs</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-around mb-2">
+                            <div class="text-center">
+                                <div class="bg-red-100 rounded-full p-2 inline-block">
+                                    <i class="fas fa-cloud text-red-600"></i>
+                                </div>
+                                <div class="text-xs mt-1">AZ 1</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-green-100 rounded-full p-2 inline-block">
+                                    <i class="fas fa-cloud text-green-600"></i>
+                                </div>
+                                <div class="text-xs mt-1">AZ 2</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-blue-100 rounded-full p-2 inline-block">
+                                    <i class="fas fa-cloud text-blue-600"></i>
+                                </div>
+                                <div class="text-xs mt-1">AZ 3</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-around">
+                            <!-- Data copies in AZ 1 -->
+                            <div class="flex flex-col items-center">
+                                <div class="storage-block bg-red-200 border border-red-300"></div>
+                                <div class="storage-block bg-red-200 border border-red-300"></div>
+                            </div>
+                            <!-- Data copies in AZ 2 -->
+                            <div class="flex flex-col items-center">
+                                <div class="storage-block bg-green-200 border border-green-300"></div>
+                                <div class="storage-block bg-green-200 border border-green-300"></div>
+                            </div>
+                            <!-- Data copies in AZ 3 -->
+                            <div class="flex flex-col items-center">
+                                <div class="storage-block bg-blue-200 border border-blue-300"></div>
+                                <div class="storage-block bg-blue-200 border border-blue-300"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2 pl-4">
+                    <h3 class="font-semibold text-lg mb-3">Fault Tolerance</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white p-3 rounded-lg shadow-md">
+                            <div class="flex items-center">
+                                <div class="rounded-full bg-blue-100 p-2 mr-2 flex-shrink-0">
+                                    <i class="fas fa-pen text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-blue-800">4/6 copies</div>
+                                    <div class="text-xs text-gray-600">needed for writes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-md">
+                            <div class="flex items-center">
+                                <div class="rounded-full bg-green-100 p-2 mr-2 flex-shrink-0">
+                                    <i class="fas fa-book-open text-green-600"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-green-800">3/6 copies</div>
+                                    <div class="text-xs text-gray-600">needed for reads</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-md col-span-2">
+                            <div class="flex items-center">
+                                <div class="rounded-full bg-purple-100 p-2 mr-2 flex-shrink-0">
+                                    <i class="fas fa-sync-alt text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-purple-800">Self-Healing</div>
+                                    <div class="text-xs text-gray-600">Peer-to-peer replication repairs corrupted data automatically</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-center bg-yellow-50 p-3 rounded-lg">
+                <i class="fas fa-info-circle text-yellow-600 mr-2"></i>
+                <span class="text-yellow-800">Storage automatically grows from 10GB to 128TB without manual intervention</span>
+            </div>
+        </div>
+        
+        <!-- Advanced Features -->
+        <div class="grid grid-cols-3 gap-6 mt-6">
+            <div class="bg-white rounded-lg shadow-md p-4 animate-fadein delay-300">
+                <div class="flex items-center mb-3">
+                    <div class="rounded-full bg-blue-100 p-3 mr-3">
+                        <i class="fas fa-clock-rotate-left text-blue-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg aws-blue-text">Backtrack</h3>
+                </div>
+                <p class="text-sm text-gray-600">Restore database to any point in time without backups. Go back seconds, minutes or hours with minimal disruption.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-4 animate-fadein delay-400">
+                <div class="flex items-center mb-3">
+                    <div class="rounded-full bg-green-100 p-3 mr-3">
+                        <i class="fas fa-bolt text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg aws-blue-text">Instant Failover</h3>
+                </div>
+                <p class="text-sm text-gray-600">Failover in under 30 seconds (on average). Much faster than RDS Multi-AZ. Any read replica can become the master.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-4 animate-fadein delay-500">
+                <div class="flex items-center mb-3">
+                    <div class="rounded-full bg-purple-100 p-3 mr-3">
+                        <i class="fas fa-shield-alt text-purple-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg aws-blue-text">Security & Compliance</h3>
+                </div>
+                <p class="text-sm text-gray-600">Built-in isolation, automated patching, and industry compliance. Zero downtime during maintenance operations.</p>
+            </div>
+        </div>
+        
+        <!-- Cost Efficiency -->
+        <div class="mt-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 shadow-md animate-fadein delay-300">
+            <h3 class="text-lg font-bold aws-blue-text mb-2"><i class="fas fa-coins text-yellow-500 mr-2"></i>Cost Efficiency</h3>
+            <div class="flex items-center">
+                <div class="w-3/4">
+                    <p class="text-sm text-gray-700">Aurora costs ~20% more than standard RDS, but offers significantly higher performance and efficiency. At scale, the performance gains make Aurora more cost-effective for high-demand workloads.</p>
+                </div>
+                <div class="w-1/4 pl-4">
+                    <div class="chart-container" style="height: 100px;">
+                        <canvas id="costEfficiencyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i> Mind Map: Amazon Aurora Architecture & Features
+            </div>
+            <div class="text-sm">Page 2/3</div>
+        </div>
+    </div>
+    
+    <script>
+        // Cost efficiency chart
+        const ctx = document.getElementById('costEfficiencyChart').getContext('2d');
+        const costChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Cost', 'Performance'],
+                datasets: [{
+                    label: 'Standard RDS',
+                    data: [80, 20],
+                    backgroundColor: 'rgba(35, 47, 62, 0.6)',
+                    borderColor: 'rgba(35, 47, 62, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Aurora',
+                    data: [100, 100],
+                    backgroundColor: 'rgba(255, 153, 0, 0.6)',
+                    borderColor: 'rgba(255, 153, 0, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 120
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

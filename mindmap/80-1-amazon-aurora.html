@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Aurora Overview</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fc;
+            color: #232f3e;
+            overflow: auto;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            margin: 0 auto;
+            position: relative;
+            background: #ffffff;
+            overflow: auto;
+        }
+        .mind-map {
+            position: relative;
+        }
+        .center-node {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .node {
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            transform: scale(1.05);
+        }
+        .connector {
+            position: absolute;
+            background-color: #232f3e;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        .connector.thin {
+            height: 2px;
+        }
+        .connector.thick {
+            height: 3px;
+        }
+        .aws-blue {
+            background-color: #232f3e;
+        }
+        .aws-orange {
+            background-color: #ff9900;
+        }
+        .aws-light-blue {
+            background-color: #1a73e8;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadein {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="slide-container shadow-xl p-8 flex flex-col">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-800">
+                <i class="fab fa-aws text-orange-500 mr-2"></i>Amazon Aurora
+            </h1>
+            <div class="text-sm text-gray-500">AWS Proprietary Database Technology</div>
+        </div>
+        
+        <!-- Mind Map -->
+        <div class="mind-map flex-1 relative" style="height: 580px;">
+            <!-- Center Node -->
+            <div class="center-node node bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-full shadow-lg p-6 animate-fadein" style="width: 200px; height: 200px;">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <i class="fas fa-database text-4xl mb-2"></i>
+                    <div class="text-xl font-bold text-center">Amazon Aurora</div>
+                    <div class="text-sm text-center">AWS Proprietary DB</div>
+                </div>
+            </div>
+            
+            <!-- Connection Lines -->
+            <div class="connector thick" style="width: 100px; top: 280px; left: 475px; transform: rotate(30deg);"></div>
+            <div class="connector thick" style="width: 120px; top: 350px; left: 640px;"></div>
+            <div class="connector thick" style="width: 100px; top: 280px; left: 705px; transform: rotate(-30deg);"></div>
+            <div class="connector thick" style="width: 100px; top: 200px; left: 705px; transform: rotate(30deg);"></div>
+            <div class="connector thick" style="width: 120px; top: 150px; left: 640px;"></div>
+            <div class="connector thick" style="width: 100px; top: 200px; left: 475px; transform: rotate(-30deg);"></div>
+            
+            <!-- Node 1: Compatible Engines -->
+            <div class="node bg-white rounded-lg shadow-md p-4 animate-fadein delay-100" style="width: 220px; position: absolute; top: 100px; left: 510px;">
+                <div class="flex items-start">
+                    <div class="rounded-full bg-blue-100 p-2 mr-3">
+                        <i class="fas fa-plug text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-blue-800">Compatible With</h3>
+                        <ul class="text-sm mt-1 text-gray-600">
+                            <li>• MySQL</li>
+                            <li>• PostgreSQL</li>
+                            <li>• Compatible drivers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node 2: Performance -->
+            <div class="node bg-white rounded-lg shadow-md p-4 animate-fadein delay-200" style="width: 220px; position: absolute; top: 160px; left: 760px;">
+                <div class="flex items-start">
+                    <div class="rounded-full bg-green-100 p-2 mr-3">
+                        <i class="fas fa-tachometer-alt text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-green-800">Performance</h3>
+                        <ul class="text-sm mt-1 text-gray-600">
+                            <li>• 5x over MySQL on RDS</li>
+                            <li>• 3x over PostgreSQL on RDS</li>
+                            <li>• Cloud optimized</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node 3: Storage -->
+            <div class="node bg-white rounded-lg shadow-md p-4 animate-fadein delay-300" style="width: 220px; position: absolute; top: 290px; left: 820px;">
+                <div class="flex items-start">
+                    <div class="rounded-full bg-purple-100 p-2 mr-3">
+                        <i class="fas fa-hdd text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-purple-800">Storage</h3>
+                        <ul class="text-sm mt-1 text-gray-600">
+                            <li>• Auto-expanding (10GB to 128TB)</li>
+                            <li>• 6 copies across 3 AZs</li>
+                            <li>• Self-healing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node 4: High Availability -->
+            <div class="node bg-white rounded-lg shadow-md p-4 animate-fadein delay-400" style="width: 220px; position: absolute; top: 400px; left: 640px;">
+                <div class="flex items-start">
+                    <div class="rounded-full bg-red-100 p-2 mr-3">
+                        <i class="fas fa-shield-alt text-red-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-red-800">High Availability</h3>
+                        <ul class="text-sm mt-1 text-gray-600">
+                            <li>• 4/6 copies for writes</li>
+                            <li>• 3/6 copies for reads</li>
+                            <li>• Fast failover (<30s)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node 5: Endpoints -->
+            <div class="node bg-white rounded-lg shadow-md p-4 animate-fadein delay-500" style="width: 220px; position: absolute; top: 290px; left: 240px;">
+                <div class="flex items-start">
+                    <div class="rounded-full bg-yellow-100 p-2 mr-3">
+                        <i class="fas fa-network-wired text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-yellow-800">Endpoints</h3>
+                        <ul class="text-sm mt-1 text-gray-600">
+                            <li>• Writer Endpoint (to master)</li>
+                            <li>• Reader Endpoint</li>
+                            <li>• Connection load balancing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node 6: Scaling -->
+            <div class="node bg-white rounded-lg shadow-md p-4 animate-fadein delay-200" style="width: 220px; position: absolute; top: 160px; left: 320px;">
+                <div class="flex items-start">
+                    <div class="rounded-full bg-blue-100 p-2 mr-3">
+                        <i class="fas fa-expand-arrows-alt text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-blue-800">Scaling</h3>
+                        <ul class="text-sm mt-1 text-gray-600">
+                            <li>• Up to 15 read replicas</li>
+                            <li>• Low replication lag (<10ms)</li>
+                            <li>• Auto scaling support</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i> Mind Map: Overview of Amazon Aurora
+            </div>
+            <div class="text-sm">Page 1/3</div>
+        </div>
+    </div>
+</body>
+</html>
