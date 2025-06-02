@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: RDS và Aurora Security</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .mindmap-container {
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .center-node {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            padding: 30px;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            margin: 0 auto;
+        }
+        .branches-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: -50px;
+            padding-top: 80px;
+        }
+        .branch {
+            width: 45%;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .branch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        .branch-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+        .branch-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .branch-content {
+            padding-left: 55px;
+        }
+        .branch-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .branch-content li {
+            padding: 8px 0;
+            position: relative;
+        }
+        .branch-content li:before {
+            content: "•";
+            position: absolute;
+            left: -15px;
+        }
+        .connector {
+            position: absolute;
+            top: 200px;
+            left: 50%;
+            height: 50px;
+            width: 2px;
+            background-color: #ccc;
+            z-index: 1;
+        }
+        .encryption-rest { background-color: #f7fafc; }
+        .encryption-flight { background-color: #f0f4f8; }
+        .authentication { background-color: #f7fafc; }
+        .network-control { background-color: #f0f4f8; }
+        .audit-logs { background-color: #f7fafc; }
+        
+        .icon-encryption-rest { background-color: #FF9900; }
+        .icon-encryption-flight { background-color: #36C2B4; }
+        .icon-authentication { background-color: #4D27AA; }
+        .icon-network-control { background-color: #EC7211; }
+        .icon-audit-logs { background-color: #3B48CC; }
+        
+        @media print {
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: #fff;
+            }
+            .mindmap-container {
+                padding: 0;
+                margin: 0;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Mind Map: RDS và Aurora Security</h1>
+        <div class="relative">
+            <div class="center-node">
+                RDS & Aurora Security
+            </div>
+            <div class="connector"></div>
+            <div class="branches-container">
+                <!-- Encryption at-rest branch -->
+                <div class="branch encryption-rest">
+                    <div class="branch-header">
+                        <div class="branch-icon icon-encryption-rest">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="branch-title">Encryption at-rest</div>
+                    </div>
+                    <div class="branch-content">
+                        <ul>
+                            <li>Mã hóa dữ liệu trên volumes</li>
+                            <li>Sử dụng AWS KMS (Key Management Service) để mã hóa</li>
+                            <li>Phải được cấu hình khi khởi tạo database</li>
+                            <li>Nếu database chính không được mã hóa, read replicas không thể được mã hóa</li>
+                            <li>Để mã hóa database chưa được mã hóa:
+                                <ul class="ml-6">
+                                    <li>Tạo snapshot từ database chưa mã hóa</li>
+                                    <li>Khôi phục snapshot với tùy chọn mã hóa</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- In-flight encryption branch -->
+                <div class="branch encryption-flight">
+                    <div class="branch-header">
+                        <div class="branch-icon icon-encryption-flight">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="branch-title">In-flight encryption</div>
+                    </div>
+                    <div class="branch-content">
+                        <ul>
+                            <li>Mã hóa dữ liệu giữa client và database</li>
+                            <li>Tất cả RDS và Aurora databases đều sẵn sàng hỗ trợ mã hóa in-flight</li>
+                            <li>Client phải sử dụng TLS root certificates từ AWS</li>
+                            <li>Certificates được cung cấp trên website của AWS</li>
+                            <li>Đảm bảo dữ liệu không bị đánh chặn trong quá trình truyền</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Authentication branch -->
+                <div class="branch authentication">
+                    <div class="branch-header">
+                        <div class="branch-icon icon-authentication">
+                            <i class="fas fa-user-lock"></i>
+                        </div>
+                        <div class="branch-title">Authentication</div>
+                    </div>
+                    <div class="branch-content">
+                        <ul>
+                            <li>Phương thức xác thực truyền thống:
+                                <ul class="ml-6">
+                                    <li>Username và password</li>
+                                </ul>
+                            </li>
+                            <li>Phương thức xác thực AWS:
+                                <ul class="ml-6">
+                                    <li>IAM roles</li>
+                                    <li>EC2 instances có thể xác thực trực tiếp với database bằng IAM role</li>
+                                    <li>Không cần username/password</li>
+                                    <li>Quản lý bảo mật tập trung thông qua AWS IAM</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Network Access Control branch -->
+                <div class="branch network-control">
+                    <div class="branch-header">
+                        <div class="branch-icon icon-network-control">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="branch-title">Network Access Control</div>
+                    </div>
+                    <div class="branch-content">
+                        <ul>
+                            <li>Kiểm soát truy cập mạng bằng Security Groups</li>
+                            <li>Có thể cho phép hoặc chặn:
+                                <ul class="ml-6">
+                                    <li>Các cổng cụ thể (specific ports)</li>
+                                    <li>Các địa chỉ IP cụ thể (specific IPs)</li>
+                                    <li>Các security groups cụ thể</li>
+                                </ul>
+                            </li>
+                            <li>Không hỗ trợ SSH access (vì là dịch vụ được quản lý)
+                                <ul class="ml-6">
+                                    <li>Ngoại trừ dịch vụ RDS Custom từ AWS</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Audit Logs branch -->
+                <div class="branch audit-logs">
+                    <div class="branch-header">
+                        <div class="branch-icon icon-audit-logs">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="branch-title">Audit Logs</div>
+                    </div>
+                    <div class="branch-content">
+                        <ul>
+                            <li>Theo dõi các truy vấn được thực hiện trên RDS và Aurora</li>
+                            <li>Có thể kích hoạt Audit Logs để ghi lại hoạt động</li>
+                            <li>Logs sẽ bị mất sau một thời gian</li>
+                            <li>Để lưu trữ lâu dài:
+                                <ul class="ml-6">
+                                    <li>Chuyển logs sang dịch vụ CloudWatch Logs trên AWS</li>
+                                    <li>Cho phép phân tích và lưu trữ lâu dài</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-10 text-center text-sm text-gray-500">
+            <p>© 2023 AWS RDS và Aurora Security Mind Map</p>
+        </div>
+    </div>
+</body>
+</html>
