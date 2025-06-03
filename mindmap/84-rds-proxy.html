@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Amazon RDS Proxy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        #mynetwork {
+            width: 100%;
+            height: 800px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .header {
+            background-color: #232f3e;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .aws-orange {
+            color: #ff9900;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        @media print {
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+            #mynetwork {
+                page-break-inside: avoid;
+                height: 750px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold"><i class="fab fa-aws mr-2"></i> Mind Map: Amazon RDS Proxy</h1>
+            <p class="text-sm mt-1">Tính năng quản lý proxy hoàn toàn cho RDS và Aurora</p>
+        </div>
+    </div>
+
+    <div class="container mx-auto py-6">
+        <div class="card bg-white">
+            <div id="mynetwork"></div>
+        </div>
+        
+        <div class="card bg-white mt-4">
+            <h2 class="text-xl font-bold mb-2 aws-orange">Tổng quan về Amazon RDS Proxy</h2>
+            <p class="mb-4">Amazon RDS Proxy là dịch vụ proxy cơ sở dữ liệu được quản lý hoàn toàn cho Amazon RDS và Aurora. Nó hoạt động như một lớp trung gian giữa ứng dụng và cơ sở dữ liệu, cải thiện hiệu quả quản lý kết nối và tính sẵn sàng cao.</p>
+        </div>
+    </div>
+
+    <script>
+        // Create nodes and edges for the mind map
+        const nodes = new vis.DataSet([
+            { id: 1, label: "Amazon RDS Proxy", shape: "ellipse", color: { background: "#232F3E", border: "#ff9900", highlight: { background: "#ff9900", border: "#232F3E" } }, font: { color: "white", size: 18, face: "Segoe UI" } },
+            
+            // Main branches
+            { id: 2, label: "Định nghĩa", color: { background: "#FF9900" }, font: { color: "black" } },
+            { id: 3, label: "Lợi ích chính", color: { background: "#FF9900" }, font: { color: "black" } },
+            { id: 4, label: "Databases được hỗ trợ", color: { background: "#FF9900" }, font: { color: "black" } },
+            { id: 5, label: "Kiến trúc & Truy cập", color: { background: "#FF9900" }, font: { color: "black" } },
+            { id: 6, label: "Use Cases", color: { background: "#FF9900" }, font: { color: "black" } },
+            
+            // Definition details
+            { id: 21, label: "Proxy cơ sở dữ liệu\nđược quản lý hoàn toàn", color: { background: "#E6F7FF" } },
+            { id: 22, label: "Hoạt động như lớp trung gian\ngiữa ứng dụng và database", color: { background: "#E6F7FF" } },
+            { id: 23, label: "Serverless & Auto Scaling", color: { background: "#E6F7FF" } },
+            { id: 24, label: "Highly Available\n(Đa AZ)", color: { background: "#E6F7FF" } },
+            
+            // Benefits details
+            { id: 31, label: "Connection Pooling", color: { background: "#EBF5FF" } },
+            { id: 32, label: "Giảm thời gian failover", color: { background: "#EBF5FF" } },
+            { id: 33, label: "IAM Authentication", color: { background: "#EBF5FF" } },
+            
+            // Connection pooling details
+            { id: 311, label: "Gộp và chia sẻ kết nối database", color: { background: "#F0F8FF" } },
+            { id: 312, label: "Giảm tải cho resources\n(CPU, RAM)", color: { background: "#F0F8FF" } },
+            { id: 313, label: "Giảm thiểu kết nối mở\nvà timeouts", color: { background: "#F0F8FF" } },
+            
+            // Failover details
+            { id: 321, label: "Giảm thời gian failover\nlên tới 66%", color: { background: "#F0F8FF" } },
+            { id: 322, label: "Xử lý failover tự động\ngiữa primary và standby", color: { background: "#F0F8FF" } },
+            
+            // IAM Authentication details
+            { id: 331, label: "Bắt buộc sử dụng IAM\ncho database", color: { background: "#F0F8FF" } },
+            { id: 332, label: "Lưu trữ credentials an toàn\ntrong AWS Secrets Manager", color: { background: "#F0F8FF" } },
+            
+            // Supported databases
+            { id: 41, label: "MySQL", color: { background: "#E6F7FF" } },
+            { id: 42, label: "PostgreSQL", color: { background: "#E6F7FF" } },
+            { id: 43, label: "MariaDB", color: { background: "#E6F7FF" } },
+            { id: 44, label: "Microsoft SQL Server", color: { background: "#E6F7FF" } },
+            { id: 45, label: "Aurora MySQL", color: { background: "#E6F7FF" } },
+            { id: 46, label: "Aurora PostgreSQL", color: { background: "#E6F7FF" } },
+            
+            // Architecture
+            { id: 51, label: "Chỉ có thể truy cập\ntrong VPC", color: { background: "#E6F7FF" } },
+            { id: 52, label: "Không thể truy cập\nqua Internet", color: { background: "#E6F7FF" } },
+            { id: 53, label: "Không cần thay đổi code\ntrong ứng dụng", color: { background: "#E6F7FF" } },
+            
+            // Use cases
+            { id: 61, label: "Lambda Functions", color: { background: "#EBF5FF" } },
+            { id: 62, label: "Ứng dụng với nhiều kết nối", color: { background: "#EBF5FF" } },
+            
+            // Lambda use case details
+            { id: 611, label: "Lambda xuất hiện và biến mất nhanh chóng", color: { background: "#F0F8FF" } },
+            { id: 612, label: "Tạo nhiều kết nối đồng thời", color: { background: "#F0F8FF" } },
+            { id: 613, label: "RDS Proxy gộp kết nối\ngiảm tải cho database", color: { background: "#F0F8FF" } },
+        ]);
+
+        // Define connections between nodes
+        const edges = new vis.DataSet([
+            { from: 1, to: 2 },
+            { from: 1, to: 3 },
+            { from: 1, to: 4 },
+            { from: 1, to: 5 },
+            { from: 1, to: 6 },
+            
+            // Definition connections
+            { from: 2, to: 21 },
+            { from: 2, to: 22 },
+            { from: 2, to: 23 },
+            { from: 2, to: 24 },
+            
+            // Benefits connections
+            { from: 3, to: 31 },
+            { from: 3, to: 32 },
+            { from: 3, to: 33 },
+            
+            // Connection pooling details
+            { from: 31, to: 311 },
+            { from: 31, to: 312 },
+            { from: 31, to: 313 },
+            
+            // Failover details
+            { from: 32, to: 321 },
+            { from: 32, to: 322 },
+            
+            // IAM Authentication details
+            { from: 33, to: 331 },
+            { from: 33, to: 332 },
+            
+            // Supported databases
+            { from: 4, to: 41 },
+            { from: 4, to: 42 },
+            { from: 4, to: 43 },
+            { from: 4, to: 44 },
+            { from: 4, to: 45 },
+            { from: 4, to: 46 },
+            
+            // Architecture
+            { from: 5, to: 51 },
+            { from: 5, to: 52 },
+            { from: 5, to: 53 },
+            
+            // Use cases
+            { from: 6, to: 61 },
+            { from: 6, to: 62 },
+            
+            // Lambda use case details
+            { from: 61, to: 611 },
+            { from: 61, to: 612 },
+            { from: 61, to: 613 },
+        ]);
+
+        // Create the network
+        const container = document.getElementById("mynetwork");
+        const data = {
+            nodes: nodes,
+            edges: edges
+        };
+        const options = {
+            layout: {
+                hierarchical: {
+                    direction: "UD",
+                    sortMethod: "directed",
+                    levelSeparation: 150,
+                    nodeSpacing: 200,
+                }
+            },
+            physics: {
+                enabled: false
+            },
+            nodes: {
+                shape: "box",
+                margin: 10,
+                widthConstraint: {
+                    maximum: 200
+                },
+                font: {
+                    size: 14,
+                    face: "Segoe UI"
+                }
+            },
+            edges: {
+                arrows: {
+                    to: {
+                        enabled: false,
+                    }
+                },
+                smooth: {
+                    type: "cubicBezier",
+                    roundness: 0.5
+                }
+            },
+            interaction: {
+                navigationButtons: true,
+                zoomView: true
+            }
+        };
+
+        // Initialize the network
+        const network = new vis.Network(container, data, options);
+        
+        // Fit the network to view after it's loaded
+        network.once("afterDrawing", function() {
+            network.fit({
+                animation: {
+                    duration: 1000,
+                    easingFunction: "easeInOutQuad"
+                }
+            });
+        });
+    </script>
+</body>
+</html>
