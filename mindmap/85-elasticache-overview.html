@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Amazon ElastiCache</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-benefits { border-color: #1E88E5; }
+        .branch-benefits .branch-title { color: #1E88E5; }
+        
+        .branch-architecture { border-color: #43A047; }
+        .branch-architecture .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .branch-comparison { border-color: #F4511E; }
+        .branch-comparison .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .app-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .cache-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .db-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .aws-logo {
+            width: 120px;
+            height: auto;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .redis-list li:before {
+            color: #DC3545;
+        }
+        .memcached-list li:before {
+            color: #007BFF;
+        }
+        .redis-color { color: #DC3545; }
+        .memcached-color { color: #007BFF; }
+        .redis-diagram, .memcached-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Amazon ElastiCache</h1>
+            <span class="text-sm text-gray-500">AWS Database Caching Service</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-database text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Amazon ElastiCache</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa</h3>
+            <div class="branch-content">
+                <p class="mb-3">Amazon ElastiCache là dịch vụ caching được quản lý hoàn toàn bởi AWS, cho phép triển khai, vận hành và mở rộng các cơ sở dữ liệu in-memory.</p>
+                <ul class="feature-list">
+                    <li>Hỗ trợ hai công nghệ cache phổ biến: Redis và Memcached</li>
+                    <li>Cơ sở dữ liệu in-memory với hiệu năng cao và độ trễ thấp</li>
+                    <li>Được quản lý hoàn toàn bởi AWS, tương tự như RDS</li>
+                    <li>Tối ưu cho các workload đọc nhiều (read-intensive workloads)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Benefits Branch -->
+        <div class="branch branch-benefits">
+            <h3 class="branch-title text-xl"><i class="fas fa-trophy mr-2"></i> Lợi ích</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Lợi ích về hiệu năng:</h4>
+                        <ul class="feature-list">
+                            <li>Giảm tải cho cơ sở dữ liệu chính</li>
+                            <li>Độ trễ thấp (microseconds)</li>
+                            <li>Tăng tốc độ truy vấn phổ biến</li>
+                            <li>Cải thiện trải nghiệm người dùng</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Lợi ích về quản lý:</h4>
+                        <ul class="feature-list">
+                            <li>AWS quản lý bảo trì hệ điều hành</li>
+                            <li>Patching và tối ưu hóa tự động</li>
+                            <li>Cấu hình và giám sát được cung cấp sẵn</li>
+                            <li>Khôi phục lỗi và sao lưu tự động</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lưu ý quan trọng:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Yêu cầu thay đổi code ứng dụng để tương tác với cache</li>
+                        <li>Cần chiến lược cache invalidation để đảm bảo dữ liệu luôn mới nhất</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Branch -->
+        <div class="branch branch-architecture">
+            <h3 class="branch-title text-xl"><i class="fas fa-project-diagram mr-2"></i> Kiến trúc sử dụng</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">1. Kiến trúc cache-aside (Lazy Loading):</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box app-box">Application</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box cache-box">ElastiCache</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box db-box">RDS Database</div>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <ol class="list-decimal ml-4">
+                            <li>Ứng dụng kiểm tra dữ liệu trong ElastiCache trước</li>
+                            <li>Nếu có (cache hit) → trả về kết quả từ cache</li>
+                            <li>Nếu không có (cache miss) → truy vấn database → lưu kết quả vào cache</li>
+                            <li>Giúp giảm tải cho database khi có nhiều truy vấn lặp lại</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-6">2. Kiến trúc lưu trữ session để tạo ứng dụng stateless:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box app-box">Application Instance 1</div>
+                        <div class="diagram-box app-box">Application Instance 2</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="arrow-down"></div>
+                        <div class="arrow-down"></div>
+                    </div>
+                    <div class="diagram-row justify-content-center">
+                        <div class="diagram-box cache-box" style="min-width: 200px;">ElastiCache<br/>(Session Data)</div>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <ul class="list-disc ml-4">
+                            <li>User đăng nhập vào instance ứng dụng → session data lưu vào ElastiCache</li>
+                            <li>User chuyển sang instance khác → instance mới lấy session data từ ElastiCache</li>
+                            <li>User không cần đăng nhập lại → ứng dụng trở nên stateless</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Trường hợp sử dụng</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Các trường hợp phổ biến:</h4>
+                        <ul class="feature-list">
+                            <li>Tăng tốc truy vấn database phổ biến</li>
+                            <li>Quản lý session người dùng</li>
+                            <li>Lưu trữ kết quả tính toán phức tạp</li>
+                            <li>Quản lý thông tin API rate limiting</li>
+                            <li>Caching trang web động</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Ngành và ứng dụng:</h4>
+                        <ul class="feature-list">
+                            <li>Gaming (leaderboards, game state) với Redis</li>
+                            <li>E-commerce (giỏ hàng, phiên mua sắm)</li>
+                            <li>Media và nội dung (caching metadata)</li>
+                            <li>Real-time analytics</li>
+                            <li>Ứng dụng web có lượng truy cập cao</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Branch -->
+        <div class="branch branch-comparison">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> So sánh Redis và Memcached</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3 redis-color text-center">Redis</h4>
+                        <div class="redis-diagram">
+                            <div class="diagram-row">
+                                <div class="diagram-box cache-box" style="border-color: #DC3545;">Redis Primary</div>
+                            </div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-row">
+                                <div class="diagram-box cache-box" style="border-color: #DC3545;">Redis Replica</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-center mb-3">Mô hình sao chép (replication)</p>
+                        <ul class="feature-list redis-list">
+                            <li>Multi-AZ với auto-failover</li>
+                            <li>Read Replicas để mở rộng khả năng đọc và HA</li>
+                            <li>Tính bền vững dữ liệu với AOF persistence</li>
+                            <li>Backup và restore trong cả phiên bản mã nguồn mở</li>
+                            <li>Hỗ trợ sets và sorted sets (tốt cho leaderboards)</li>
+                            <li>Cấu trúc dữ liệu phong phú hơn</li>
+                            <li>Hỗ trợ transactions</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3 memcached-color text-center">Memcached</h4>
+                        <div class="memcached-diagram">
+                            <div class="diagram-row">
+                                <div class="diagram-box cache-box" style="border-color: #007BFF;">Node 1</div>
+                                <div class="diagram-box cache-box" style="border-color: #007BFF;">Node 2</div>
+                                <div class="diagram-box cache-box" style="border-color: #007BFF;">Node 3</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-center mb-3">Mô hình phân vùng (sharding)</p>
+                        <ul class="feature-list memcached-list">
+                            <li>Mô hình nhiều node phân vùng dữ liệu (sharding)</li>
+                            <li>Không có high availability hoặc replication</li>
+                            <li>Rủi ro mất toàn bộ cache khi có sự cố</li>
+                            <li>Backup/restore chỉ có ở phiên bản serverless</li>
+                            <li>Kiến trúc đa luồng (multi-threaded) tốt cho hiệu năng</li>
+                            <li>Cấu trúc dữ liệu đơn giản (key-value)</li>
+                            <li>Đơn giản hơn, nhẹ hơn</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <h4 class="font-semibold mb-3 text-center">Bảng so sánh tính năng</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th width="30%">Tính năng</th>
+                                <th width="35%">Redis</th>
+                                <th width="35%">Memcached</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature">High Availability</td>
+                                <td>✅ Multi-AZ với auto-failover</td>
+                                <td>❌ Không hỗ trợ</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Data Persistence</td>
+                                <td>✅ AOF persistence</td>
+                                <td>❌ Không hỗ trợ</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Backup/Restore</td>
+                                <td>✅ Hỗ trợ đầy đủ</td>
+                                <td>⚠️ Chỉ trong phiên bản serverless</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Mô hình mở rộng</td>
+                                <td>Replication (Master-Replica)</td>
+                                <td>Sharding (Horizontal Partitioning)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Use Cases</td>
+                                <td>Leaderboards, session store, pub/sub, real-time analytics</td>
+                                <td>Object caching đơn giản, cần hiệu năng đa luồng</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Kiến trúc</td>
+                                <td>Single-threaded nhưng có I/O multiplexing</td>
+                                <td>Multi-threaded</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600">Lựa chọn giữa Redis và Memcached phụ thuộc vào use case cụ thể. Redis phù hợp hơn cho các ứng dụng cần bền vững dữ liệu và tính năng phức tạp, trong khi Memcached đơn giản và hiệu quả cho việc caching đơn giản.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Amazon ElastiCache - Dịch vụ caching quản lý của AWS hỗ trợ Redis và Memcached</p>
+        </div>
+    </div>
+</body>
+</html>
