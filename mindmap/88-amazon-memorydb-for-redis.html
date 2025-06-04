@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Amazon MemoryDB for Redis</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-differences { border-color: #DC3545; }
+        .branch-differences .branch-title { color: #DC3545; }
+        
+        .branch-performance { border-color: #1E88E5; }
+        .branch-performance .branch-title { color: #1E88E5; }
+        
+        .branch-scaling { border-color: #43A047; }
+        .branch-scaling .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .microservice-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .memorydb-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .multiaz-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .aws-logo {
+            width: 120px;
+            height: auto;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .redis-color { color: #DC3545; }
+        .memorydb-color { color: #FF9900; }
+        .performance-icon { color: #1E88E5; }
+        .scaling-icon { color: #43A047; }
+        .usecase-icon { color: #8E24AA; }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Amazon MemoryDB for Redis</h1>
+            <span class="text-sm text-gray-500">AWS Redis-compatible In-memory Database</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-memory text-3xl mb-2"></i>
+                <h2 class="text-lg font-bold">Amazon MemoryDB<br/>for Redis</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa</h3>
+            <div class="branch-content">
+                <p class="mb-3">Amazon MemoryDB for Redis là dịch vụ cơ sở dữ liệu in-memory tương thích Redis, bền vững (durable) được quản lý hoàn toàn bởi AWS.</p>
+                <ul class="feature-list">
+                    <li>Redis-compatible, durable, in-memory database service</li>
+                    <li>Là database thực sự với Redis-compatible API</li>
+                    <li>Cung cấp dữ liệu in-memory nhưng với tính bền vững (durable data storage)</li>
+                    <li>Multi-AZ transaction log để đảm bảo data durability</li>
+                    <li>Được quản lý hoàn toàn bởi AWS</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Differences Branch -->
+        <div class="branch branch-differences">
+            <h3 class="branch-title text-xl"><i class="fas fa-exchange-alt mr-2"></i> Khác biệt với Redis</h3>
+            <div class="branch-content">
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-3 text-center">So sánh MemoryDB vs Redis</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th width="25%">Khía cạnh</th>
+                                <th width="37.5%">Redis (ElastiCache)</th>
+                                <th width="37.5%">MemoryDB for Redis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature">Mục đích chính</td>
+                                <td>Cache với some durability</td>
+                                <td>Database với Redis-compatible API</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Use Case</td>
+                                <td>Caching, session storage</td>
+                                <td>Primary database cho ứng dụng</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Data Durability</td>
+                                <td>Limited (AOF persistence)</td>
+                                <td>Full durability với Multi-AZ transaction log</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Recovery</td>
+                                <td>Backup/restore</td>
+                                <td>Fast recovery từ transaction log</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Performance</td>
+                                <td>High performance caching</td>
+                                <td>Ultra-fast performance (160M+ requests/sec)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600"><strong>Kết luận:</strong> Redis được thiết kế như một cache, trong khi MemoryDB for Redis được thiết kế như một cơ sở dữ liệu chính với khả năng tương thích Redis.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Branch -->
+        <div class="branch branch-performance">
+            <h3 class="branch-title text-xl"><i class="fas fa-tachometer-alt mr-2"></i> Hiệu năng và Tính năng</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2 performance-icon">Hiệu năng vượt trội:</h4>
+                        <ul class="feature-list">
+                            <li>Ultra-fast performance với hơn 160 triệu requests/giây</li>
+                            <li>Độ trễ micro-second cho in-memory data</li>
+                            <li>Hiệu năng cao nhất cho Redis-compatible workloads</li>
+                            <li>Tối ưu cho real-time applications</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2 performance-icon">Tính năng chính:</h4>
+                        <ul class="feature-list">
+                            <li>Multi-AZ transaction log</li>
+                            <li>Durable data storage</li>
+                            <li>Fast recovery capabilities</li>
+                            <li>Data durability được đảm bảo</li>
+                            <li>Redis-compatible API hoàn toàn</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="diagram-container mt-4">
+                    <h4 class="font-semibold mb-3 text-center">Kiến trúc MemoryDB</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box microservice-box">Microservices</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box memorydb-box">MemoryDB for Redis<br/>(Ultra-fast in-memory)</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box multiaz-box">Multi-AZ Transaction Log<br/>(Data Durability)</div>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <ul class="list-disc ml-4">
+                            <li>Microservices truy cập MemoryDB với ultra-fast speed</li>
+                            <li>Multi-AZ transaction log đảm bảo data durability</li>
+                            <li>Fast recovery từ transaction log khi cần thiết</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scaling Branch -->
+        <div class="branch branch-scaling">
+            <h3 class="branch-title text-xl"><i class="fas fa-expand-arrows-alt mr-2"></i> Khả năng mở rộng</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3 scaling-icon">Scaling liền mạch:</h4>
+                <ul class="feature-list">
+                    <li>Scale seamlessly từ tens of gigabytes đến hundreds of terabytes storage</li>
+                    <li>Không cần downtime khi mở rộng</li>
+                    <li>Tự động adjust capacity theo nhu cầu</li>
+                    <li>Hỗ trợ horizontal scaling cho throughput</li>
+                </ul>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2 scaling-icon">Scaling Range:</h4>
+                    <div class="bg-gradient-to-r from-green-100 to-green-200 p-4 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <div class="text-center">
+                                <div class="font-bold text-lg">Tens of GB</div>
+                                <div class="text-sm text-gray-600">Starting Point</div>
+                            </div>
+                            <div class="flex-1 mx-4">
+                                <div class="h-2 bg-gradient-to-r from-green-400 to-green-600 rounded"></div>
+                                <div class="text-center text-sm mt-1">Seamless Scaling</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg">Hundreds of TB</div>
+                                <div class="text-sm text-gray-600">Maximum Scale</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Trường hợp sử dụng</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2 usecase-icon">Ứng dụng chính:</h4>
+                        <ul class="feature-list">
+                            <li>Web và mobile applications</li>
+                            <li>Online gaming (real-time leaderboards, game state)</li>
+                            <li>Media streaming (metadata, user preferences)</li>
+                            <li>Real-time analytics và dashboards</li>
+                            <li>Financial services (trading, fraud detection)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2 usecase-icon">Kiến trúc Microservices:</h4>
+                        <ul class="feature-list">
+                            <li>Nhiều microservices cần access Redis-compatible database</li>
+                            <li>Shared data store cho distributed systems</li>
+                            <li>Session management cho microservices</li>
+                            <li>Real-time communication giữa services</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-3 text-center usecase-icon">Ideal Use Case Scenario</h4>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <p class="text-center mb-3"><strong>Scenario:</strong> Bạn có nhiều microservices cần access một Redis-compatible in-memory database</p>
+                        <div class="grid md:grid-cols-3 gap-4 text-center">
+                            <div>
+                                <i class="fas fa-rocket text-2xl usecase-icon mb-2"></i>
+                                <div class="font-semibold">Ultra-fast speed</div>
+                                <div class="text-sm">160M+ requests/sec</div>
+                            </div>
+                            <div>
+                                <i class="fas fa-shield-alt text-2xl usecase-icon mb-2"></i>
+                                <div class="font-semibold">Data durability</div>
+                                <div class="text-sm">Multi-AZ transaction log</div>
+                            </div>
+                            <div>
+                                <i class="fas fa-sync-alt text-2xl usecase-icon mb-2"></i>
+                                <div class="font-semibold">Fast recovery</div>
+                                <div class="text-sm">Minimal downtime</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600"><strong>Khi nào sử dụng MemoryDB:</strong> Khi bạn cần một primary database với Redis compatibility, không chỉ là cache. Đặc biệt phù hợp cho các ứng dụng real-time có yêu cầu cao về performance và data durability.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Amazon MemoryDB for Redis - Redis-compatible durable in-memory database service của AWS</p>
+        </div>
+    </div>
+</body>
+</html>
