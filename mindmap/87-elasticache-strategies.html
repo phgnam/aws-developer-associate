@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: ElastiCache Caching Strategies</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-considerations { border-color: #FF9900; }
+        .branch-considerations .branch-title { color: #FF9900; }
+        
+        .branch-lazy { border-color: #1E88E5; }
+        .branch-lazy .branch-title { color: #1E88E5; }
+        
+        .branch-writethrough { border-color: #43A047; }
+        .branch-writethrough .branch-title { color: #43A047; }
+        
+        .branch-eviction { border-color: #8E24AA; }
+        .branch-eviction .branch-title { color: #8E24AA; }
+        
+        .branch-combination { border-color: #F4511E; }
+        .branch-combination .branch-title { color: #F4511E; }
+        
+        .branch-best { border-color: #795548; }
+        .branch-best .branch-title { color: #795548; }
+        
+        .code-block {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .pros {
+            background-color: #e8f5e8;
+            border-left: 4px solid #43A047;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .cons {
+            background-color: #ffeaa7;
+            border-left: 4px solid #FF9900;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .app-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .cache-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .db-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .question-list li:before {
+            content: "\f059";
+            color: #1E88E5;
+        }
+        .step-list {
+            counter-reset: step-counter;
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .step-list li {
+            margin-bottom: 10px;
+            padding-left: 35px;
+            position: relative;
+        }
+        .step-list li:before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: #1976d2;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .highlight-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: ElastiCache Caching Strategies</h1>
+            <span class="text-sm text-gray-500">Các chiến lược caching và cân nhắc quan trọng</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-layer-group text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">ElastiCache Caching Strategies</h2>
+            </div>
+        </div>
+
+        <!-- Considerations Branch -->
+        <div class="branch branch-considerations">
+            <h3 class="branch-title text-xl"><i class="fas fa-question-circle mr-2"></i> Cân nhắc khi sử dụng Cache</h3>
+            <div class="branch-content">
+                <p class="mb-3">Trước khi triển khai caching, cần trả lời 4 câu hỏi quan trọng:</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">1. Có an toàn để cache dữ liệu này không?</h4>
+                        <ul class="feature-list question-list">
+                            <li>Nói chung là có, nhưng dữ liệu có thể outdated</li>
+                            <li>Eventually consistency - không phải mọi loại dữ liệu</li>
+                            <li>Cần cân nhắc tính chính xác vs hiệu năng</li>
+                        </ul>
+                        
+                        <h4 class="font-semibold mb-2 mt-4">2. Cache có hiệu quả cho dữ liệu này không?</h4>
+                        <ul class="feature-list">
+                            <li>Hiệu quả: Dữ liệu ít thay đổi, ít keys được truy cập thường xuyên</li>
+                            <li>Không hiệu quả: Dữ liệu thay đổi nhanh, cần toàn bộ key space</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">3. Dữ liệu có cấu trúc phù hợp cho cache không?</h4>
+                        <ul class="feature-list">
+                            <li>Tốt: Key-value pairs</li>
+                            <li>Tốt: Kết quả aggregation</li>
+                            <li>Cần cấu trúc dữ liệu phù hợp với queries</li>
+                        </ul>
+                        
+                        <h4 class="font-semibold mb-2 mt-4">4. Caching pattern nào phù hợp nhất?</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Lazy Loading (Cache-Aside)</li>
+                            <li>Write Through</li>
+                            <li>Cache Eviction & TTL</li>
+                            <li>Kết hợp các strategies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lazy Loading Branch -->
+        <div class="branch branch-lazy">
+            <h3 class="branch-title text-xl"><i class="fas fa-hourglass-half mr-2"></i> Lazy Loading (Cache-Aside / Lazy Population)</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cách hoạt động:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box app-box">Application</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">1. Query cache</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box cache-box">ElastiCache</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="flow-label">2a. Cache Hit → Return data</div>
+                        <div class="flow-label">2b. Cache Miss ↓</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box db-box">Database</div>
+                        <div class="arrow-left"></div>
+                        <div class="diagram-box cache-box">Write to Cache</div>
+                    </div>
+                    <div class="flow-label">3. Query DB → 4. Cache result</div>
+                </div>
+
+                <h4 class="font-semibold mb-2">Pseudocode Pattern:</h4>
+                <div class="code-block">
+def get_user(user_id):
+    record = cache.get(user_id)
+    if record is None:  # Cache miss
+        record = db.query("SELECT * FROM users WHERE id = ?", user_id)
+        cache.set(user_id, record)
+    return record
+                </div>
+
+                <div class="pros-cons-grid">
+                    <div class="pros">
+                        <h4 class="font-semibold mb-2 text-green-700"><i class="fas fa-thumbs-up mr-1"></i> Ưu điểm</h4>
+                        <ul class="feature-list">
+                            <li>Chỉ cache dữ liệu được yêu cầu</li>
+                            <li>Hiệu quả về memory</li>
+                            <li>Không fatal khi cache node failure</li>
+                            <li>Dễ implement</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4 class="font-semibold mb-2 text-orange-700"><i class="fas fa-thumbs-down mr-1"></i> Nhược điểm</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Cache miss penalty: 3 network calls</li>
+                            <li>Stale data có thể xảy ra</li>
+                            <li>Cần warm-up cache sau node failure</li>
+                            <li>User experience không tốt khi cache miss</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Write Through Branch -->
+        <div class="branch branch-writethrough">
+            <h3 class="branch-title text-xl"><i class="fas fa-pen mr-2"></i> Write Through</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cách hoạt động:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box app-box">Application</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">1. Write operation</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box db-box">Database</div>
+                        <div class="diagram-box cache-box">ElastiCache</div>
+                    </div>
+                    <div class="flow-label">2. Write to both DB & Cache simultaneously</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box app-box">Read from Cache</div>
+                    </div>
+                    <div class="flow-label">3. Future reads from cache (always fresh)</div>
+                </div>
+
+                <h4 class="font-semibold mb-2">Pseudocode Pattern:</h4>
+                <div class="code-block">
+def save_user(user_id, user_data):
+    record = db.query("UPDATE users SET ... WHERE id = ?", user_id, user_data)
+    cache.set(user_id, record)  # Write to cache immediately
+    return record
+                </div>
+
+                <div class="pros-cons-grid">
+                    <div class="pros">
+                        <h4 class="font-semibold mb-2 text-green-700"><i class="fas fa-thumbs-up mr-1"></i> Ưu điểm</h4>
+                        <ul class="feature-list">
+                            <li>Dữ liệu trong cache không bao giờ stale</li>
+                            <li>Write penalty thay vì read penalty</li>
+                            <li>Users chấp nhận write chậm hơn read</li>
+                            <li>Consistency tốt hơn</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4 class="font-semibold mb-2 text-orange-700"><i class="fas fa-thumbs-down mr-1"></i> Nhược điểm</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Missing data cho đến khi được written</li>
+                            <li>Cache churn: cache dữ liệu không được đọc</li>
+                            <li>Mỗi write cần 2 network calls</li>
+                            <li>Phức tạp hơn để implement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cache Eviction & TTL Branch -->
+        <div class="branch branch-eviction">
+            <h3 class="branch-title text-xl"><i class="fas fa-clock mr-2"></i> Cache Eviction & TTL (Time-To-Live)</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cache Eviction xảy ra khi:</h4>
+                <ol class="step-list">
+                    <li>Delete item explicitly từ cache</li>
+                    <li>Memory cache đầy</li>
+                    <li>LRU (Least Recently Used) - item ít được sử dụng gần đây</li>
+                    <li>TTL hết hạn</li>
+                </ol>
+
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">TTL Strategies:</h4>
+                        <ul class="feature-list">
+                            <li>Có thể từ vài giây đến giờ/ngày</li>
+                            <li>Phụ thuộc vào loại dữ liệu</li>
+                            <li>Leaderboards: vài phút</li>
+                            <li>Comments: vài giờ</li>
+                            <li>Activity streams: 1 ngày</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Scaling Cache:</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Quá nhiều evictions → scale up cache</li>
+                            <li>Scale out với nhiều nodes</li>
+                            <li>Tăng memory allocation</li>
+                            <li>Optimize TTL values</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <p class="font-semibold mb-2">💡 Lưu ý quan trọng:</p>
+                    <p>TTL rất hiệu quả ngay cả khi chỉ vài giây cho dữ liệu được request nhiều. Cần cân bằng giữa data freshness và cache performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combination Strategies Branch -->
+        <div class="branch branch-combination">
+            <h3 class="branch-title text-xl"><i class="fas fa-puzzle-piece mr-2"></i> Kết hợp Strategies</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Lazy Loading + Write Through:</h4>
+                <p class="mb-3">Có thể kết hợp hai strategies để tận dụng ưu điểm của cả hai:</p>
+                
+                <div class="code-block">
+# Combine both strategies
+def get_user(user_id):           # Lazy Loading for reads
+    record = cache.get(user_id)
+    if record is None:
+        record = db.query("SELECT * FROM users WHERE id = ?", user_id)
+        cache.set(user_id, record)
+    return record
+
+def save_user(user_id, data):    # Write Through for writes
+    record = db.query("UPDATE users SET ... WHERE id = ?", user_id, data)
+    cache.set(user_id, record)
+    return record
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Khi nào kết hợp:</h4>
+                        <ul class="feature-list">
+                            <li>Application có cả read và write operations</li>
+                            <li>Cần balance giữa performance và consistency</li>
+                            <li>Data pattern phức tạp</li>
+                            <li>Multiple use cases trong cùng system</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Lợi ích kết hợp:</h4>
+                        <ul class="feature-list">
+                            <li>Write Through đảm bảo data consistency</li>
+                            <li>Lazy Loading handle cache miss gracefully</li>
+                            <li>Optimal memory usage</li>
+                            <li>Flexible cho different data types</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices Branch -->
+        <div class="branch branch-best">
+            <h3 class="branch-title text-xl"><i class="fas fa-star mr-2"></i> Best Practices & Recommendations</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Strategy Priority:</h4>
+                        <ol class="step-list">
+                            <li><strong>Lazy Loading</strong>: Foundation strategy, dễ implement, phù hợp nhiều tình huống</li>
+                            <li><strong>Write Through</strong>: Optimization bổ sung, không nên là priority đầu tiên</li>
+                            <li><strong>TTL</strong>: Thường là ý tưởng tốt, trừ khi dùng Write Through</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Data Selection:</h4>
+                        <ul class="feature-list">
+                            <li><strong>Nên cache:</strong> User profiles, blogs, product catalogs</li>
+                            <li><strong>Cẩn thận:</strong> Pricing data, financial data</li>
+                            <li><strong>Tránh cache:</strong> Bank account values, sensitive data</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box mt-4">
+                    <h4 class="font-semibold mb-2">💭 Wisdom về Caching:</h4>
+                    <blockquote class="text-gray-700 italic">
+                        "There are two hard things in Computer Science: cache invalidation and naming things."
+                    </blockquote>
+                    <p class="mt-2 text-sm">Caching thực sự khó khăn. Đây chỉ là introduction - có cả một lĩnh vực Computer Science về caching. Cache invalidation là một trong những vấn đề khó nhất trong lập trình.</p>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Implementation Tips:</h4>
+                    <ul class="feature-list">
+                        <li>Bắt đầu với Lazy Loading như foundation</li>
+                        <li>Thêm Write Through khi cần data consistency</li>
+                        <li>Set TTL values hợp lý cho từng loại data</li>
+                        <li>Monitor cache hit rates và adjust strategies</li>
+                        <li>Plan cho cache invalidation strategy</li>
+                        <li>Test thoroughly trước khi production</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về ElastiCache Caching Strategies - Các chiến lược và best practices cho caching hiệu quả</p>
+        </div>
+    </div>
+</body>
+</html>
