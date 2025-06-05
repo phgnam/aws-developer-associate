@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route 53 CNAME vs Alias Records - Mind Map</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1400px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-cname { border-color: #FF9900; }
+        .branch-cname .branch-title { color: #FF9900; }
+        
+        .branch-alias { border-color: #1E88E5; }
+        .branch-alias .branch-title { color: #1E88E5; }
+        
+        .branch-differences { border-color: #43A047; }
+        .branch-differences .branch-title { color: #43A047; }
+        
+        .branch-restrictions { border-color: #8E24AA; }
+        .branch-restrictions .branch-title { color: #8E24AA; }
+        
+        .branch-demo { border-color: #F4511E; }
+        .branch-demo .branch-title { color: #F4511E; }
+        
+        .branch-targets { border-color: #795548; }
+        .branch-targets .branch-title { color: #795548; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .client-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .dns-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .alb-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .restriction-list li:before {
+            content: "\f05e";
+            color: #DC3545;
+        }
+        .target-list li:before {
+            content: "\f140";
+            color: #1E88E5;
+        }
+        .demo-list li:before {
+            content: "\f085";
+            color: #F4511E;
+        }
+        .code-example {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .success-box {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .error-box {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .highlight-zone-apex {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 CNAME vs Alias Records</h1>
+            <span class="text-sm text-gray-500">AWS DNS Record Types Comparison</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-route text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">CNAME vs Alias Records</h2>
+                <p class="text-sm">Route 53 DNS Mapping</p>
+            </div>
+        </div>
+
+        <!-- CNAME Records Branch -->
+        <div class="branch branch-cname">
+            <h3 class="branch-title text-xl"><i class="fas fa-link mr-2"></i> CNAME Records</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Định nghĩa và Đặc điểm:</h4>
+                <p class="mb-3">CNAME (Canonical Name) cho phép point một hostname đến hostname khác.</p>
+                <ul class="feature-list">
+                    <li>Map hostname → another hostname</li>
+                    <li>Target hostname có thể là A hoặc AAAA record</li>
+                    <li>Hoạt động với standard DNS protocols</li>
+                    <li>Có thể point đến bất kỳ hostname nào</li>
+                </ul>
+
+                <div class="code-example">
+                    <strong>Ví dụ CNAME:</strong><br/>
+                    app.mydomain.com → blabla.anything.com<br/>
+                    myapp.stephanetheteacher.com → my-alb-123456789.eu-central-1.elb.amazonaws.com
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">Giới hạn quan trọng:</h4>
+                <ul class="feature-list restriction-list">
+                    <li>Chỉ hoạt động với non-root domain (subdomain)</li>
+                    <li>Không thể tạo CNAME cho Zone Apex (example.com)</li>
+                    <li>Chỉ có thể tạo cho www.example.com, app.example.com, etc.</li>
+                    <li>Có cost cho DNS queries</li>
+                </ul>
+
+                <div class="highlight-zone-apex">
+                    <strong>⚠️ Zone Apex Restriction:</strong><br/>
+                    ❌ <strong>Không thể:</strong> example.com CNAME → load-balancer.amazonaws.com<br/>
+                    ✅ <strong>Có thể:</strong> www.example.com CNAME → load-balancer.amazonaws.com
+                </div>
+            </div>
+        </div>
+
+        <!-- Alias Records Branch -->
+        <div class="branch branch-alias">
+            <h3 class="branch-title text-xl"><i class="fas fa-aws mr-2"></i> Alias Records</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Định nghĩa và Đặc điểm:</h4>
+                <p class="mb-3">Alias Records là tính năng đặc biệt của Route 53, cho phép point hostname đến AWS Resources.</p>
+                <ul class="feature-list">
+                    <li>Point hostname → specific AWS Resource</li>
+                    <li>Extension của DNS functionality (chỉ Route 53)</li>
+                    <li>Hoạt động cho cả root domain và non-root domain</li>
+                    <li>Automatically recognize IP changes của underlying resource</li>
+                </ul>
+
+                <div class="code-example">
+                    <strong>Ví dụ Alias:</strong><br/>
+                    app.mydomain.com → blabla.amazonaws.com<br/>
+                    mydomain.com → my-alb-123456789.eu-central-1.elb.amazonaws.com<br/>
+                    myalias.stephanetheteacher.com → Application Load Balancer
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">Lợi ích của Alias Records:</h4>
+                <ul class="feature-list">
+                    <li>Hoạt động cho Zone Apex (example.com)</li>
+                    <li>Free of charge (không tính phí DNS queries)</li>
+                    <li>Native health check capability</li>
+                    <li>Tự động update khi AWS resource IP thay đổi</li>
+                    <li>Luôn là type A hoặc AAAA</li>
+                    <li>Không thể set TTL (Route 53 tự động set)</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>✅ Zone Apex Support:</strong><br/>
+                    Alias records có thể được sử dụng cho zone apex (example.com), khắc phục giới hạn của CNAME.
+                </div>
+            </div>
+        </div>
+
+        <!-- Alias Targets Branch -->
+        <div class="branch branch-targets">
+            <h3 class="branch-title text-xl"><i class="fas fa-bullseye mr-2"></i> Alias Record Targets</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">AWS Resources có thể làm Alias targets:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="font-medium mb-2">Compute & Load Balancing:</h5>
+                        <ul class="feature-list target-list">
+                            <li>Elastic Load Balancers (ALB, NLB, CLB)</li>
+                            <li>API Gateway</li>
+                            <li>Elastic Beanstalk environments</li>
+                            <li>Global Accelerator accelerator</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-medium mb-2">Content & Storage:</h5>
+                        <ul class="feature-list target-list">
+                            <li>CloudFront Distributions</li>
+                            <li>S3 Websites (không phải S3 Buckets)</li>
+                            <li>VPC Interface Endpoints</li>
+                            <li>Route 53 records trong cùng hosted zone</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-box mt-4">
+                    <strong>❌ Không thể làm Alias target:</strong><br/>
+                    EC2 DNS names không thể được sử dụng làm target cho Alias records.
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Differences Branch -->
+        <div class="branch branch-differences">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> So sánh Chi tiết</h3>
+            <div class="branch-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Đặc điểm</th>
+                            <th width="37.5%">CNAME Records</th>
+                            <th width="37.5%">Alias Records</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">Target</td>
+                            <td>Bất kỳ hostname nào</td>
+                            <td>Chỉ AWS Resources</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Zone Apex Support</td>
+                            <td>❌ Không hỗ trợ (example.com)</td>
+                            <td>✅ Có hỗ trợ (example.com)</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">DNS Query Cost</td>
+                            <td>💰 Có tính phí</td>
+                            <td>🆓 Miễn phí</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Health Check</td>
+                            <td>❌ Không có native support</td>
+                            <td>✅ Native health check capability</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">TTL Control</td>
+                            <td>✅ Có thể set TTL</td>
+                            <td>❌ Route 53 tự động set</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Record Type</td>
+                            <td>CNAME</td>
+                            <td>A hoặc AAAA</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">IP Change Handling</td>
+                            <td>Manual update cần thiết</td>
+                            <td>Tự động recognize changes</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">DNS Standard</td>
+                            <td>✅ Standard DNS</td>
+                            <td>⚠️ Route 53 extension</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Zone Apex Restrictions Branch -->
+        <div class="branch branch-restrictions">
+            <h3 class="branch-title text-xl"><i class="fas fa-exclamation-triangle mr-2"></i> Zone Apex và Restrictions</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Zone Apex Problem:</h4>
+                <p class="mb-3">Zone Apex là top node của DNS namespace (ví dụ: example.com không có subdomain).</p>
+
+                <div class="diagram-container">
+                    <h5 class="font-medium mb-3">DNS Hierarchy:</h5>
+                    <div class="diagram-row">
+                        <div class="diagram-box" style="background-color: #ffcdd2; border: 2px solid #f44336;">
+                            <strong>Zone Apex</strong><br/>
+                            example.com
+                        </div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box" style="background-color: #c8e6c9; border: 2px solid #4caf50;">
+                            <strong>Subdomain</strong><br/>
+                            www.example.com
+                        </div>
+                        <div class="diagram-box" style="background-color: #c8e6c9; border: 2px solid #4caf50;">
+                            <strong>Subdomain</strong><br/>
+                            app.example.com
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">CNAME Restrictions:</h4>
+                <ul class="feature-list restriction-list">
+                    <li>RFC DNS standard không cho phép CNAME tại zone apex</li>
+                    <li>example.com không thể là CNAME record</li>
+                    <li>Conflict với other DNS records (SOA, NS) tại zone apex</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2 mt-4">Alias Solution:</h4>
+                <ul class="feature-list">
+                    <li>Route 53 extension giải quyết zone apex problem</li>
+                    <li>example.com có thể point đến AWS resources</li>
+                    <li>Không conflict với SOA và NS records</li>
+                    <li>Transparent đối với DNS clients</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Demo Examples Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-laptop-code mr-2"></i> Demo Examples từ Script</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">1. CNAME Record Demo:</h4>
+                <div class="code-example">
+                    <strong>Record tạo:</strong><br/>
+                    Name: myapp.stephanetheteacher.com<br/>
+                    Type: CNAME<br/>
+                    Value: my-alb-123456789.eu-central-1.elb.amazonaws.com
+                </div>
+                <ul class="feature-list demo-list">
+                    <li>Thành công: myapp.stephanetheteacher.com trỏ đến ALB</li>
+                    <li>Browser access → Hello World from EC2 instance</li>
+                    <li>DNS query có cost</li>
+                </ul>
+
+                <h4 class="font-semibold mb-3 mt-5">2. Alias Record Demo:</h4>
+                <div class="code-example">
+                    <strong>Record tạo:</strong><br/>
+                    Name: myalias.stephanetheteacher.com<br/>
+                    Type: A (Alias)<br/>
+                    Target: Application Load Balancer in eu-central-1<br/>
+                    Health Check: Yes
+                </div>
+                <ul class="feature-list demo-list">
+                    <li>Thành công: myalias.stephanetheteacher.com trỏ đến ALB</li>
+                    <li>Browser access → Same Hello World response</li>
+                    <li>Free DNS queries</li>
+                    <li>Auto health check enabled</li>
+                </ul>
+
+                <h4 class="font-semibold mb-3 mt-5">3. Zone Apex Failure vs Success:</h4>
+                
+                <div class="error-box">
+                    <strong>❌ CNAME tại Zone Apex (Thất bại):</strong>
+                    <div class="code-example mt-2">
+                        Name: stephanetheteacher.com<br/>
+                        Type: CNAME<br/>
+                        Value: my-alb-123456789.eu-central-1.elb.amazonaws.com<br/>
+                        <span style="color: red;">Result: "Bad request. CNAME is not permitted at apex of this zone"</span>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Alias tại Zone Apex (Thành công):</strong>
+                    <div class="code-example mt-2">
+                        Name: stephanetheteacher.com<br/>
+                        Type: A (Alias)<br/>
+                        Target: Application Load Balancer in eu-central-1<br/>
+                        <span style="color: green;">Result: Successfully created and accessible</span>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-5">4. Verification Methods:</h4>
+                <ul class="feature-list demo-list">
+                    <li>Web browser access test</li>
+                    <li>DNS lookup commands verification</li>
+                    <li>Route 53 console confirmation</li>
+                    <li>Health check status monitoring</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 CNAME vs Alias Records - Phân biệt và cách sử dụng các loại DNS records trong AWS</p>
+        </div>
+    </div>
+</body>
+</html>
