@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route 53 TTL (Time To Live) - Mind Map</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-benefits { border-color: #1E88E5; }
+        .branch-benefits .branch-title { color: #1E88E5; }
+        
+        .branch-architecture { border-color: #43A047; }
+        .branch-architecture .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .branch-comparison { border-color: #F4511E; }
+        .branch-comparison .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .app-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .cache-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .db-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .dns-box { background-color: #e1bee7; border: 2px solid #7b1fa2; }
+        .client-box { background-color: #ffcdd2; border: 2px solid #d32f2f; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .aws-logo {
+            width: 120px;
+            height: auto;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .high-ttl-list li:before {
+            color: #DC3545;
+        }
+        .low-ttl-list li:before {
+            color: #007BFF;
+        }
+        .high-ttl-color { color: #DC3545; }
+        .low-ttl-color { color: #007BFF; }
+        .demo-box {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+        .command-line {
+            color: #68d391;
+        }
+        .output-line {
+            color: #fbb6ce;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Route 53 TTL (Time To Live) - Mind Map</h1>
+            <span class="text-sm text-gray-500">DNS Record Caching Strategy</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-clock text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Route 53 TTL</h2>
+                <p class="text-sm">Time To Live</p>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa TTL</h3>
+            <div class="branch-content">
+                <p class="mb-3">TTL (Time To Live) là thời gian mà một DNS record được cache tại DNS resolvers trước khi hết hạn và cần được làm mới.</p>
+                <ul class="feature-list">
+                    <li>Đơn vị tính bằng giây (seconds)</li>
+                    <li>Áp dụng cho tất cả DNS record types</li>
+                    <li>Ngoại lệ: Alias records không cần TTL</li>
+                    <li>Là thông số bắt buộc khi tạo DNS record</li>
+                    <li>Giúp kiểm soát tần suất truy vấn DNS</li>
+                </ul>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Ví dụ TTL trong DNS response:</h4>
+                    <div class="demo-box">
+                        <div class="command-line">$ dig myapp.example.com</div>
+                        <div class="output-line">myapp.example.com. 300 IN A 12.34.56.78</div>
+                        <div class="text-sm mt-2">TTL = 300 giây (5 phút)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How TTL Works Branch -->
+        <div class="branch branch-benefits">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cách TTL hoạt động</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Quy trình TTL caching:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box dns-box">Route 53</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box app-box">Web Server</div>
+                    </div>
+                    <div class="flow-label">1. DNS Query: myapp.example.com</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box dns-box">Response: IP + TTL=300s</div>
+                    </div>
+                    <div class="flow-label">2. Client caches kết quả trong 300 giây</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Cached for 300s</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box app-box">Direct Access</div>
+                    </div>
+                    <div class="flow-label">3. Requests tiếp theo không query DNS</div>
+                    <div class="mt-4 px-4">
+                        <ol class="list-decimal ml-4">
+                            <li>Client gửi DNS query đến Route 53</li>
+                            <li>Route 53 trả về IP address + TTL (ví dụ: 300 giây)</li>
+                            <li>Client cache kết quả trong thời gian TTL</li>
+                            <li>Các request tiếp theo sử dụng cached IP, không query DNS</li>
+                            <li>Sau khi TTL hết hạn, client mới query DNS lại</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- High vs Low TTL Branch -->
+        <div class="branch branch-comparison">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> High TTL vs Low TTL</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3 high-ttl-color text-center">High TTL (24 giờ)</h4>
+                        <div class="mb-4">
+                            <div class="demo-box">
+                                <div class="text-center">TTL = 86400 seconds (24 hours)</div>
+                            </div>
+                        </div>
+                        <h5 class="font-semibold mb-2">Ưu điểm:</h5>
+                        <ul class="feature-list high-ttl-list">
+                            <li>Ít traffic đến Route 53 = chi phí thấp hơn</li>
+                            <li>Giảm tải cho DNS servers</li>
+                            <li>Tăng hiệu suất cho end users</li>
+                            <li>Ít dependency vào DNS service</li>
+                        </ul>
+                        <h5 class="font-semibold mb-2 mt-4">Nhược điểm:</h5>
+                        <ul class="feature-list warning-list">
+                            <li>Records có thể outdated lâu (24 giờ)</li>
+                            <li>Khó thay đổi records nhanh chóng</li>
+                            <li>Clients có thể truy cập server cũ</li>
+                            <li>Không linh hoạt cho maintenance</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3 low-ttl-color text-center">Low TTL (60 giây)</h4>
+                        <div class="mb-4">
+                            <div class="demo-box">
+                                <div class="text-center">TTL = 60 seconds (1 minute)</div>
+                            </div>
+                        </div>
+                        <h5 class="font-semibold mb-2">Ưu điểm:</h5>
+                        <ul class="feature-list low-ttl-list">
+                            <li>Records outdated trong thời gian ngắn</li>
+                            <li>Thay đổi records nhanh chóng</li>
+                            <li>Dễ dàng maintenance và updates</li>
+                            <li>Linh hoạt cho disaster recovery</li>
+                        </ul>
+                        <h5 class="font-semibold mb-2 mt-4">Nhược điểm:</h5>
+                        <ul class="feature-list warning-list">
+                            <li>Nhiều traffic đến Route 53 = chi phí cao</li>
+                            <li>Tăng tải cho DNS servers</li>
+                            <li>Có thể chậm hơn cho end users</li>
+                            <li>Dependency cao vào DNS service</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <h4 class="font-semibold mb-3 text-center">Bảng so sánh chi tiết</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th width="30%">Yếu tố</th>
+                                <th width="35%">High TTL (24h)</th>
+                                <th width="35%">Low TTL (60s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature">DNS Traffic</td>
+                                <td>Ít (cost thấp)</td>
+                                <td>Nhiều (cost cao)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Record Freshness</td>
+                                <td>Có thể outdated lâu</td>
+                                <td>Luôn gần như mới nhất</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Change Propagation</td>
+                                <td>Chậm (tối đa 24h)</td>
+                                <td>Nhanh (tối đa 60s)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Use Cases</td>
+                                <td>Stable applications, cost optimization</td>
+                                <td>Frequent changes, disaster recovery</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TTL Strategies Branch -->
+        <div class="branch branch-architecture">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> TTL Strategies</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Chiến lược TTL khi thay đổi records:</h4>
+                <div class="diagram-container">
+                    <div class="mt-4 px-4">
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="demo-box">
+                                    <div class="font-semibold">Bước 1</div>
+                                    <div>Giảm TTL xuống thấp</div>
+                                    <div>(ví dụ: 60 giây)</div>
+                                </div>
+                                <div class="text-sm mt-2">Trước khi thay đổi record</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="demo-box">
+                                    <div class="font-semibold">Bước 2</div>
+                                    <div>Đợi TTL cũ expire</div>
+                                    <div>(chờ clients có TTL mới)</div>
+                                </div>
+                                <div class="text-sm mt-2">Thường chờ 24 giờ</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="demo-box">
+                                    <div class="font-semibold">Bước 3</div>
+                                    <div>Thay đổi record value</div>
+                                    <div>Tăng TTL lên cao</div>
+                                </div>
+                                <div class="text-sm mt-2">Sau khi thay đổi xong</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-semibold mb-3">Lựa chọn TTL phù hợp:</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="font-semibold mb-2">Chọn High TTL khi:</h5>
+                            <ul class="feature-list">
+                                <li>Application ổn định, ít thay đổi</li>
+                                <li>Muốn tối ưu chi phí DNS</li>
+                                <li>Records không thay đổi thường xuyên</li>
+                                <li>Có infrastructure backup sẵn sàng</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-2">Chọn Low TTL khi:</h5>
+                            <ul class="feature-list">
+                                <li>Cần thay đổi records thường xuyên</li>
+                                <li>Đang testing hoặc development</li>
+                                <li>Maintenance windows ngắn</li>
+                                <li>Disaster recovery nhanh</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Example Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-terminal mr-2"></i> Demo Example</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Thực hành với demo.stephanetheteacher.com (TTL = 120s):</h4>
+                
+                <div class="mb-4">
+                    <h5 class="font-semibold mb-2">1. Tạo A record với TTL 120 giây:</h5>
+                    <div class="demo-box">
+                        <div class="command-line">Record: demo.stephanetheteacher.com</div>
+                        <div class="command-line">Type: A</div>
+                        <div class="command-line">Value: eu-central-1 EC2 IP</div>
+                        <div class="command-line">TTL: 120 seconds</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="font-semibold mb-2">2. Kiểm tra bằng dig command:</h5>
+                    <div class="demo-box">
+                        <div class="command-line">$ dig demo.stephanetheteacher.com</div>
+                        <div class="output-line">Answer section shows TTL: 115 (countdown)</div>
+                        <div class="command-line">$ dig demo.stephanetheteacher.com (sau vài giây)</div>
+                        <div class="output-line">Answer section shows TTL: 98 (giảm dần)</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="font-semibold mb-2">3. Thay đổi record sang ap-southeast-1:</h5>
+                    <div class="demo-box">
+                        <div class="command-line">Updated record value to ap-southeast-1 IP</div>
+                        <div class="output-line">Browser vẫn access eu-central-1 (cached)</div>
+                        <div class="output-line">dig command vẫn show old IP với TTL đếm ngược</div>
+                        <div class="command-line">Sau khi TTL expire (66s remaining)...</div>
+                        <div class="output-line">Browser + dig command sẽ show new IP</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="font-semibold mb-2">4. Kết quả sau khi TTL expire:</h5>
+                    <div class="demo-box">
+                        <div class="command-line">Browser refresh → ap-southeast-1b Hello World</div>
+                        <div class="command-line">$ dig demo.stephanetheteacher.com</div>
+                        <div class="output-line">New IP address with fresh TTL: 120</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5 class="font-semibold mb-2">Key takeaways từ demo:</h5>
+                    <ul class="feature-list">
+                        <li>TTL countdown xảy ra ở client-side</li>
+                        <li>Thay đổi record không ảnh hưởng ngay lập tức</li>
+                        <li>Browser và command-line tools đều tuân theo TTL</li>
+                        <li>Cần chờ TTL expire để thấy changes</li>
+                        <li>CloudShell và Chrome đều cache DNS theo TTL</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 TTL (Time To Live) - Cơ chế caching DNS records và chiến lược tối ưu</p>
+        </div>
+    </div>
+</body>
+</html>
