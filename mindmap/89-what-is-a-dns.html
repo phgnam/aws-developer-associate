@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: DNS (Domain Name System)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-hierarchy { border-color: #1E88E5; }
+        .branch-hierarchy .branch-title { color: #1E88E5; }
+        
+        .branch-terminology { border-color: #43A047; }
+        .branch-terminology .branch-title { color: #43A047; }
+        
+        .branch-fqdn { border-color: #8E24AA; }
+        .branch-fqdn .branch-title { color: #8E24AA; }
+        
+        .branch-resolution { border-color: #F4511E; }
+        .branch-resolution .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .browser-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .local-dns-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .root-dns-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .tld-dns-box { background-color: #f8bbd9; border: 2px solid #c2185b; }
+        .domain-dns-box { background-color: #e1bee7; border: 2px solid #7b1fa2; }
+        .webserver-box { background-color: #ffcdd2; border: 2px solid #d32f2f; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .aws-logo {
+            width: 120px;
+            height: auto;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .hierarchy-box {
+            background-color: #e3f2fd;
+            border: 2px solid #1976d2;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .fqdn-breakdown {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .fqdn-part {
+            margin: 5px 0;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .fqdn-protocol { background-color: #ffcdd2; color: #d32f2f; }
+        .fqdn-fqdn { background-color: #c8e6c9; color: #388e3c; }
+        .fqdn-subdomain { background-color: #ffecb3; color: #f57c00; }
+        .fqdn-sld { background-color: #e1bee7; color: #7b1fa2; }
+        .fqdn-tld { background-color: #bbdefb; color: #1976d2; }
+        .fqdn-root { background-color: #f5f5f5; color: #424242; }
+        .step-number {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: DNS (Domain Name System)</h1>
+            <span class="text-sm text-gray-500">Backbone của Internet</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-network-wired text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">DNS</h2>
+                <p class="text-sm">Domain Name System</p>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa DNS</h3>
+            <div class="branch-content">
+                <p class="mb-3"><strong>DNS (Domain Name System)</strong> là hệ thống dịch tên miền thân thiện với con người thành địa chỉ IP của máy chủ đích.</p>
+                <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                    <h4 class="font-semibold mb-2">Ví dụ:</h4>
+                    <p class="text-center">
+                        <span class="font-mono bg-yellow-200 px-2 py-1 rounded">www.google.com</span>
+                        <span class="mx-2">→</span>
+                        <span class="font-mono bg-green-200 px-2 py-1 rounded">172.217.14.196</span>
+                    </p>
+                </div>
+                <ul class="feature-list">
+                    <li>Backbone của Internet</li>
+                    <li>Dịch URLs/hostnames thành IP addresses</li>
+                    <li>Cho phép con người sử dụng tên thay vì số IP</li>
+                    <li>Hoạt động trong nền mỗi khi bạn truy cập website</li>
+                    <li>Hệ thống phân tán toàn cầu</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Hierarchical Structure Branch -->
+        <div class="branch branch-hierarchy">
+            <h3 class="branch-title text-xl"><i class="fas fa-sitemap mr-2"></i> Cấu trúc phân cấp DNS</h3>
+            <div class="branch-content">
+                <p class="mb-4">DNS có cấu trúc phân cấp từ chung đến cụ thể:</p>
+                <div class="text-center">
+                    <div class="hierarchy-box">Root (.)</div>
+                    <div class="arrow-down mx-auto"></div>
+                    <div class="hierarchy-box">Top Level Domain (.com)</div>
+                    <div class="arrow-down mx-auto"></div>
+                    <div class="hierarchy-box">Second Level Domain (example.com)</div>
+                    <div class="arrow-down mx-auto"></div>
+                    <div class="hierarchy-box">Subdomain (www.example.com)</div>
+                    <div class="arrow-down mx-auto"></div>
+                    <div class="hierarchy-box">FQDN (api.www.example.com)</div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Ví dụ cụ thể với www.google.com:</h4>
+                    <ul class="feature-list">
+                        <li><strong>Root:</strong> . (điểm cuối, ẩn trong URL)</li>
+                        <li><strong>TLD:</strong> .com (Top Level Domain)</li>
+                        <li><strong>SLD:</strong> google.com (Second Level Domain)</li>
+                        <li><strong>Subdomain:</strong> www.google.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminology Branch -->
+        <div class="branch branch-terminology">
+            <h3 class="branch-title text-xl"><i class="fas fa-book mr-2"></i> Thuật ngữ DNS</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Các thành phần chính:</h4>
+                        <ul class="feature-list">
+                            <li><strong>Domain Registrar:</strong> Nơi đăng ký tên miền (Route 53, GoDaddy)</li>
+                            <li><strong>DNS Records:</strong> Các loại bản ghi (A, AAAA, CNAME, NS...)</li>
+                            <li><strong>Zone File:</strong> File chứa tất cả DNS records</li>
+                            <li><strong>Name Servers:</strong> Máy chủ giải quyết DNS queries</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Phân loại Domain:</h4>
+                        <ul class="feature-list">
+                            <li><strong>Top Level Domains:</strong> .com, .us, .in, .gov, .org</li>
+                            <li><strong>Second Level Domain:</strong> amazon.com, google.com</li>
+                            <li><strong>Subdomain:</strong> www.amazon.com, api.google.com</li>
+                            <li><strong>FQDN:</strong> Fully Qualified Domain Name</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FQDN Structure Branch -->
+        <div class="branch branch-fqdn">
+            <h3 class="branch-title text-xl"><i class="fas fa-link mr-2"></i> Cấu trúc FQDN</h3>
+            <div class="branch-content">
+                <div class="fqdn-breakdown">
+                    <h4 class="font-semibold mb-4">Phân tích: http://api.www.example.com</h4>
+                    <div class="fqdn-part fqdn-protocol">HTTP - Protocol</div>
+                    <div class="fqdn-part fqdn-fqdn">api.www.example.com - FQDN (Fully Qualified Domain Name)</div>
+                    <div class="fqdn-part fqdn-subdomain">www.example.com - Subdomain</div>
+                    <div class="fqdn-part fqdn-sld">example.com - Second Level Domain (SLD)</div>
+                    <div class="fqdn-part fqdn-tld">.com - Top Level Domain (TLD)</div>
+                    <div class="fqdn-part fqdn-root">. - Root (thường ẩn)</div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Giải thích:</h4>
+                    <ul class="feature-list">
+                        <li><strong>URL hoàn chỉnh:</strong> http://api.www.example.com</li>
+                        <li><strong>Protocol:</strong> HTTP (cách thức giao tiếp)</li>
+                        <li><strong>FQDN:</strong> Tên miền đầy đủ chỉ định chính xác máy chủ</li>
+                        <li><strong>Hierarchy:</strong> Từ cụ thể (api) đến chung (root)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- DNS Resolution Process Branch -->
+        <div class="branch branch-resolution">
+            <h3 class="branch-title text-xl"><i class="fas fa-route mr-2"></i> Quy trình DNS Resolution</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-4">Cách DNS hoạt động khi bạn truy cập example.com:</h4>
+                
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box browser-box">Web Browser</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">1. Query: "example.com là gì?"</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-box local-dns-box">Local DNS Server<br/><small>(ISP/Company)</small></div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">2. Chưa có cache → Query Root DNS</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-box root-dns-box">Root DNS Server<br/><small>(ICANN)</small></div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">3. "Tôi biết .com ở IP 1.2.3.4"</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-box tld-dns-box">TLD DNS Server<br/><small>(.com - IANA)</small></div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">4. "example.com ở Name Server 5.6.7.8"</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-box domain-dns-box">Domain DNS Server<br/><small>(Route 53/Registrar)</small></div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">5. "example.com = 9.10.11.12"</div>
+                    
+                    <div class="diagram-row">
+                        <div class="diagram-box webserver-box">Web Server<br/><small>(9.10.11.12)</small></div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h4 class="font-semibold mb-3">Chi tiết từng bước:</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <span class="step-number">1</span>
+                            <div>
+                                <strong>Browser → Local DNS:</strong> "example.com ở đâu?"<br/>
+                                <small class="text-gray-600">Local DNS được ISP hoặc công ty quản lý</small>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="step-number">2</span>
+                            <div>
+                                <strong>Local DNS → Root DNS:</strong> Hỏi Root DNS Server (ICANN)<br/>
+                                <small class="text-gray-600">Root DNS: "Tôi không biết example.com, nhưng tôi biết .com"</small>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="step-number">3</span>
+                            <div>
+                                <strong>Local DNS → TLD DNS:</strong> Hỏi .com Name Server (IANA)<br/>
+                                <small class="text-gray-600">TLD DNS: "example.com được quản lý bởi Name Server tại 5.6.7.8"</small>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="step-number">4</span>
+                            <div>
+                                <strong>Local DNS → Domain DNS:</strong> Hỏi example.com Name Server<br/>
+                                <small class="text-gray-600">Domain DNS: "example.com là A record với IP 9.10.11.12"</small>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="step-number">5</span>
+                            <div>
+                                <strong>Trả kết quả:</strong> Local DNS cache kết quả và trả về browser<br/>
+                                <small class="text-gray-600">Browser sử dụng IP để kết nối đến Web Server</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-yellow-50 p-4 rounded-lg">
+                    <h4 class="font-semibold mb-2">Lưu ý quan trọng:</h4>
+                    <ul class="feature-list warning-list">
+                        <li><strong>Caching:</strong> Local DNS sẽ cache kết quả để trả lời nhanh hơn cho lần sau</li>
+                        <li><strong>Recursive Query:</strong> Local DNS đảm nhận việc hỏi từng server để tìm câu trả lời</li>
+                        <li><strong>Redundancy:</strong> Mỗi level đều có nhiều server để đảm bảo độ tin cậy</li>
+                        <li><strong>TTL:</strong> DNS records có thời gian sống để kiểm soát cache</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về DNS (Domain Name System) - Hệ thống dịch tên miền thành địa chỉ IP, backbone của Internet</p>
+        </div>
+    </div>
+</body>
+</html>
