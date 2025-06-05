@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Amazon Route 53</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-features { border-color: #1E88E5; }
+        .branch-features .branch-title { color: #1E88E5; }
+        
+        .branch-records { border-color: #43A047; }
+        .branch-records .branch-title { color: #43A047; }
+        
+        .branch-hosted-zones { border-color: #8E24AA; }
+        .branch-hosted-zones .branch-title { color: #8E24AA; }
+        
+        .branch-pricing { border-color: #F4511E; }
+        .branch-pricing .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .client-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .ec2-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .vpc-box { background-color: #f8bbd9; border: 2px solid #e91e63; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .aws-logo {
+            width: 120px;
+            height: auto;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .record-list li:before {
+            content: "\f0c1";
+            color: #1E88E5;
+        }
+        .public-list li:before {
+            color: #FF9900;
+        }
+        .private-list li:before {
+            color: #8E24AA;
+        }
+        .public-color { color: #FF9900; }
+        .private-color { color: #8E24AA; }
+        .public-diagram, .private-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .record-type-box {
+            background-color: #e3f2fd;
+            border: 2px solid #1976d2;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .record-type-title {
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+        .example-box {
+            background-color: #f5f5f5;
+            border-left: 4px solid #666;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Amazon Route 53</h1>
+            <span class="text-sm text-gray-500">AWS Managed DNS Service</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-route text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Amazon Route 53</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa và Đặc điểm</h3>
+            <div class="branch-content">
+                <p class="mb-3">Amazon Route 53 là dịch vụ DNS (Domain Name System) được quản lý hoàn toàn bởi AWS với tính sẵn sàng cao, khả năng mở rộng và có thẩm quyền.</p>
+                <ul class="feature-list">
+                    <li><strong>Highly Available</strong>: Tính sẵn sàng cao</li>
+                    <li><strong>Scalable</strong>: Khả năng mở rộng tự động</li>
+                    <li><strong>Fully Managed</strong>: Được quản lý hoàn toàn bởi AWS</li>
+                    <li><strong>Authoritative DNS</strong>: Khách hàng có thể cập nhật DNS records</li>
+                    <li><strong>Domain Registrar</strong>: Có thể đăng ký domain names</li>
+                    <li><strong>Health Checking</strong>: Kiểm tra sức khỏe resources</li>
+                    <li><strong>100% Availability SLA</strong>: Dịch vụ duy nhất trong AWS có SLA 100%</li>
+                </ul>
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600"><strong>Tại sao gọi là Route 53?</strong> Số 53 tham chiếu đến cổng DNS truyền thống được sử dụng bởi các dịch vụ DNS.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Branch -->
+        <div class="branch branch-features">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cách hoạt động</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Ví dụ: Client truy cập EC2 Instance qua domain name</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client</div>
+                        <div class="flow-label">Query: example.com</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box route53-box">Route 53<br/>(Hosted Zone)</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box route53-box">DNS Response<br/>54.22.33.44</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box ec2-box">EC2 Instance<br/>54.22.33.44</div>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <ol class="list-decimal ml-4">
+                            <li>Client muốn truy cập example.com</li>
+                            <li>Route 53 hosted zone chứa DNS records</li>
+                            <li>Route 53 trả về IP address 54.22.33.44</li>
+                            <li>Client kết nối trực tiếp đến EC2 Instance</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h4 class="font-semibold mb-3">Thành phần của DNS Record</h4>
+                    <ul class="feature-list record-list">
+                        <li><strong>Domain/Subdomain Name</strong>: example.com, www.example.com</li>
+                        <li><strong>Record Type</strong>: A, AAAA, CNAME, NS...</li>
+                        <li><strong>Value</strong>: IP address hoặc hostname (12.34.56.78)</li>
+                        <li><strong>Routing Policy</strong>: Cách Route 53 phản hồi queries</li>
+                        <li><strong>TTL (Time To Live)</strong>: Thời gian cache ở DNS resolvers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- DNS Records Branch -->
+        <div class="branch branch-records">
+            <h3 class="branch-title text-xl"><i class="fas fa-list mr-2"></i> Các loại DNS Records quan trọng</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="record-type-box">
+                        <div class="record-type-title">A Record</div>
+                        <p class="mb-2">Ánh xạ hostname đến IPv4 address</p>
+                        <div class="example-box">
+                            example.com → 1.2.3.4
+                        </div>
+                    </div>
+                    
+                    <div class="record-type-box">
+                        <div class="record-type-title">AAAA Record</div>
+                        <p class="mb-2">Ánh xạ hostname đến IPv6 address</p>
+                        <div class="example-box">
+                            example.com → 2001:0db8:85a3::8a2e:0370:7334
+                        </div>
+                    </div>
+                    
+                    <div class="record-type-box">
+                        <div class="record-type-title">CNAME Record</div>
+                        <p class="mb-2">Ánh xạ hostname đến hostname khác</p>
+                        <div class="example-box">
+                            www.example.com → example.com
+                        </div>
+                        <p class="text-sm text-red-600 mt-2">⚠️ Không thể tạo CNAME cho Zone Apex (example.com)</p>
+                    </div>
+                    
+                    <div class="record-type-box">
+                        <div class="record-type-title">NS Record</div>
+                        <p class="mb-2">Name servers của hosted zone</p>
+                        <div class="example-box">
+                            example.com → ns-123.awsdns-12.com
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Kiểm soát cách traffic được định tuyến đến domain</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Records nâng cao khác:</h4>
+                    <p class="text-sm text-gray-600">CAA, DS, MX, NAPTR, PTR, SOA, SPF, SRV, TXT (không cần biết chi tiết cho kỳ thi)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hosted Zones Branch -->
+        <div class="branch branch-hosted-zones">
+            <h3 class="branch-title text-xl"><i class="fas fa-server mr-2"></i> Hosted Zones</h3>
+            <div class="branch-content">
+                <p class="mb-4"><strong>Hosted Zone</strong> là container chứa các records, định nghĩa cách định tuyến traffic đến domain và subdomain.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3 public-color text-center">Public Hosted Zones</h4>
+                        <div class="public-diagram">
+                            <div class="diagram-row">
+                                <div class="diagram-box client-box">Internet Clients</div>
+                            </div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-row">
+                                <div class="diagram-box route53-box">Public Hosted Zone<br/>mypublicdomain.com</div>
+                            </div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-row">
+                                <div class="diagram-box ec2-box">Public Resources</div>
+                            </div>
+                        </div>
+                        <ul class="feature-list public-list">
+                            <li>Trả lời queries từ public clients</li>
+                            <li>Domain names công khai (mypublicdomain.com)</li>
+                            <li>Có thể truy cập từ internet</li>
+                            <li>Sử dụng cho websites, applications công khai</li>
+                        </ul>
+                        <div class="example-box mt-3">
+                            Query: application1.mypublicdomain.com<br/>
+                            Response: 54.22.33.44
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3 private-color text-center">Private Hosted Zones</h4>
+                        <div class="private-diagram">
+                            <div class="diagram-row">
+                                <div class="diagram-box vpc-box">VPC Resources</div>
+                            </div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-row">
+                                <div class="diagram-box route53-box">Private Hosted Zone<br/>company.internal</div>
+                            </div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-row">
+                                <div class="diagram-box ec2-box">Private Resources</div>
+                            </div>
+                        </div>
+                        <ul class="feature-list private-list">
+                            <li>Chỉ trả lời queries từ trong VPC</li>
+                            <li>Domain names riêng tư (.internal)</li>
+                            <li>Không thể truy cập từ internet</li>
+                            <li>Sử dụng cho internal services</li>
+                        </ul>
+                        <div class="example-box mt-3">
+                            Query: webapp.company.internal<br/>
+                            Response: 10.0.0.5 (Private IP)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-semibold mb-3">Ví dụ Private Hosted Zone Architecture</h4>
+                    <div class="diagram-container">
+                        <div class="diagram-row">
+                            <div class="diagram-box ec2-box">EC2 Instance<br/>webapp.example.internal</div>
+                            <div class="diagram-box ec2-box">EC2 Instance<br/>api.example.internal</div>
+                            <div class="diagram-box ec2-box">Database<br/>database.example.internal</div>
+                        </div>
+                        <div class="arrow-down"></div>
+                        <div class="diagram-row justify-content-center">
+                            <div class="diagram-box route53-box" style="min-width: 300px;">Private Hosted Zone<br/>example.internal</div>
+                        </div>
+                        <div class="mt-4 px-4">
+                            <p class="text-sm">EC2 instances có thể giao tiếp với nhau thông qua private domain names thay vì private IP addresses, giúp dễ quản lý và nhớ.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Branch -->
+        <div class="branch branch-pricing">
+            <h3 class="branch-title text-xl"><i class="fas fa-dollar-sign mr-2"></i> Pricing và Lưu ý</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Chi phí Hosted Zone:</h4>
+                        <ul class="feature-list">
+                            <li><strong>$0.50 per month</strong> cho mỗi hosted zone</li>
+                            <li>Áp dụng cho cả public và private hosted zones</li>
+                            <li>Route 53 <strong>không miễn phí</strong></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Chi phí Domain Registration:</h4>
+                        <ul class="feature-list">
+                            <li><strong>Tối thiểu $12 per year</strong> cho domain registration</li>
+                            <li>Giá thay đổi tùy theo TLD (.com, .org, .net...)</li>
+                            <li>Route 53 có thể đóng vai trò domain registrar</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lưu ý quan trọng:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Route 53 section không miễn phí trong thực hành</li>
+                        <li>Cần cân nhắc chi phí khi tạo hosted zones và đăng ký domains</li>
+                        <li>Xóa hosted zones và domains sau khi thực hành để tránh chi phí không mong muốn</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Điểm nổi bật:</h4>
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
+                        <p class="font-medium">🎯 Route 53 là dịch vụ duy nhất trong AWS cung cấp 100% Availability SLA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Amazon Route 53 - Dịch vụ DNS được quản lý của AWS với tính sẵn sàng cao</p>
+        </div>
+    </div>
+</body>
+</html>
