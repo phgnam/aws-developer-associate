@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Latency-based Routing Policy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-measurement { border-color: #1E88E5; }
+        .branch-measurement .branch-title { color: #1E88E5; }
+        
+        .branch-configuration { border-color: #43A047; }
+        .branch-configuration .branch-title { color: #43A047; }
+        
+        .branch-demo { border-color: #8E24AA; }
+        .branch-demo .branch-title { color: #8E24AA; }
+        
+        .branch-usecases { border-color: #F4511E; }
+        .branch-usecases .branch-title { color: #F4511E; }
+        
+        .world-map {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            background-color: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .region-box {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+        .us-east { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .ap-southeast { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .eu-central { background-color: #bbdefb; border: 2px solid #1976d2; }
+        
+        .user-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+        .user-icon {
+            font-size: 2rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .user-label {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .arrow-curved {
+            border: 2px solid #666;
+            border-radius: 50px;
+            width: 60px;
+            height: 30px;
+            border-bottom: none;
+            position: relative;
+        }
+        .arrow-curved:after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            bottom: -5px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            transform: rotate(-45deg);
+        }
+        
+        .demo-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .demo-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .demo-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .demo-table tr:last-child td {
+            border-bottom: none;
+        }
+        .demo-table .location {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #1E88E5;
+        }
+        
+        .vpn-demo {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .vpn-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .vpn-step-number {
+            background-color: #8E24AA;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .config-box {
+            background-color: #e8f5e8;
+            border-left: 4px solid #43A047;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Latency-based Routing Policy</h1>
+            <span class="text-sm text-gray-500">AWS DNS Routing for Performance Optimization</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-route text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Latency-based Routing</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa và Khái niệm</h3>
+            <div class="branch-content">
+                <p class="mb-3">Latency-based routing policy là chính sách định tuyến trong Route 53 cho phép chuyển hướng traffic đến resource có độ trễ thấp nhất từ người dùng.</p>
+                <ul class="feature-list">
+                    <li><strong>Mục tiêu chính:</strong> Redirect đến resource gần nhất với user</li>
+                    <li><strong>Tiêu chí:</strong> Độ trễ thấp nhất đến AWS region</li>
+                    <li><strong>Lợi ích:</strong> Cải thiện hiệu năng cho websites/applications</li>
+                    <li><strong>Tính năng bổ sung:</strong> Có thể kết hợp với health checks</li>
+                </ul>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Ví dụ hoạt động:</h4>
+                    <div class="config-box">
+                        <p>User ở Germany → Độ trễ thấp nhất đến US region → Route 53 redirect đến US resource</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Measurement Branch -->
+        <div class="branch branch-measurement">
+            <h3 class="branch-title text-xl"><i class="fas fa-stopwatch mr-2"></i> Cách đo và Hoạt động</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Phương pháp đo latency:</h4>
+                <ul class="feature-list">
+                    <li>Latency được đo dựa trên tốc độ kết nối của users đến AWS region gần nhất</li>
+                    <li>Route 53 sử dụng dữ liệu latency được thu thập từ AWS infrastructure</li>
+                    <li>Không phải đo real-time mà dựa trên statistical data</li>
+                    <li>AWS region được chỉ định cho mỗi record để so sánh latency</li>
+                </ul>
+
+                <h4 class="font-semibold mb-3 mt-4">Sơ đồ hoạt động toàn cầu:</h4>
+                <div class="world-map">
+                    <div class="user-group">
+                        <i class="fas fa-users user-icon"></i>
+                        <div class="user-label">Users Europe</div>
+                        <div class="arrow-curved"></div>
+                    </div>
+                    
+                    <div class="region-box eu-central">
+                        <strong>eu-central-1</strong><br/>
+                        <small>Frankfurt</small><br/>
+                        <i class="fas fa-server"></i>
+                    </div>
+                    
+                    <div class="region-box us-east">
+                        <strong>us-east-1</strong><br/>
+                        <small>N. Virginia</small><br/>
+                        <i class="fas fa-server"></i>
+                    </div>
+                    
+                    <div class="region-box ap-southeast">
+                        <strong>ap-southeast-1</strong><br/>
+                        <small>Singapore</small><br/>
+                        <i class="fas fa-server"></i>
+                    </div>
+                    
+                    <div class="user-group">
+                        <div class="arrow-curved" style="transform: scaleX(-1);"></div>
+                        <i class="fas fa-users user-icon"></i>
+                        <div class="user-label">Users Asia</div>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-600 mt-2">Users được redirect đến region có latency thấp nhất dựa trên vị trí địa lý và AWS infrastructure data.</p>
+            </div>
+        </div>
+
+        <!-- Configuration Branch -->
+        <div class="branch branch-configuration">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cấu hình và Yêu cầu</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Yêu cầu cấu hình:</h4>
+                <ul class="feature-list info-list">
+                    <li><strong>Record Name:</strong> Tất cả records phải có cùng tên (VD: latency.example.com)</li>
+                    <li><strong>Record Type:</strong> Phải cùng loại (A, AAAA, etc.)</li>
+                    <li><strong>Region Specification:</strong> Bắt buộc chỉ định AWS region cho mỗi record</li>
+                    <li><strong>Record ID:</strong> Unique identifier để phân biệt các records</li>
+                </ul>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lý do phải chỉ định region:</h4>
+                    <div class="config-box">
+                        <ul class="list-disc ml-4">
+                            <li>Route 53 không thể tự động xác định region từ IP address</li>
+                            <li>IP address có thể thuộc bất kỳ đâu trên thế giới</li>
+                            <li>Cần manual specification để Route 53 so sánh latency chính xác</li>
+                            <li>Region information được dùng để tính toán latency routing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">Tính năng bổ sung:</h4>
+                <ul class="feature-list">
+                    <li>Health Checks: Có thể associate với health checks</li>
+                    <li>Automatic Failover: Khi kết hợp với health checks</li>
+                    <li>TTL Control: Có thể set TTL cho caching</li>
+                    <li>Record Management: Quản lý multiple records cho cùng domain</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Demo Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-play-circle mr-2"></i> Demo Examples từ Script</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Setup demo với 3 regions:</h4>
+                <table class="demo-table">
+                    <thead>
+                        <tr>
+                            <th>Record Name</th>
+                            <th>Region</th>
+                            <th>Record ID</th>
+                            <th>IP Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="3">latency.stephanetheteacher.com</td>
+                            <td>ap-southeast-1 (Singapore)</td>
+                            <td>ap-southeast-1</td>
+                            <td>Singapore IP</td>
+                        </tr>
+                        <tr>
+                            <td>us-east-1 (N. Virginia)</td>
+                            <td>us-east-1</td>
+                            <td>US East IP</td>
+                        </tr>
+                        <tr>
+                            <td>eu-central-1 (Frankfurt)</td>
+                            <td>EU</td>
+                            <td>EU Central IP</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 class="font-semibold mb-3 mt-4">VPN Testing Demo:</h4>
+                <div class="vpn-demo">
+                    <div class="vpn-step">
+                        <div class="vpn-step-number">1</div>
+                        <div>
+                            <strong>Europe Location:</strong><br/>
+                            <span class="text-sm">Result: Hello World from eu-central-1c</span>
+                        </div>
+                    </div>
+                    <div class="vpn-step">
+                        <div class="vpn-step-number">2</div>
+                        <div>
+                            <strong>VPN to Canada:</strong><br/>
+                            <span class="text-sm">Result: Hello World from us-east-1a (closest to Canada)</span>
+                        </div>
+                    </div>
+                    <div class="vpn-step">
+                        <div class="vpn-step-number">3</div>
+                        <div>
+                            <strong>VPN to Hong Kong:</strong><br/>
+                            <span class="text-sm">Result: Hello World from ap-southeast-1b (closest to Hong Kong)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3">CloudShell Testing:</h4>
+                <div class="config-box">
+                    <p><strong>dig command:</strong> <code>dig latency.stephanetheteacher.com</code></p>
+                    <ul class="list-disc ml-4 mt-2">
+                        <li>CloudShell ở eu-central-1 → luôn get EU IP</li>
+                        <li>Browser với VPN → get IP based on VPN location</li>
+                        <li>DNS cache cleared khi change VPN location</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Use Cases và Best Practices</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Trường hợp sử dụng lý tưởng:</h4>
+                        <ul class="feature-list">
+                            <li>Global websites với users trên toàn thế giới</li>
+                            <li>Gaming applications yêu cầu low latency</li>
+                            <li>Streaming services (video, audio)</li>
+                            <li>Real-time applications (chat, video calls)</li>
+                            <li>API services với global distribution</li>
+                            <li>E-commerce sites với international customers</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Best Practices:</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Luôn kết hợp với health checks</li>
+                            <li>Deploy ứng dụng ở multiple regions</li>
+                            <li>Test với VPN hoặc global testing tools</li>
+                            <li>Monitor latency metrics từ different locations</li>
+                            <li>Ensure data consistency across regions</li>
+                            <li>Plan for failover scenarios</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">Cân nhắc khi triển khai:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="font-medium mb-2">Advantages:</h5>
+                        <ul class="feature-list">
+                            <li>Automatic performance optimization</li>
+                            <li>Better user experience globally</li>
+                            <li>Reduced application latency</li>
+                            <li>AWS infrastructure leveraged for routing</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-medium mb-2">Considerations:</h5>
+                        <ul class="feature-list warning-list">
+                            <li>Requires resources in multiple regions</li>
+                            <li>Increased infrastructure costs</li>
+                            <li>Data synchronization complexity</li>
+                            <li>Testing requires global perspective</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Kết hợp với Health Checks:</h4>
+                    <div class="config-box">
+                        <p>Latency-based routing kết hợp với health checks sẽ:</p>
+                        <ul class="list-disc ml-4 mt-2">
+                            <li>Chỉ route đến healthy resources</li>
+                            <li>Automatic failover khi region có vấn đề</li>
+                            <li>Đảm bảo high availability + low latency</li>
+                            <li>Best of both worlds: performance + reliability</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Latency-based Routing Policy - Tối ưu hóa hiệu năng DNS routing dựa trên độ trễ</p>
+        </div>
+    </div>
+</body>
+</html>
