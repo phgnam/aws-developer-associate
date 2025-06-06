@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route 53 Routing Policies - Simple Policy - Mind Map</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-overview { border-color: #FF9900; }
+        .branch-overview .branch-title { color: #FF9900; }
+        
+        .branch-simple { border-color: #1E88E5; }
+        .branch-simple .branch-title { color: #1E88E5; }
+        
+        .branch-behavior { border-color: #43A047; }
+        .branch-behavior .branch-title { color: #43A047; }
+        
+        .branch-demo { border-color: #8E24AA; }
+        .branch-demo .branch-title { color: #8E24AA; }
+        
+        .branch-limitations { border-color: #F4511E; }
+        .branch-limitations .branch-title { color: #F4511E; }
+        
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .limitation-list li:before {
+            content: "\f071";
+            color: #F4511E;
+        }
+        .routing-policies-list li:before {
+            content: "\f0e8";
+            color: #FF9900;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .client-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .server-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .code-block {
+            background-color: #1e1e1e;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .process-step {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .step-number {
+            background-color: #2196f3;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Route 53 Routing Policies - Simple Policy</h1>
+            <span class="text-sm text-gray-500">AWS DNS Routing Configuration</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-route text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Route 53<br/>Routing Policies</h2>
+                <p class="text-sm mt-1">Simple Policy</p>
+            </div>
+        </div>
+
+        <!-- Overview Branch -->
+        <div class="branch branch-overview">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Tổng quan về Routing Policies</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Định nghĩa Routing Policy:</h4>
+                    <p class="mb-3">Routing Policy giúp Route 53 phản hồi các DNS queries. <strong>Lưu ý:</strong> Đây không phải là routing traffic như Load Balancer, mà là routing từ góc độ DNS.</p>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-3">
+                        <p class="text-sm"><strong>Quan trọng:</strong> DNS không route traffic thực tế. DNS chỉ phản hồi DNS queries để client biết nên kết nối đến endpoint nào.</p>
+                    </div>
+                </div>
+                
+                <h4 class="font-semibold mb-2">Các loại Routing Policies trong Route 53:</h4>
+                <ul class="feature-list routing-policies-list">
+                    <li><strong>Simple</strong> - Route traffic đến single resource</li>
+                    <li><strong>Weighted</strong> - Phân phối traffic theo tỷ lệ phần trăm</li>
+                    <li><strong>Failover</strong> - Chuyển đổi dự phòng khi có lỗi</li>
+                    <li><strong>Latency-based</strong> - Route đến resource có độ trễ thấp nhất</li>
+                    <li><strong>Geolocation</strong> - Route dựa trên vị trí địa lý của user</li>
+                    <li><strong>Multi-value answer</strong> - Trả về nhiều healthy resources</li>
+                    <li><strong>Geoproximity</strong> - Route dựa trên vị trí địa lý với bias</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Simple Policy Branch -->
+        <div class="branch branch-simple">
+            <h3 class="branch-title text-xl"><i class="fas fa-play-circle mr-2"></i> Simple Routing Policy</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Định nghĩa và Đặc điểm:</h4>
+                    <ul class="feature-list">
+                        <li>Route traffic đến một single resource (thường)</li>
+                        <li>Loại routing policy đơn giản nhất</li>
+                        <li>Đã được sử dụng trong các examples trước đây</li>
+                        <li>Có thể chỉ định multiple values trong cùng một record</li>
+                        <li>Được gọi là "simple" vì rất đơn giản để cấu hình</li>
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Alias Record với Simple Policy:</h4>
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                        <p class="text-sm">Khi sử dụng alias record với simple policy, bạn chỉ có thể chỉ định <strong>một AWS resource duy nhất</strong> làm target.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Behavior Branch -->
+        <div class="branch branch-behavior">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cách thức hoạt động</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">1. Single Value Response:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box route53-box">Route 53</div>
+                    </div>
+                    <div class="text-center text-sm text-gray-600 mb-2">Query: foo.example.com</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client</div>
+                        <div class="arrow-right" style="transform: rotate(180deg);"></div>
+                        <div class="diagram-box route53-box">Route 53</div>
+                    </div>
+                    <div class="text-center text-sm text-gray-600 mb-3">Response: A record → IP address</div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-6">2. Multiple Values Response:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box route53-box">Route 53</div>
+                    </div>
+                    <div class="text-center text-sm text-gray-600 mb-2">Query: foo.example.com</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client</div>
+                        <div class="arrow-right" style="transform: rotate(180deg);"></div>
+                        <div class="diagram-box route53-box">Route 53</div>
+                    </div>
+                    <div class="text-center text-sm text-gray-600 mb-3">Response: 3 IP addresses trong cùng A record</div>
+                    
+                    <div class="process-step">
+                        <div class="flex items-center mb-2">
+                            <span class="step-number">1</span>
+                            <span>Route 53 trả về nhiều IP addresses trong response</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="step-number">2</span>
+                            <span>Client nhận được tất cả IP addresses</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="step-number">3</span>
+                            <span><strong>Client chọn ngẫu nhiên một IP</strong> để kết nối</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-desktop mr-2"></i> Demo Examples</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Demo Setup từ Script:</h4>
+                <div class="bg-gray-50 border rounded-lg p-4 mb-4">
+                    <p><strong>Record Name:</strong> simple.stephanetheteacher.com</p>
+                    <p><strong>Record Type:</strong> A</p>
+                    <p><strong>TTL:</strong> 20 seconds</p>
+                    <p><strong>Routing Policy:</strong> Simple</p>
+                </div>
+
+                <h4 class="font-semibold mb-2">Test với Single IP:</h4>
+                <div class="code-block">
+                    <div>Value: ap-southeast-1 instance IP</div>
+                    <div>Result: Hello World from ap-southeast-1b</div>
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">Test với Multiple IPs:</h4>
+                <div class="code-block">
+                    <div>Values: </div>
+                    <div>  - ap-southeast-1 instance IP</div>
+                    <div>  - us-east-1 instance IP</div>
+                    <div></div>
+                    <div># dig command results:</div>
+                    <div>ANSWER SECTION:</div>
+                    <div>simple.stephanetheteacher.com. 20 IN A [IP1]</div>
+                    <div>simple.stephanetheteacher.com. 20 IN A [IP2]</div>
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">Client-side Random Selection:</h4>
+                <div class="process-step">
+                    <p class="mb-2">Khi refresh browser:</p>
+                    <ul class="list-disc ml-6">
+                        <li>Lần 1: Hello World from ap-southeast-1b</li>
+                        <li>Lần 2: Hello World from us-east-1a (sau 20 seconds TTL)</li>
+                        <li>Client tự động chọn ngẫu nhiên giữa các IP có sẵn</li>
+                    </ul>
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">Commands để test:</h4>
+                <div class="code-block">
+                    <div># Install dig tool</div>
+                    <div>sudo yum install bind-utils</div>
+                    <div></div>
+                    <div># Query DNS record</div>
+                    <div>dig simple.stephanetheteacher.com</div>
+                    <div></div>
+                    <div># Shows TTL countdown and multiple IPs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Limitations Branch -->
+        <div class="branch branch-limitations">
+            <h3 class="branch-title text-xl"><i class="fas fa-exclamation-triangle mr-2"></i> Limitations & Considerations</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-2">Những điều cần lưu ý:</h4>
+                <ul class="feature-list limitation-list">
+                    <li><strong>Không hỗ trợ Health Checks:</strong> Simple policy không thể kết hợp với health checks</li>
+                    <li><strong>Không kiểm soát traffic distribution:</strong> Client chọn ngẫu nhiên, không có load balancing thật sự</li>
+                    <li><strong>Alias record limitation:</strong> Chỉ có thể chỉ định một AWS resource khi dùng alias</li>
+                    <li><strong>Client dependency:</strong> Phụ thuộc vào client implementation để chọn IP</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2 mt-4">Khi nào sử dụng Simple Policy:</h4>
+                <ul class="feature-list">
+                    <li>Khi chỉ có một resource để route traffic</li>
+                    <li>Khi cần setup đơn giản và nhanh chóng</li>
+                    <li>Khi không cần advanced routing logic</li>
+                    <li>Khi không cần health monitoring</li>
+                    <li>Cho development hoặc testing environments</li>
+                </ul>
+
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
+                    <h5 class="font-semibold text-red-800 mb-2">Exam Tips:</h5>
+                    <ul class="list-disc ml-4 text-red-700">
+                        <li>Simple policy = No health checks</li>
+                        <li>Multiple values = Client-side random selection</li>
+                        <li>Đơn giản nhất trong tất cả routing policies</li>
+                        <li>Alias với Simple = Chỉ một AWS resource</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Routing Policies - Simple Policy: DNS routing đơn giản nhất trong AWS</p>
+        </div>
+    </div>
+</body>
+</html>
