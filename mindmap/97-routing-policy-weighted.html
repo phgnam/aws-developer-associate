@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Weighted Routing Policy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-concept { border-color: #FF9900; }
+        .branch-concept .branch-title { color: #FF9900; }
+        
+        .branch-calculation { border-color: #1E88E5; }
+        .branch-calculation .branch-title { color: #1E88E5; }
+        
+        .branch-requirements { border-color: #43A047; }
+        .branch-requirements .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .branch-strategies { border-color: #F4511E; }
+        .branch-strategies .branch-title { color: #F4511E; }
+        
+        .branch-demo { border-color: #795548; }
+        .branch-demo .branch-title { color: #795548; }
+        
+        .weight-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .weight-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .weight-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .weight-table tr:last-child td {
+            border-bottom: none;
+        }
+        .weight-table .region {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .client-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .ec2-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .calculation-example {
+            background-color: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .weight-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .weight-item {
+            text-align: center;
+            flex: 1;
+        }
+        .weight-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            color: white;
+        }
+        .weight-70 { background-color: #f44336; }
+        .weight-20 { background-color: #ff9800; }
+        .weight-10 { background-color: #4caf50; }
+        .command-box {
+            background-color: #263238;
+            color: #4fc3f7;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Weighted Routing Policy</h1>
+            <span class="text-sm text-gray-500">Điều khiển phần trăm traffic đến các resources</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-balance-scale text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Route 53<br/>Weighted Routing<br/>Policy</h2>
+            </div>
+        </div>
+
+        <!-- Concept Branch -->
+        <div class="branch branch-concept">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Khái niệm Weighted Routing</h3>
+            <div class="branch-content">
+                <p class="mb-3">Weighted Routing Policy cho phép kiểm soát phần trăm requests đến từng resource cụ thể thông qua việc gán trọng số (weights).</p>
+                
+                <div class="weight-visual">
+                    <div class="weight-item">
+                        <div class="weight-circle weight-70">70</div>
+                        <p class="text-sm">EC2 Instance 1<br/>70% traffic</p>
+                    </div>
+                    <div class="weight-item">
+                        <div class="weight-circle weight-20">20</div>
+                        <p class="text-sm">EC2 Instance 2<br/>20% traffic</p>
+                    </div>
+                    <div class="weight-item">
+                        <div class="weight-circle weight-10">10</div>
+                        <p class="text-sm">EC2 Instance 3<br/>10% traffic</p>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Clients</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box route53-box">Amazon Route 53<br/>(Weighted Policy)</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box ec2-box" style="background-color: #ffcdd2;">EC2 (Weight: 70)</div>
+                        <div class="diagram-box ec2-box" style="background-color: #ffe0b2;">EC2 (Weight: 20)</div>
+                        <div class="diagram-box ec2-box" style="background-color: #c8e6c9;">EC2 (Weight: 10)</div>
+                    </div>
+                </div>
+
+                <ul class="feature-list">
+                    <li>DNS không route traffic trực tiếp - chỉ phản hồi DNS queries</li>
+                    <li>Clients nhận IP address và tự quyết định kết nối</li>
+                    <li>Khác với load balancer routing - đây là DNS level routing</li>
+                    <li>Giúp distribute traffic theo tỷ lệ mong muốn</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Traffic Calculation Branch -->
+        <div class="branch branch-calculation">
+            <h3 class="branch-title text-xl"><i class="fas fa-calculator mr-2"></i> Cách tính phần trăm Traffic</h3>
+            <div class="branch-content">
+                <div class="calculation-example">
+                    <h4 class="font-semibold mb-2">Công thức tính:</h4>
+                    <p class="text-lg text-center mb-3">
+                        <strong>Traffic % = (Weight của record) ÷ (Tổng tất cả weights) × 100</strong>
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Ví dụ với weights: 70, 20, 10</h4>
+                        <ul class="list-disc ml-4">
+                            <li>Tổng weights = 70 + 20 + 10 = 100</li>
+                            <li>EC2 Instance 1: 70/100 = 70%</li>
+                            <li>EC2 Instance 2: 20/100 = 20%</li>
+                            <li>EC2 Instance 3: 10/100 = 10%</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Ví dụ với weights: 1, 2, 3</h4>
+                        <ul class="list-disc ml-4">
+                            <li>Tổng weights = 1 + 2 + 3 = 6</li>
+                            <li>EC2 Instance 1: 1/6 ≈ 16.7%</li>
+                            <li>EC2 Instance 2: 2/6 ≈ 33.3%</li>
+                            <li>EC2 Instance 3: 3/6 = 50%</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lưu ý quan trọng:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Weights không cần tổng bằng 100 - chỉ cần tỷ lệ tương đối</li>
+                        <li>Route 53 tự động tính phần trăm dựa trên tỷ lệ</li>
+                        <li>Có thể thay đổi weights bất kỳ lúc nào</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements Branch -->
+        <div class="branch branch-requirements">
+            <h3 class="branch-title text-xl"><i class="fas fa-list-check mr-2"></i> Yêu cầu và Cấu hình</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Yêu cầu bắt buộc:</h4>
+                        <ul class="feature-list">
+                            <li>DNS records phải có cùng name và type</li>
+                            <li>Mỗi record phải có weight được gán</li>
+                            <li>Record ID để phân biệt các records</li>
+                            <li>Có thể kết hợp với Health Checks</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Tính năng bổ sung:</h4>
+                        <ul class="feature-list">
+                            <li>Health Checks để monitor resource health</li>
+                            <li>TTL có thể set riêng cho mỗi record</li>
+                            <li>Record ID để quản lý và identify</li>
+                            <li>Có thể update weights real-time</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Cấu trúc Record:</h4>
+                    <table class="weight-table">
+                        <thead>
+                            <tr>
+                                <th>Record Name</th>
+                                <th>Type</th>
+                                <th>Value (IP)</th>
+                                <th>Weight</th>
+                                <th>Record ID</th>
+                                <th>TTL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>weighted.example.com</td>
+                                <td>A</td>
+                                <td>1.2.3.4</td>
+                                <td>70</td>
+                                <td>US-East</td>
+                                <td>300</td>
+                            </tr>
+                            <tr>
+                                <td>weighted.example.com</td>
+                                <td>A</td>
+                                <td>5.6.7.8</td>
+                                <td>20</td>
+                                <td>EU-Central</td>
+                                <td>300</td>
+                            </tr>
+                            <tr>
+                                <td>weighted.example.com</td>
+                                <td>A</td>
+                                <td>9.10.11.12</td>
+                                <td>10</td>
+                                <td>AP-Southeast</td>
+                                <td>300</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-rocket mr-2"></i> Use Cases</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Load Balancing:</h4>
+                        <ul class="feature-list">
+                            <li>Phân phối tải giữa các regions khác nhau</li>
+                            <li>Balance traffic giữa nhiều data centers</li>
+                            <li>Tận dụng capacity của các servers khác nhau</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">A/B Testing:</h4>
+                        <ul class="feature-list">
+                            <li>Test phiên bản ứng dụng mới với traffic nhỏ</li>
+                            <li>Ví dụ: 90% traffic → version cũ, 10% → version mới</li>
+                            <li>Đánh giá performance trước khi full deployment</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Blue-Green Deployment:</h4>
+                        <ul class="feature-list">
+                            <li>Chuyển đổi traffic từ environment cũ sang mới</li>
+                            <li>Bắt đầu: Blue (100%), Green (0%)</li>
+                            <li>Dần dần: Blue (50%), Green (50%)</li>
+                            <li>Cuối cùng: Blue (0%), Green (100%)</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">Disaster Recovery:</h4>
+                        <ul class="feature-list">
+                            <li>Primary region: weight cao</li>
+                            <li>Backup region: weight thấp hoặc 0</li>
+                            <li>Nhanh chóng chuyển traffic khi cần</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight Strategies Branch -->
+        <div class="branch branch-strategies">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Strategies với Weights</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Weight = 0 Strategy:</h4>
+                        <ul class="feature-list">
+                            <li>Dừng gửi traffic đến resource cụ thể</li>
+                            <li>Dùng để maintenance hoặc remove resource</li>
+                            <li>Resource vẫn tồn tại nhưng không nhận traffic</li>
+                            <li>Có thể enable lại bằng cách tăng weight</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">All Weights = 0:</h4>
+                        <ul class="feature-list">
+                            <li>Nếu tất cả records có weight = 0</li>
+                            <li>Route 53 sẽ trả về tất cả records với equal weight</li>
+                            <li>Effectively thành simple routing</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Gradual Traffic Shifting:</h4>
+                        <ul class="feature-list">
+                            <li>Week 1: Old (90), New (10)</li>
+                            <li>Week 2: Old (70), New (30)</li>
+                            <li>Week 3: Old (50), New (50)</li>
+                            <li>Week 4: Old (0), New (100)</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">Regional Distribution:</h4>
+                        <ul class="feature-list">
+                            <li>US East (Primary): Weight 60</li>
+                            <li>EU West (Secondary): Weight 30</li>
+                            <li>AP Southeast (Backup): Weight 10</li>
+                            <li>Phản ánh capacity và proximity</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Example Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-terminal mr-2"></i> Demo Example từ Script</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cấu hình Demo: weighted.stephanetheteacher.com</h4>
+                
+                <table class="weight-table">
+                    <thead>
+                        <tr>
+                            <th>Record</th>
+                            <th>Region</th>
+                            <th>Weight</th>
+                            <th>Record ID</th>
+                            <th>TTL</th>
+                            <th>Expected %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="region">
+                            <td>weighted.stephanetheteacher.com</td>
+                            <td>ap-southeast-1</td>
+                            <td>10</td>
+                            <td>Southeast</td>
+                            <td>3s</td>
+                            <td>10%</td>
+                        </tr>
+                        <tr class="region">
+                            <td>weighted.stephanetheteacher.com</td>
+                            <td>us-east-1</td>
+                            <td>70</td>
+                            <td>US East</td>
+                            <td>3s</td>
+                            <td>70%</td>
+                        </tr>
+                        <tr class="region">
+                            <td>weighted.stephanetheteacher.com</td>
+                            <td>eu-central-1</td>
+                            <td>20</td>
+                            <td>EU</td>
+                            <td>3s</td>
+                            <td>20%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Testing Commands:</h4>
+                    <div class="command-box">
+                        dig weighted.stephanetheteacher.com
+                    </div>
+                    <p class="text-sm mt-2">Lặp lại command này nhiều lần để thấy sự phân phối theo weights</p>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Kết quả Demo:</h4>
+                    <ul class="feature-list">
+                        <li>Phần lớn requests (70%) trả về us-east-1a (Hello World from us-east-1a)</li>
+                        <li>20% requests trả về eu-central-1c (Hello World from eu-central-1c)</li>
+                        <li>10% requests trả về ap-southeast-1b (Hello World from ap-southeast-1b)</li>
+                        <li>TTL = 3 seconds cho phép test nhanh chóng</li>
+                    </ul>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lưu ý về TTL thấp:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>TTL = 3 seconds chỉ dùng cho testing/demo</li>
+                        <li>Production nên dùng TTL cao hơn (300s - 3600s)</li>
+                        <li>TTL thấp tăng số lượng DNS queries → cost tăng</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Weighted Routing Policy - Điều khiển phần trăm traffic distribution</p>
+        </div>
+    </div>
+</body>
+</html>
