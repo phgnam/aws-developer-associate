@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Failover Routing Policy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-concept { border-color: #FF9900; }
+        .branch-concept .branch-title { color: #FF9900; }
+        
+        .branch-setup { border-color: #1E88E5; }
+        .branch-setup .branch-title { color: #1E88E5; }
+        
+        .branch-healthcheck { border-color: #43A047; }
+        .branch-healthcheck .branch-title { color: #43A047; }
+        
+        .branch-mechanism { border-color: #8E24AA; }
+        .branch-mechanism .branch-title { color: #8E24AA; }
+        
+        .branch-demo { border-color: #F4511E; }
+        .branch-demo .branch-title { color: #F4511E; }
+        
+        .failover-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .failover-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .failover-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .failover-table tr:last-child td {
+            border-bottom: none;
+        }
+        .failover-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .client-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .primary-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .secondary-box { background-color: #ffcdd2; border: 2px solid #d32f2f; }
+        .health-box { background-color: #e1bee7; border: 2px solid #7b1fa2; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .demo-list li:before {
+            content: "\f0e7";
+            color: #F4511E;
+        }
+        .step-list li:before {
+            content: "\f0a9";
+            color: #8E24AA;
+        }
+        .healthy-status { color: #43A047; font-weight: bold; }
+        .unhealthy-status { color: #d32f2f; font-weight: bold; }
+        .primary-color { color: #388e3c; }
+        .secondary-color { color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Failover Routing Policy</h1>
+            <span class="text-sm text-gray-500">AWS DNS Disaster Recovery Solution</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-exchange-alt text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Route 53 Failover Routing</h2>
+            </div>
+        </div>
+
+        <!-- Concept Branch -->
+        <div class="branch branch-concept">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Khái niệm và Mục đích</h3>
+            <div class="branch-content">
+                <p class="mb-3">Failover Routing Policy cho phép tạo cơ chế disaster recovery tự động cho DNS, chuyển hướng traffic từ resource chính (primary) sang resource phụ (secondary) khi có sự cố.</p>
+                <ul class="feature-list">
+                    <li>Chỉ có thể có <strong>1 Primary</strong> và <strong>1 Secondary</strong> record</li>
+                    <li>Primary record <strong>BẮT BUỘC</strong> phải có health check</li>
+                    <li>Secondary record có thể có health check (tùy chọn)</li>
+                    <li>Client luôn nhận được resource healthy khi query DNS</li>
+                    <li>Automatic failover không cần can thiệp thủ công</li>
+                </ul>
+
+                <div class="diagram-container mt-4">
+                    <h4 class="font-semibold mb-3 text-center">Kiến trúc Failover cơ bản</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client DNS Query</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box route53-box">Route 53</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="arrow-down"></div>
+                        <div class="arrow-down"></div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box primary-box">Primary EC2<br/>(eu-central-1)</div>
+                        <div class="diagram-box secondary-box">Secondary EC2<br/>(us-east-1)</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box health-box">Health Check<br/>(MANDATORY)</div>
+                        <div class="diagram-box health-box">Health Check<br/>(OPTIONAL)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Branch -->
+        <div class="branch branch-setup">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cấu hình Primary/Secondary</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2 primary-color">Primary Record Setup:</h4>
+                        <ul class="feature-list">
+                            <li>Record Name: failover.stephanetheteacher.com</li>
+                            <li>Record Type: A record</li>
+                            <li>Value: EU-central-1 instance IP</li>
+                            <li>Routing Policy: Failover</li>
+                            <li>Failover Record Type: <strong>Primary</strong></li>
+                            <li>Health Check: <strong>REQUIRED</strong> (EU-central-1)</li>
+                            <li>Record ID: EU (identifier)</li>
+                            <li>TTL: 60 seconds (cho demo)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2 secondary-color">Secondary Record Setup:</h4>
+                        <ul class="feature-list">
+                            <li>Record Name: failover.stephanetheteacher.com</li>
+                            <li>Record Type: A record</li>
+                            <li>Value: US-east-1 instance IP</li>
+                            <li>Routing Policy: Failover</li>
+                            <li>Failover Record Type: <strong>Secondary</strong></li>
+                            <li>Health Check: Optional (US-east-1)</li>
+                            <li>Record ID: US (identifier)</li>
+                            <li>TTL: 60 seconds (cho demo)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-3">Bảng so sánh Primary vs Secondary</h4>
+                    <table class="failover-table">
+                        <thead>
+                            <tr>
+                                <th width="30%">Đặc điểm</th>
+                                <th width="35%">Primary Record</th>
+                                <th width="35%">Secondary Record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature">Record Name</td>
+                                <td>Giống nhau (cùng domain)</td>
+                                <td>Giống nhau (cùng domain)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Record Type</td>
+                                <td>Giống nhau (A, AAAA, etc.)</td>
+                                <td>Giống nhau (A, AAAA, etc.)</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Health Check</td>
+                                <td>🔴 <strong>BẮT BUỘC</strong></td>
+                                <td>🟡 Tùy chọn</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Failover Type</td>
+                                <td>Primary</td>
+                                <td>Secondary</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Priority</td>
+                                <td>Cao nhất (preferred)</td>
+                                <td>Backup/Disaster Recovery</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Check Branch -->
+        <div class="branch branch-healthcheck">
+            <h3 class="branch-title text-xl"><i class="fas fa-heartbeat mr-2"></i> Health Check Requirements</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-3">Tại sao Health Check là bắt buộc cho Primary?</h4>
+                    <ul class="feature-list">
+                        <li>Failover chỉ xảy ra khi Primary health check <span class="unhealthy-status">UNHEALTHY</span></li>
+                        <li>Không có health check = Route 53 không biết khi nào failover</li>
+                        <li>Health check monitor endpoint accessibility từ global locations</li>
+                        <li>Thường kiểm tra HTTP/HTTPS response codes (2xx, 3xx)</li>
+                    </ul>
+                </div>
+
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-3 text-center">Health Check Flow</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box health-box">15 Global<br/>Health Checkers</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box primary-box">Primary Instance<br/>EU-central-1</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box" style="background-color: #c8e6c9; border: 2px solid #388e3c;">
+                            <span class="healthy-status">HEALTHY</span><br/>
+                            >18% checkers report OK
+                        </div>
+                        <div style="margin: 0 20px;">OR</div>
+                        <div class="diagram-box" style="background-color: #ffcdd2; border: 2px solid #d32f2f;">
+                            <span class="unhealthy-status">UNHEALTHY</span><br/>
+                            ≤18% checkers report OK
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Health Check Status Impact:</h4>
+                    <ul class="feature-list warning-list">
+                        <li><span class="healthy-status">HEALTHY Primary</span> → Client nhận Primary record</li>
+                        <li><span class="unhealthy-status">UNHEALTHY Primary</span> → Client nhận Secondary record</li>
+                        <li>Health check liên tục monitor (30s hoặc 10s intervals)</li>
+                        <li>Failover tự động dựa trên health check status</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mechanism Branch -->
+        <div class="branch branch-mechanism">
+            <h3 class="branch-title text-xl"><i class="fas fa-sync-alt mr-2"></i> Cơ chế Automatic Failover</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Quy trình Failover tự động:</h4>
+                <ol class="list-decimal ml-4 mb-4">
+                    <li class="mb-2"><strong>Normal Operation:</strong> Primary healthy → Route 53 trả về Primary record</li>
+                    <li class="mb-2"><strong>Failure Detection:</strong> Health checkers detect Primary unhealthy</li>
+                    <li class="mb-2"><strong>Automatic Switch:</strong> Route 53 automatically returns Secondary record</li>
+                    <li class="mb-2"><strong>Recovery:</strong> Primary becomes healthy → Route 53 switches back to Primary</li>
+                </ol>
+
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-3 text-center">Failover Sequence</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <h5 class="font-semibold mb-2 healthy-status">1. Normal State</h5>
+                            <div class="diagram-box primary-box mb-2">Primary<br/><span class="healthy-status">HEALTHY</span></div>
+                            <div class="diagram-box secondary-box">Secondary<br/>Standby</div>
+                            <p class="text-sm mt-2">Client → Primary</p>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="font-semibold mb-2 unhealthy-status">2. Failure State</h5>
+                            <div class="diagram-box" style="background-color: #ffcdd2; border: 2px solid #d32f2f; margin-bottom: 8px;">Primary<br/><span class="unhealthy-status">UNHEALTHY</span></div>
+                            <div class="diagram-box primary-box">Secondary<br/><span class="healthy-status">ACTIVE</span></div>
+                            <p class="text-sm mt-2">Client → Secondary</p>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="font-semibold mb-2 healthy-status">3. Recovery State</h5>
+                            <div class="diagram-box primary-box mb-2">Primary<br/><span class="healthy-status">RECOVERED</span></div>
+                            <div class="diagram-box secondary-box">Secondary<br/>Standby</div>
+                            <p class="text-sm mt-2">Client → Primary</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Key Features:</h4>
+                    <ul class="feature-list step-list">
+                        <li><strong>Seamless:</strong> Failover xảy ra tự động, không cần intervention</li>
+                        <li><strong>DNS-based:</strong> Client chỉ query DNS như bình thường</li>
+                        <li><strong>TTL Dependent:</strong> TTL ảnh hưởng đến tốc độ failover</li>
+                        <li><strong>Bidirectional:</strong> Tự động failback khi Primary recovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-flask mr-2"></i> Demo Testing Example</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Demo Setup từ Script:</h4>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h5 class="font-semibold mb-2">Initial Setup:</h5>
+                        <ul class="feature-list">
+                            <li>Domain: failover.stephanetheteacher.com</li>
+                            <li>Primary: EU-central-1 instance</li>
+                            <li>Secondary: US-east-1 instance</li>
+                            <li>Both health checks: <span class="healthy-status">HEALTHY</span></li>
+                            <li>TTL: 60 seconds (for testing)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold mb-2">Test Result:</h5>
+                        <ul class="feature-list demo-list">
+                            <li>Initial access: eu-central-1c response</li>
+                            <li>Expected: Primary được ưu tiên</li>
+                            <li>Browser shows: "Hello World from EU-central-1c"</li>
+                            <li>Health check status: HEALTHY</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3">Trigger Failure Test:</h4>
+                <div class="bg-red-50 p-4 rounded-lg mb-4">
+                    <ol class="list-decimal ml-4">
+                        <li class="mb-2"><strong>Simulate Failure:</strong> Edit EU-central-1 Security Group</li>
+                        <li class="mb-2"><strong>Remove HTTP Rule:</strong> Delete inbound port 80 rule</li>
+                        <li class="mb-2"><strong>Effect:</strong> Instance becomes unreachable to health checkers</li>
+                        <li class="mb-2"><strong>Wait:</strong> Health check transitions to <span class="unhealthy-status">UNHEALTHY</span></li>
+                        <li class="mb-2"><strong>Verify:</strong> Monitor health check status in console</li>
+                    </ol>
+                </div>
+
+                <h4 class="font-semibold mb-3">Failover Verification:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="font-semibold mb-2 unhealthy-status">After Failure:</h5>
+                        <ul class="feature-list">
+                            <li>EU-central-1 health check: <span class="unhealthy-status">UNHEALTHY</span></li>
+                            <li>Health check percentage: Goes to 0%</li>
+                            <li>Browser refresh result: US-east-1 response</li>
+                            <li>Message: "Hello World from US-east-1"</li>
+                            <li>Failover: <span class="healthy-status">SUCCESS</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold mb-2 healthy-status">Recovery Process:</h5>
+                        <ul class="feature-list">
+                            <li>Add back HTTP rule to Security Group</li>
+                            <li>Health check automatically passes</li>
+                            <li>EU-central-1 becomes <span class="healthy-status">HEALTHY</span></li>
+                            <li>Route 53 fails back to Primary</li>
+                            <li>Browser shows EU response again</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-blue-50 p-4 rounded-lg">
+                    <h5 class="font-semibold mb-2">Testing Insights:</h5>
+                    <ul class="feature-list">
+                        <li><strong>TTL Impact:</strong> 60 seconds TTL enables quick testing</li>
+                        <li><strong>Health Check Monitoring:</strong> Console shows real-time status</li>
+                        <li><strong>Seamless Experience:</strong> Failover transparent to end users</li>
+                        <li><strong>Production Considerations:</strong> Use higher TTL (300+ seconds) for production</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Failover Routing Policy - Giải pháp Disaster Recovery tự động cho DNS</p>
+        </div>
+    </div>
+</body>
+</html>
