@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Health Checks</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-concept { border-color: #FF9900; }
+        .branch-concept .branch-title { color: #FF9900; }
+        
+        .branch-types { border-color: #1E88E5; }
+        .branch-types .branch-title { color: #1E88E5; }
+        
+        .branch-mechanism { border-color: #43A047; }
+        .branch-mechanism .branch-title { color: #43A047; }
+        
+        .branch-private { border-color: #8E24AA; }
+        .branch-private .branch-title { color: #8E24AA; }
+        
+        .branch-network { border-color: #F4511E; }
+        .branch-network .branch-title { color: #F4511E; }
+        
+        .feature-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .feature-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .feature-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .feature-table tr:last-child td {
+            border-bottom: none;
+        }
+        .feature-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .alb-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .health-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .cloudwatch-box { background-color: #f8bbd9; border: 2px solid #e91e63; }
+        .checker-box { background-color: #d1c4e9; border: 2px solid #673ab7; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #1E88E5;
+        }
+        .network-list li:before {
+            content: "\f0ac";
+            color: #F4511E;
+        }
+        .health-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-healthy { background-color: #c8e6c9; color: #2e7d32; }
+        .status-unhealthy { background-color: #ffcdd2; color: #c62828; }
+        .threshold-box {
+            background-color: #e3f2fd;
+            border: 1px solid #1976d2;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Health Checks</h1>
+            <span class="text-sm text-gray-500">DNS Failover và Monitoring</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-heartbeat text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Route 53<br>Health Checks</h2>
+            </div>
+        </div>
+
+        <!-- Concept Branch -->
+        <div class="branch branch-concept">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Khái niệm Health Checks</h3>
+            <div class="branch-content">
+                <p class="mb-3">Health Checks là cơ chế kiểm tra sức khỏe của các tài nguyên, chủ yếu là public resources, để đảm bảo DNS chỉ route traffic đến các endpoints khỏe mạnh.</p>
+                
+                <h4 class="font-semibold mb-3">Mục đích và lợi ích:</h4>
+                <ul class="feature-list">
+                    <li>Kiểm tra sức khỏe của public resources (Load Balancers, Servers)</li>
+                    <li>Tự động DNS failover khi có sự cố</li>
+                    <li>Tăng tính sẵn sàng cao (High Availability) ở cấp độ region</li>
+                    <li>Ngăn chặn việc route traffic đến endpoints bị lỗi</li>
+                    <li>Kết hợp với các routing policies (latency, weighted, etc.)</li>
+                </ul>
+
+                <div class="diagram-container mt-4">
+                    <h4 class="font-semibold mb-3 text-center">Multi-Region Setup với Health Checks</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box route53-box">Route 53<br>DNS Records</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box alb-box">ALB us-east-1<br><span class="status-healthy">Healthy</span></div>
+                        <div class="diagram-box alb-box">ALB eu-west-1<br><span class="status-unhealthy">Unhealthy</span></div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box health-box">Health Check<br>us-east-1</div>
+                        <div class="diagram-box health-box">Health Check<br>eu-west-1</div>
+                    </div>
+                    <div class="flow-label">Traffic chỉ được route đến ALB us-east-1 (healthy)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Types Branch -->
+        <div class="branch branch-types">
+            <h3 class="branch-title text-xl"><i class="fas fa-list mr-2"></i> Ba loại Health Checks</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-3 text-center">1. Endpoint Monitoring</h4>
+                        <div class="diagram-container">
+                            <div class="diagram-box checker-box">15 Health Checkers<br>Worldwide</div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-box alb-box">Public Endpoint<br>(ALB/Server)</div>
+                        </div>
+                        <ul class="feature-list info-list">
+                            <li>Monitor public endpoints trực tiếp</li>
+                            <li>Applications, servers, AWS resources</li>
+                            <li>15 global health checkers</li>
+                            <li>Protocols: HTTP, HTTPS, TCP</li>
+                            <li>Status codes: 2xx, 3xx = healthy</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3 text-center">2. Calculated Health Checks</h4>
+                        <div class="diagram-container">
+                            <div class="diagram-box health-box">Parent<br>Health Check</div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-row">
+                                <div class="diagram-box health-box" style="font-size: 0.8rem;">Child 1</div>
+                                <div class="diagram-box health-box" style="font-size: 0.8rem;">Child 2</div>
+                                <div class="diagram-box health-box" style="font-size: 0.8rem;">Child 3</div>
+                            </div>
+                        </div>
+                        <ul class="feature-list info-list">
+                            <li>Kết hợp nhiều health checks thành một</li>
+                            <li>Logic: OR, AND, NOT</li>
+                            <li>Monitor tối đa 256 child health checks</li>
+                            <li>Thiết lập threshold để parent pass</li>
+                            <li>Use case: Website maintenance</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3 text-center">3. CloudWatch Alarm</h4>
+                        <div class="diagram-container">
+                            <div class="diagram-box cloudwatch-box">CloudWatch<br>Alarm</div>
+                            <div class="arrow-down"></div>
+                            <div class="diagram-box health-box">Health Check</div>
+                        </div>
+                        <ul class="feature-list info-list">
+                            <li>Monitor CloudWatch metrics</li>
+                            <li>Cho phép monitor private resources</li>
+                            <li>Alarm state = unhealthy health check</li>
+                            <li>Linh hoạt với custom metrics</li>
+                            <li>Tích hợp với VPC/on-premises</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mechanism Branch -->
+        <div class="branch branch-mechanism">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cơ chế Health Checkers</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Health Checkers toàn cầu của AWS:</h4>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <ul class="feature-list">
+                            <li>15 health checkers từ khắp thế giới</li>
+                            <li>Gửi requests đến public endpoint</li>
+                            <li>Kiểm tra response status codes</li>
+                            <li>2xx hoặc 3xx = healthy</li>
+                            <li>Có thể kiểm tra nội dung response (5,120 bytes đầu)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="threshold-box">
+                            <div class="font-semibold mb-2">Threshold Logic</div>
+                            <div class="text-sm">
+                                Nếu <strong>trên 18%</strong> health checkers<br>
+                                báo cáo healthy<br>
+                                → Route 53 coi là <span class="status-healthy">HEALTHY</span><br>
+                                Ngược lại → <span class="status-unhealthy">UNHEALTHY</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3">Cấu hình Health Check:</h4>
+                <table class="feature-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Tham số</th>
+                            <th width="35%">Giá trị</th>
+                            <th width="40%">Mô tả</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">Interval</td>
+                            <td>30 seconds (standard)<br>10 seconds (fast, higher cost)</td>
+                            <td>Tần suất kiểm tra</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Protocols</td>
+                            <td>HTTP, HTTPS, TCP</td>
+                            <td>Giao thức kiểm tra</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Status Codes</td>
+                            <td>2xx, 3xx</td>
+                            <td>Healthy response codes</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Text Checking</td>
+                            <td>First 5,120 bytes</td>
+                            <td>Kiểm tra nội dung response</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Locations</td>
+                            <td>Customizable</td>
+                            <td>Chọn vị trí health checkers</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="diagram-container mt-4">
+                    <h4 class="font-semibold mb-3 text-center">Health Check Flow</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box checker-box">Global Health<br>Checkers (15)</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box alb-box">ALB eu-west-1<br>/health endpoint</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="arrow-down"></div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box route53-box">Route 53<br>Health Status</div>
+                    </div>
+                    <div class="flow-label">18% threshold → HEALTHY/UNHEALTHY decision</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Private Resources Branch -->
+        <div class="branch branch-private">
+            <h3 class="branch-title text-xl"><i class="fas fa-shield-alt mr-2"></i> Monitoring Private Resources</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Vấn đề với Private Resources:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Health checkers ở outside VPC → không thể access private endpoints</li>
+                        <li>Không thể monitor EC2 instances trong private subnets trực tiếp</li>
+                        <li>Không thể monitor on-premises resources trực tiếp</li>
+                    </ul>
+                </div>
+
+                <h4 class="font-semibold mb-3">Giải pháp: CloudWatch Metrics + Alarm</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box alb-box">EC2 Instance<br>(Private Subnet)</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box cloudwatch-box">CloudWatch<br>Metric</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="arrow-down"></div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box cloudwatch-box">CloudWatch<br>Alarm</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="arrow-down"></div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box health-box">Route 53<br>Health Check</div>
+                    </div>
+                    <div class="flow-label">Alarm State = Unhealthy Health Check</div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">Cách thực hiện:</h4>
+                <ol class="list-decimal ml-6 space-y-2">
+                    <li>Tạo CloudWatch Metric để monitor EC2 instance trong private subnet</li>
+                    <li>Thiết lập CloudWatch Alarm dựa trên metric đó</li>
+                    <li>Tạo Health Check monitor CloudWatch Alarm</li>
+                    <li>Khi metric vượt threshold → Alarm triggered → Health Check = Unhealthy</li>
+                    <li>Route 53 tự động failover sang resource khác</li>
+                </ol>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Use Cases phổ biến:</h4>
+                    <ul class="feature-list">
+                        <li>Monitor EC2 instances trong private VPC</li>
+                        <li>Monitor on-premises servers</li>
+                        <li>Monitor database connections</li>
+                        <li>Monitor custom application metrics</li>
+                        <li>Integration với hybrid cloud architecture</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Requirements Branch -->
+        <div class="branch branch-network">
+            <h3 class="branch-title text-xl"><i class="fas fa-network-wired mr-2"></i> Yêu cầu Network</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-3">Điều kiện bắt buộc cho Health Checks hoạt động:</h4>
+                    <ul class="feature-list network-list">
+                        <li>Health checkers phải có thể access endpoints của bạn</li>
+                        <li>Allow incoming requests từ Route 53 health checkers' IP ranges</li>
+                        <li>Cấu hình Security Groups và NACLs phù hợp</li>
+                        <li>Endpoints phải là publicly accessible</li>
+                    </ul>
+                </div>
+
+                <div class="threshold-box">
+                    <div class="font-semibold mb-2">IP Address Ranges</div>
+                    <div class="text-sm">
+                        Route 53 health checkers' IP ranges<br>
+                        có thể tìm thấy tại:<br>
+                        <code class="text-xs bg-gray-200 p-1 rounded">AWS documentation</code>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">Security Group Configuration:</h4>
+                <table class="feature-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Protocol</th>
+                            <th width="25%">Port</th>
+                            <th width="50%">Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">HTTP</td>
+                            <td>80</td>
+                            <td>Route 53 health checkers IP ranges</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">HTTPS</td>
+                            <td>443</td>
+                            <td>Route 53 health checkers IP ranges</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">TCP</td>
+                            <td>Custom</td>
+                            <td>Route 53 health checkers IP ranges</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">CloudWatch Metrics:</h4>
+                    <ul class="feature-list">
+                        <li>Health checks có metrics riêng trong CloudWatch</li>
+                        <li>Monitor health check status và response time</li>
+                        <li>Thiết lập additional alarms dựa trên health check metrics</li>
+                        <li>Integrate với SNS notifications</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Health Checks - Monitoring và DNS Failover cho High Availability</p>
+        </div>
+    </div>
+</body>
+</html>
