@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Domain Registrar vs DNS Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-separation { border-color: #1E88E5; }
+        .branch-separation .branch-title { color: #1E88E5; }
+        
+        .branch-mixing { border-color: #43A047; }
+        .branch-mixing .branch-title { color: #43A047; }
+        
+        .branch-configuration { border-color: #8E24AA; }
+        .branch-configuration .branch-title { color: #8E24AA; }
+        
+        .branch-process { border-color: #F4511E; }
+        .branch-process .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .registrar-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .dns-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .godaddy-box { background-color: #ffe0b2; border: 2px solid #f57c00; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #1E88E5;
+        }
+        .step-list li:before {
+            content: "\f0a4";
+            color: #8E24AA;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .step-number {
+            background-color: #8E24AA;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .provider-logo {
+            width: 80px;
+            height: 40px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .godaddy-logo { background-color: #1BDBDB; color: white; }
+        .route53-logo { background-color: #FF9900; color: white; }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Domain Registrar vs DNS Service</h1>
+            <span class="text-sm text-gray-500">Phân biệt Domain Registration và DNS Management</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-globe text-3xl mb-2"></i>
+                <h2 class="text-lg font-bold">Domain Registrar<br/>vs<br/>DNS Service</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Khái niệm cơ bản</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2 text-orange-600">Domain Registrar:</h4>
+                        <ul class="feature-list">
+                            <li>Nơi mua/đăng ký tên miền (domain name)</li>
+                            <li>Phải trả phí hàng năm</li>
+                            <li>Cung cấp quyền sở hữu domain</li>
+                            <li>Thường đi kèm DNS service mặc định</li>
+                        </ul>
+                        <div class="mt-3">
+                            <h5 class="font-medium mb-2">Ví dụ Domain Registrars:</h5>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="provider-logo route53-logo">Amazon/Route 53</div>
+                                <div class="provider-logo godaddy-logo">GoDaddy</div>
+                                <div class="provider-logo" style="background-color: #4285f4; color: white;">Google Domains</div>
+                                <div class="provider-logo" style="background-color: #0066cc; color: white;">Namecheap</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2 text-blue-600">DNS Service:</h4>
+                        <ul class="feature-list info-list">
+                            <li>Quản lý DNS records (A, CNAME, MX...)</li>
+                            <li>Dịch tên miền thành IP address</li>
+                            <li>Có thể tách riêng với domain registrar</li>
+                            <li>Cung cấp các tính năng nâng cao</li>
+                        </ul>
+                        <div class="mt-3">
+                            <h5 class="font-medium mb-2">Ví dụ DNS Services:</h5>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="provider-logo route53-logo">Route 53</div>
+                                <div class="provider-logo" style="background-color: #ff6600; color: white;">Cloudflare</div>
+                                <div class="provider-logo godaddy-logo">GoDaddy DNS</div>
+                                <div class="provider-logo" style="background-color: #4285f4; color: white;">Google DNS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Separation Branch -->
+        <div class="branch branch-separation">
+            <h3 class="branch-title text-xl"><i class="fas fa-cut mr-2"></i> Tách biệt Domain Registrar và DNS Service</h3>
+            <div class="branch-content">
+                <p class="mb-4 font-medium">Bạn có thể mua domain từ một provider và sử dụng DNS service từ provider khác.</p>
+                
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-4">Ví dụ: Sử dụng GoDaddy + Route 53</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box godaddy-box">
+                            <strong>GoDaddy</strong><br/>
+                            Domain Registrar<br/>
+                            <small>Mua example.com</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box route53-box">
+                            <strong>Route 53</strong><br/>
+                            DNS Service<br/>
+                            <small>Quản lý DNS records</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 px-4">
+                        <ul class="feature-list">
+                            <li>Mua domain "example.com" từ GoDaddy (trả phí hàng năm)</li>
+                            <li>Tạo hosted zone trên Route 53 để quản lý DNS</li>
+                            <li>Cập nhật name servers trên GoDaddy để point đến Route 53</li>
+                            <li>Quản lý tất cả DNS records từ Route 53 console</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lợi ích của việc tách biệt:</h4>
+                    <ul class="feature-list">
+                        <li>Sử dụng DNS service tốt nhất cho nhu cầu của bạn</li>
+                        <li>Tận dụng tính năng nâng cao của Route 53</li>
+                        <li>Không bị khóa vào một provider duy nhất</li>
+                        <li>Linh hoạt thay đổi DNS provider khi cần</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mixing Providers Branch -->
+        <div class="branch branch-mixing">
+            <h3 class="branch-title text-xl"><i class="fas fa-exchange-alt mr-2"></i> Kết hợp các Provider</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Các kết hợp phổ biến:</h4>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th width="30%">Domain Registrar</th>
+                            <th width="30%">DNS Service</th>
+                            <th width="40%">Lý do</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">GoDaddy</td>
+                            <td>Route 53</td>
+                            <td>Route 53 có tính năng routing policies nâng cao</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Google Domains</td>
+                            <td>Cloudflare</td>
+                            <td>Cloudflare có CDN và security tích hợp</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Namecheap</td>
+                            <td>Route 53</td>
+                            <td>Tích hợp tốt với AWS infrastructure</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Amazon</td>
+                            <td>Route 53</td>
+                            <td>Tích hợp hoàn toàn, quản lý tập trung</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lưu ý quan trọng:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Domain registrar và DNS service là hai dịch vụ khác nhau</li>
+                        <li>Mọi domain registrar đều cung cấp DNS service cơ bản</li>
+                        <li>Bạn có thể lựa chọn sử dụng DNS service từ provider khác</li>
+                        <li>Cần cập nhật name servers để kết nối hai service</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Branch -->
+        <div class="branch branch-configuration">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Cấu hình Name Servers</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cách hoạt động của Name Servers:</h4>
+                
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box godaddy-box">
+                            <strong>GoDaddy</strong><br/>
+                            Custom Name Servers<br/>
+                            <small>Point to Route 53</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box route53-box">
+                            <strong>Route 53</strong><br/>
+                            Hosted Zone<br/>
+                            <small>4 Name Servers</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="font-semibold mb-2">Route 53 Name Servers (ví dụ):</h5>
+                        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+                            <div>ns-123.awsdns-12.org</div>
+                            <div>ns-456.awsdns-34.co.uk</div>
+                            <div>ns-789.awsdns-56.com</div>
+                            <div>ns-012.awsdns-78.net</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Quy trình DNS resolution:</h4>
+                    <ol class="list-decimal ml-4 space-y-2">
+                        <li>User truy vấn "example.com"</li>
+                        <li>DNS resolver hỏi: "Name server nào quản lý example.com?"</li>
+                        <li>GoDaddy trả lời: "Route 53 name servers"</li>
+                        <li>DNS resolver hỏi Route 53: "IP của example.com là gì?"</li>
+                        <li>Route 53 trả lời với DNS record từ hosted zone</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Process Branch -->
+        <div class="branch branch-process">
+            <h3 class="branch-title text-xl"><i class="fas fa-tasks mr-2"></i> Quy trình thiết lập từng bước</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Setup GoDaddy Domain + Route 53 DNS:</h4>
+                
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h5 class="font-semibold">Đăng ký domain trên GoDaddy</h5>
+                        <p class="text-sm text-gray-600">Mua domain "example.com" và thanh toán phí hàng năm</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h5 class="font-semibold">Tạo Public Hosted Zone trên Route 53</h5>
+                        <p class="text-sm text-gray-600">Tạo hosted zone cho domain của bạn trong AWS Route 53 console</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h5 class="font-semibold">Lấy Name Servers từ Route 53</h5>
+                        <p class="text-sm text-gray-600">Copy 4 name servers từ hosted zone details trong Route 53</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h5 class="font-semibold">Cập nhật Name Servers trên GoDaddy</h5>
+                        <p class="text-sm text-gray-600">Vào GoDaddy domain settings → Custom Name Servers → Paste Route 53 name servers</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h5 class="font-semibold">Tạo DNS Records trên Route 53</h5>
+                        <p class="text-sm text-gray-600">Quản lý tất cả DNS records (A, CNAME, MX...) từ Route 53 console</p>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lưu ý về thời gian propagation:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>DNS propagation có thể mất 24-48 giờ</li>
+                        <li>Sử dụng dig hoặc nslookup để kiểm tra</li>
+                        <li>TTL thấp giúp update nhanh hơn</li>
+                        <li>Test từ nhiều location khác nhau</li>
+                    </ul>
+                </div>
+
+                <div class="mt-4 bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-semibold mb-2 text-blue-800">Tóm tắt:</h4>
+                    <p class="text-blue-700">Bạn có thể mua domain từ bất kỳ third-party registrar nào và vẫn sử dụng Route 53 làm DNS service provider. Chỉ cần tạo public hosted zone và cập nhật NS records trên website nơi bạn mua domain.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về phân biệt Domain Registrar và DNS Service - Tính linh hoạt trong việc lựa chọn providers</p>
+        </div>
+    </div>
+</body>
+</html>
