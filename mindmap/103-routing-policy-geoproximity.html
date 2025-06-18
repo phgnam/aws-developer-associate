@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Geoproximity Routing Policy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-bias { border-color: #1E88E5; }
+        .branch-bias .branch-title { color: #1E88E5; }
+        
+        .branch-resources { border-color: #43A047; }
+        .branch-resources .branch-title { color: #43A047; }
+        
+        .branch-examples { border-color: #8E24AA; }
+        .branch-examples .branch-title { color: #8E24AA; }
+        
+        .branch-requirements { border-color: #F4511E; }
+        .branch-requirements .branch-title { color: #F4511E; }
+        
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #1E88E5;
+        }
+        .bias-diagram {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .usa-map {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .region-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 20px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 2px solid;
+        }
+        .us-west { 
+            background-color: #ffecb3; 
+            border-color: #ffa000;
+        }
+        .us-east { 
+            background-color: #bbdefb; 
+            border-color: #1976d2;
+        }
+        .divider-line {
+            position: absolute;
+            width: 2px;
+            height: 60px;
+            background-color: #666;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+        .divider-shifted {
+            left: 40%;
+        }
+        .user-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .user-left, .user-right {
+            background-color: #e1f5fe;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #0277bd;
+        }
+        .example-title {
+            background-color: #232F3E;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Geoproximity Routing Policy</h1>
+            <span class="text-sm text-gray-500">AWS Route 53 Advanced Routing with Bias Control</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-globe-americas text-3xl mb-2"></i>
+                <h2 class="text-lg font-bold">Route 53<br/>Geoproximity Routing</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa và Khái niệm</h3>
+            <div class="branch-content">
+                <p class="mb-3"><strong>Geoproximity Routing</strong> cho phép route traffic đến resources dựa trên vị trí địa lý của cả users và resources.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Đặc điểm chính:</h4>
+                        <ul class="feature-list">
+                            <li>Route dựa trên vị trí users VÀ resources</li>
+                            <li>Sử dụng bias để điều chỉnh traffic</li>
+                            <li>Có thể mở rộng hoặc thu hẹp vùng địa lý</li>
+                            <li>Linh hoạt hơn Geolocation routing</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Khác biệt với Latency-based:</h4>
+                        <ul class="feature-list info-list">
+                            <li>Không dựa trên hiệu suất mạng</li>
+                            <li>Kiểm soát chính xác theo vị trí</li>
+                            <li>Có thể điều chỉnh bias theo nhu cầu</li>
+                            <li>Phức tạp hơn nhưng linh hoạt hơn</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bias Mechanism Branch -->
+        <div class="branch branch-bias">
+            <h3 class="branch-title text-xl"><i class="fas fa-sliders-h mr-2"></i> Cơ chế Bias</h3>
+            <div class="branch-content">
+                <p class="mb-3">Bias là số được sử dụng để shift traffic nhiều hơn hoặc ít hơn đến specific resources dựa trên location.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Positive Bias (+):</h4>
+                        <ul class="feature-list">
+                            <li>Tăng bias value để có thêm traffic</li>
+                            <li>Mở rộng vùng địa lý của resource</li>
+                            <li>Attract users từ xa hơn</li>
+                            <li>Ví dụ: Bias +50 → thu hút traffic nhiều hơn</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Negative Bias (-):</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Giảm bias value để có ít traffic hơn</li>
+                            <li>Thu hẹp vùng địa lý của resource</li>
+                            <li>Chỉ serve users gần nhất</li>
+                            <li>Ví dụ: Bias -20 → giảm attraction</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-2">Cách Bias thay đổi kích thước vùng địa lý:</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th width="30%">Bias Value</th>
+                                <th width="35%">Effect</th>
+                                <th width="35%">Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature">Bias = 0</td>
+                                <td>Standard geographic boundary</td>
+                                <td>Cân bằng tự nhiên</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Bias > 0</td>
+                                <td>Expand geographic region</td>
+                                <td>Resource có capacity cao hơn</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Bias < 0</td>
+                                <td>Shrink geographic region</td>
+                                <td>Resource bị giới hạn capacity</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resource Types Branch -->
+        <div class="branch branch-resources">
+            <h3 class="branch-title text-xl"><i class="fas fa-server mr-2"></i> Loại Resources</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-3">AWS Resources:</h4>
+                        <ul class="feature-list">
+                            <li>Chỉ cần specify AWS region</li>
+                            <li>Route 53 tự động tính toán routing</li>
+                            <li>Ví dụ: us-east-1, eu-west-1, ap-southeast-1</li>
+                            <li>Tích hợp seamless với AWS infrastructure</li>
+                        </ul>
+                        
+                        <div class="mt-4 p-3 bg-blue-50 rounded">
+                            <p class="text-sm"><strong>Ví dụ:</strong></p>
+                            <p class="text-sm">Resource: EC2 instance trong us-west-1<br/>
+                            → Chỉ cần chọn region "us-west-1"<br/>
+                            → Route 53 biết vị trí địa lý chính xác</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Non-AWS Resources:</h4>
+                        <ul class="feature-list info-list">
+                            <li>Phải specify latitude và longitude</li>
+                            <li>Manual configuration cho vị trí</li>
+                            <li>Ví dụ: On-premises data center</li>
+                            <li>Third-party cloud providers</li>
+                        </ul>
+                        
+                        <div class="mt-4 p-3 bg-green-50 rounded">
+                            <p class="text-sm"><strong>Ví dụ:</strong></p>
+                            <p class="text-sm">Resource: On-premises server ở Singapore<br/>
+                            → Phải nhập: Lat: 1.3521°, Long: 103.8198°<br/>
+                            → Route 53 sử dụng coordinates này</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examples Branch -->
+        <div class="branch branch-examples">
+            <h3 class="branch-title text-xl"><i class="fas fa-chart-line mr-2"></i> Ví dụ Chi tiết</h3>
+            <div class="branch-content">
+                
+                <!-- Example 1: No Bias -->
+                <div class="bias-diagram">
+                    <div class="example-title">Ví dụ 1: Không có Bias (Bias = 0)</div>
+                    
+                    <div class="usa-map">
+                        <div class="region-box us-west">
+                            <strong>us-west-1</strong><br/>
+                            Bias: 0
+                        </div>
+                        
+                        <div class="divider-line"></div>
+                        
+                        <div class="region-box us-east">
+                            <strong>us-east-1</strong><br/>
+                            Bias: 0
+                        </div>
+                    </div>
+                    
+                    <div class="user-section">
+                        <div class="user-left">Users bên trái → us-west-1</div>
+                        <div class="user-right">Users bên phải → us-east-1</div>
+                    </div>
+                    
+                    <p class="text-sm mt-3 text-center">
+                        <strong>Kết quả:</strong> Đường phân chia ở giữa US, users route đến region gần nhất
+                    </p>
+                </div>
+
+                <!-- Example 2: With Positive Bias -->
+                <div class="bias-diagram">
+                    <div class="example-title">Ví dụ 2: us-east-1 có Positive Bias (+50)</div>
+                    
+                    <div class="usa-map">
+                        <div class="region-box us-west">
+                            <strong>us-west-1</strong><br/>
+                            Bias: 0
+                        </div>
+                        
+                        <div class="divider-line divider-shifted"></div>
+                        
+                        <div class="region-box us-east">
+                            <strong>us-east-1</strong><br/>
+                            Bias: +50
+                        </div>
+                    </div>
+                    
+                    <div class="user-section">
+                        <div class="user-left">Ít users → us-west-1</div>
+                        <div class="user-right">Nhiều users → us-east-1</div>
+                    </div>
+                    
+                    <p class="text-sm mt-3 text-center">
+                        <strong>Kết quả:</strong> Đường phân chia dịch chuyển sang trái, us-east-1 attract nhiều traffic hơn
+                    </p>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Tại sao sử dụng Bias?</h4>
+                    <ul class="feature-list">
+                        <li>Shift traffic từ region này sang region khác</li>
+                        <li>Load balancing khi một region có capacity cao hơn</li>
+                        <li>Testing và gradual migration</li>
+                        <li>Disaster recovery và maintenance windows</li>
+                        <li>Cost optimization giữa các regions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements Branch -->
+        <div class="branch branch-requirements">
+            <h3 class="branch-title text-xl"><i class="fas fa-cogs mr-2"></i> Yêu cầu và Limitations</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-3">Route 53 Traffic Flow:</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Bắt buộc sử dụng advanced Route 53 Traffic Flow</li>
+                            <li>Không thể sử dụng với simple routing records</li>
+                            <li>Cần visual policy editor</li>
+                            <li>Chi phí bổ sung cho Traffic Flow</li>
+                        </ul>
+                        
+                        <div class="mt-4 p-3 bg-yellow-50 rounded">
+                            <p class="text-sm"><strong>Lưu ý:</strong> Traffic Flow là service riêng biệt trong Route 53, cho phép tạo complex routing policies với visual interface.</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3">Use Cases chính:</h4>
+                        <ul class="feature-list">
+                            <li>Load balancing với fine-tuned control</li>
+                            <li>Gradual traffic shifting giữa regions</li>
+                            <li>Testing new deployments</li>
+                            <li>Disaster recovery strategies</li>
+                            <li>Cost optimization</li>
+                            <li>Performance tuning</li>
+                        </ul>
+                        
+                        <div class="mt-4 p-3 bg-green-50 rounded">
+                            <p class="text-sm"><strong>Exam Tip:</strong> Khi câu hỏi đề cập đến "shift traffic from one region to another by increasing bias" → nghĩ ngay đến Geoproximity Routing.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">So sánh với other routing policies:</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th width="25%">Policy</th>
+                                <th width="25%">Basis</th>
+                                <th width="25%">Control</th>
+                                <th width="25%">Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature">Geoproximity</td>
+                                <td>Location + Bias</td>
+                                <td>Fine-tuned với bias</td>
+                                <td>Traffic shifting</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Geolocation</td>
+                                <td>User location only</td>
+                                <td>Geographic rules</td>
+                                <td>Localization</td>
+                            </tr>
+                            <tr>
+                                <td class="feature">Latency-based</td>
+                                <td>Network latency</td>
+                                <td>Automatic</td>
+                                <td>Performance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Geoproximity Routing Policy - Advanced routing với bias control để shift traffic giữa các regions</p>
+        </div>
+    </div>
+</body>
+</html>
