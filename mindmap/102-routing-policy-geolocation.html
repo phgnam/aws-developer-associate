@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Geolocation Routing Policy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-concept { border-color: #FF9900; }
+        .branch-concept .branch-title { color: #FF9900; }
+        
+        .branch-hierarchy { border-color: #1E88E5; }
+        .branch-hierarchy .branch-title { color: #1E88E5; }
+        
+        .branch-demo { border-color: #43A047; }
+        .branch-demo .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .branch-comparison { border-color: #F4511E; }
+        .branch-comparison .branch-title { color: #F4511E; }
+        
+        .branch-troubleshooting { border-color: #E91E63; }
+        .branch-troubleshooting .branch-title { color: #E91E63; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .geo-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .region-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .user-box { background-color: #f8bbd9; border: 2px solid #e91e63; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .demo-list li:before {
+            content: "\f0ac";
+            color: #1E88E5;
+        }
+        .vpn-example {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .location-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .world-map {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .precision-hierarchy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .precision-step {
+            background-color: #f0f4f8;
+            border: 2px solid #64b5f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 0 10px;
+            text-align: center;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Geolocation Routing Policy</h1>
+            <span class="text-sm text-gray-500">AWS DNS Geographic Routing</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-globe text-3xl mb-2"></i>
+                <h2 class="text-lg font-bold">Route 53 Geolocation Routing Policy</h2>
+            </div>
+        </div>
+
+        <!-- Concept Branch -->
+        <div class="branch branch-concept">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Khái niệm Geolocation Routing</h3>
+            <div class="branch-content">
+                <p class="mb-3">Geolocation Routing Policy định tuyến traffic dựa trên vị trí địa lý thực tế của người dùng, khác hoàn toàn với Latency-based routing.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h4 class="font-semibold mb-2 text-blue-600">Geolocation Routing:</h4>
+                        <ul class="feature-list">
+                            <li>Dựa trên vị trí địa lý thực tế của user</li>
+                            <li>Route theo continent, country, hoặc US states</li>
+                            <li>Most precise location được chọn trước</li>
+                            <li>Kiểm soát chính xác nội dung theo khu vực</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2 text-green-600">Latency-based Routing:</h4>
+                        <ul class="feature-list">
+                            <li>Dựa trên độ trễ mạng thấp nhất</li>
+                            <li>Route đến AWS region gần nhất</li>
+                            <li>Tự động tối ưu hiệu suất</li>
+                            <li>Không kiểm soát theo địa lý cụ thể</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Yêu cầu Default Record:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Phải tạo default record cho trường hợp không match location</li>
+                        <li>Default record xử lý tất cả locations không được định nghĩa</li>
+                        <li>Có thể kết hợp với health checks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Hierarchy Branch -->
+        <div class="branch branch-hierarchy">
+            <h3 class="branch-title text-xl"><i class="fas fa-layer-group mr-2"></i> Hierarchy của Location</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Thứ tự ưu tiên location (từ chính xác nhất đến tổng quát nhất):</h4>
+                
+                <div class="precision-hierarchy">
+                    <div class="precision-step">
+                        <i class="fas fa-map-marker-alt text-2xl text-red-500 mb-2"></i>
+                        <h5 class="font-semibold">US States</h5>
+                        <p class="text-sm">California, Texas, etc.</p>
+                        <p class="text-xs text-gray-600">Chính xác nhất</p>
+                    </div>
+                    <div class="arrow-right"></div>
+                    <div class="precision-step">
+                        <i class="fas fa-flag text-2xl text-blue-500 mb-2"></i>
+                        <h5 class="font-semibold">Country</h5>
+                        <p class="text-sm">Germany, France, etc.</p>
+                        <p class="text-xs text-gray-600">Trung bình</p>
+                    </div>
+                    <div class="arrow-right"></div>
+                    <div class="precision-step">
+                        <i class="fas fa-globe-asia text-2xl text-green-500 mb-2"></i>
+                        <h5 class="font-semibold">Continent</h5>
+                        <p class="text-sm">Asia, Europe, etc.</p>
+                        <p class="text-xs text-gray-600">Tổng quát</p>
+                    </div>
+                    <div class="arrow-right"></div>
+                    <div class="precision-step">
+                        <i class="fas fa-globe text-2xl text-gray-500 mb-2"></i>
+                        <h5 class="font-semibold">Default</h5>
+                        <p class="text-sm">Fallback option</p>
+                        <p class="text-xs text-gray-600">Mặc định</p>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-3">Logic chọn location:</h4>
+                    <div class="diagram-container">
+                        <p class="text-center mb-3">Route 53 sẽ chọn location chính xác nhất có sẵn:</p>
+                        <div class="diagram-row">
+                            <div class="geo-box">User từ California</div>
+                            <div class="arrow-right"></div>
+                            <div class="route53-box">Route 53 kiểm tra</div>
+                        </div>
+                        <div class="arrow-down"></div>
+                        <div class="text-sm">
+                            <p>1. Có record cho California? → Chọn California record</p>
+                            <p>2. Không có? Có record cho United States? → Chọn US record</p>
+                            <p>3. Không có? Có record cho North America? → Chọn continent record</p>
+                            <p>4. Không có? → Chọn Default record</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Setup Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-code mr-2"></i> Demo Setup từ Script</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cấu hình 3 Geolocation Records:</h4>
+                
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="location-card" style="border-left: 4px solid #FF6B35;">
+                        <h5 class="font-semibold text-orange-600">Asia Record</h5>
+                        <p><strong>Record Name:</strong> geo.stephanetheteacher.com</p>
+                        <p><strong>Type:</strong> A record</p>
+                        <p><strong>Value:</strong> ap-southeast-1 instance IP</p>
+                        <p><strong>Location:</strong> Asia (Continent)</p>
+                        <p><strong>Record ID:</strong> Asia</p>
+                    </div>
+                    
+                    <div class="location-card" style="border-left: 4px solid #4E79A7;">
+                        <h5 class="font-semibold text-blue-600">US Record</h5>
+                        <p><strong>Record Name:</strong> geo.stephanetheteacher.com</p>
+                        <p><strong>Type:</strong> A record</p>
+                        <p><strong>Value:</strong> us-east-1 instance IP</p>
+                        <p><strong>Location:</strong> United States (Country)</p>
+                        <p><strong>Record ID:</strong> US</p>
+                    </div>
+                    
+                    <div class="location-card" style="border-left: 4px solid #59A14F;">
+                        <h5 class="font-semibold text-green-600">Default Record</h5>
+                        <p><strong>Record Name:</strong> geo.stephanetheteacher.com</p>
+                        <p><strong>Type:</strong> A record</p>
+                        <p><strong>Value:</strong> eu-central-1 instance IP</p>
+                        <p><strong>Location:</strong> Default</p>
+                        <p><strong>Record ID:</strong> Default EU</p>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h4 class="font-semibold mb-3">VPN Testing Results:</h4>
+                    
+                    <div class="vpn-example">
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div>
+                                <h5 class="font-semibold text-blue-600 mb-2"><i class="fas fa-flag mr-1"></i> Europe (Default)</h5>
+                                <ul class="demo-list">
+                                    <li>Location: Europe (không có specific record)</li>
+                                    <li>Result: eu-central-1c</li>
+                                    <li>Reason: Default record được sử dụng</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h5 class="font-semibold text-orange-600 mb-2"><i class="fas fa-flag mr-1"></i> India (Asia)</h5>
+                                <ul class="demo-list">
+                                    <li>VPN Location: India</li>
+                                    <li>Match: Asia continent record</li>
+                                    <li>Result: ap-southeast-1b</li>
+                                    <li>Note: Cần fix security group trước</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h5 class="font-semibold text-green-600 mb-2"><i class="fas fa-flag mr-1"></i> United States</h5>
+                                <ul class="demo-list">
+                                    <li>VPN Location: United States</li>
+                                    <li>Match: United States country record</li>
+                                    <li>Result: us-east-1a</li>
+                                    <li>Precision: Country level match</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vpn-example mt-4">
+                        <h5 class="font-semibold text-purple-600 mb-2"><i class="fas fa-flag mr-1"></i> Mexico Test</h5>
+                        <p>VPN Location: Mexico → Match: Default record (không có specific record cho Mexico) → Result: eu-central-1c</p>
+                        <p class="text-sm text-gray-600 mt-2">Mexico không được định nghĩa trong any geolocation records, nên fallback về default record.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-tasks mr-2"></i> Use Cases</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Website Localization:</h4>
+                        <ul class="feature-list">
+                            <li>German users → German version of app</li>
+                            <li>French users → French version of app</li>
+                            <li>Default → English version of app</li>
+                            <li>Tự động chọn ngôn ngữ và nội dung phù hợp</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Content Distribution Control:</h4>
+                        <ul class="feature-list">
+                            <li>Restrict content theo khu vực (geo-blocking)</li>
+                            <li>Comply với local regulations</li>
+                            <li>Different pricing cho different regions</li>
+                            <li>Legal compliance requirements</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Load Balancing Applications:</h4>
+                    <ul class="feature-list">
+                        <li>Route users đến data centers gần nhất theo khu vực</li>
+                        <li>Disaster recovery với geographic failover</li>
+                        <li>Capacity management theo regions</li>
+                        <li>Reduced latency với regional deployments</li>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting Branch -->
+        <div class="branch branch-troubleshooting">
+            <h3 class="branch-title text-xl"><i class="fas fa-wrench mr-2"></i> Troubleshooting</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Vấn đề Security Group từ Demo:</h4>
+                
+                <div class="vpn-example">
+                    <h5 class="font-semibold text-red-600 mb-2"><i class="fas fa-exclamation-triangle mr-1"></i> Problem</h5>
+                    <p>Khi test VPN đến India (Asia), gặp timeout error khi truy cập ap-southeast-1 instance.</p>
+                    
+                    <h5 class="font-semibold text-blue-600 mb-2 mt-3"><i class="fas fa-search mr-1"></i> Root Cause</h5>
+                    <p>HTTP rule đã bị remove khỏi security group (từ previous health check demo), làm instance không thể truy cập được.</p>
+                    
+                    <h5 class="font-semibold text-green-600 mb-2 mt-3"><i class="fas fa-tools mr-1"></i> Solution</h5>
+                    <ol class="list-decimal ml-4">
+                        <li>Đi đến Security Group của ap-southeast-1 instance</li>
+                        <li>Edit Inbound rules</li>
+                        <li>Add lại HTTP rule (port 80) từ anywhere (0.0.0.0/0)</li>
+                        <li>Save changes</li>
+                        <li>Refresh browser → Success: ap-southeast-1b response</li>
+                    </ol>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Common Troubleshooting Tips:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Timeout errors → Kiểm tra Security Groups và NACLs</li>
+                        <li>Wrong routing → Verify geolocation record configuration</li>
+                        <li>VPN testing → Clear DNS cache sau khi đổi location</li>
+                        <li>Default fallback → Ensure default record exists và healthy</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison with other routing policies -->
+        <div class="branch branch-comparison">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> So sánh với Routing Policies khác</h3>
+            <div class="branch-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Routing Policy</th>
+                            <th width="25%">Basis</th>
+                            <th width="25%">Use Case</th>
+                            <th width="25%">Control Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">Geolocation</td>
+                            <td>User's geographic location</td>
+                            <td>Content localization, compliance</td>
+                            <td>Precise geographic control</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Latency-based</td>
+                            <td>Lowest network latency</td>
+                            <td>Performance optimization</td>
+                            <td>Automatic performance optimization</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Weighted</td>
+                            <td>Traffic percentage</td>
+                            <td>A/B testing, gradual rollouts</td>
+                            <td>Traffic distribution control</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Failover</td>
+                            <td>Health checks</td>
+                            <td>Disaster recovery</td>
+                            <td>High availability</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Simple</td>
+                            <td>Random selection</td>
+                            <td>Basic load balancing</td>
+                            <td>Minimal configuration</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Khi nào sử dụng Geolocation Routing:</h4>
+                    <ul class="feature-list">
+                        <li>Cần kiểm soát chính xác users từ specific locations</li>
+                        <li>Website localization và multi-language support</li>
+                        <li>Legal compliance và content restrictions</li>
+                        <li>Different application versions cho different regions</li>
+                        <li>Geographic load balancing with business logic</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Geolocation Routing Policy - Định tuyến DNS dựa trên vị trí địa lý của người dùng</p>
+        </div>
+    </div>
+</body>
+</html>
