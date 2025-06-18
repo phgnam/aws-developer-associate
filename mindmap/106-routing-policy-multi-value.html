@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Route 53 Multi-Value Routing Policy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-benefits { border-color: #1E88E5; }
+        .branch-benefits .branch-title { color: #1E88E5; }
+        
+        .branch-architecture { border-color: #43A047; }
+        .branch-architecture .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .branch-comparison { border-color: #F4511E; }
+        .branch-comparison .branch-title { color: #F4511E; }
+        
+        .branch-demo { border-color: #00ACC1; }
+        .branch-demo .branch-title { color: #00ACC1; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .client-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .route53-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .server-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .health-box { background-color: #f8bbd9; border: 2px solid #e91e63; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .aws-logo {
+            width: 120px;
+            height: auto;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #2196F3;
+        }
+        .demo-list li:before {
+            content: "\f120";
+            color: #00ACC1;
+        }
+        .health-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .healthy { background-color: #c8e6c9; color: #2e7d32; }
+        .unhealthy { background-color: #ffcdd2; color: #c62828; }
+        .code-block {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Route 53 Multi-Value Routing Policy</h1>
+            <span class="text-sm text-gray-500">AWS DNS Multi-Value Answer Routing</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-sitemap text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Multi-Value</h2>
+                <h2 class="text-xl font-bold">Routing Policy</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa và Khái niệm</h3>
+            <div class="branch-content">
+                <p class="mb-3">Multi-Value Routing Policy cho phép Route 53 trả về nhiều giá trị/tài nguyên khi client thực hiện DNS query.</p>
+                <ul class="feature-list">
+                    <li>Route traffic đến nhiều resources cùng lúc</li>
+                    <li>Route 53 trả về tối đa 8 healthy records cho mỗi Multi-Value query</li>
+                    <li>Có thể liên kết với Health Checks để đảm bảo chỉ trả về healthy resources</li>
+                    <li>Client-side load balancing - client chọn một trong các IP được trả về</li>
+                    <li>Không phải là thay thế cho ELB, chỉ là client-side load balancing</li>
+                </ul>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Điểm khác biệt quan trọng:</h4>
+                    <ul class="feature-list info-list">
+                        <li>Khác với Simple routing: Simple không cho phép Health Checks</li>
+                        <li>Khác với ELB: Multi-Value là DNS-level, ELB là application-level</li>
+                        <li>Client tự chọn IP từ danh sách được trả về</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Branch -->
+        <div class="branch branch-architecture">
+            <h3 class="branch-title text-xl"><i class="fas fa-project-diagram mr-2"></i> Cách thức hoạt động</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Luồng hoạt động Multi-Value Routing:</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client DNS Query</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">Query: example.com</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box route53-box">Route 53<br/>Multi-Value Policy</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">Health Check Validation</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box health-box">Health Checks</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">Returns up to 8 healthy IPs</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box server-box">Server 1<br/>1.2.3.4</div>
+                        <div class="diagram-box server-box">Server 2<br/>5.6.7.8</div>
+                        <div class="diagram-box server-box">Server 3<br/>9.10.11.12</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-label">Client picks one IP randomly</div>
+                    <div class="diagram-row">
+                        <div class="diagram-box client-box">Client connects to chosen server</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Tích hợp Health Checks:</h4>
+                    <ul class="feature-list">
+                        <li>Mỗi A Record có thể liên kết với một Health Check</li>
+                        <li>Chỉ các resources có Health Check healthy mới được trả về</li>
+                        <li>Nếu Health Check fail → resource tự động bị loại khỏi DNS response</li>
+                        <li>Đảm bảo client luôn nhận được healthy resources</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Branch -->
+        <div class="branch branch-comparison">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> So sánh với Simple Routing và ELB</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3 text-center">Multi-Value vs Simple Routing</h4>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th width="40%">Tính năng</th>
+                                    <th width="30%">Multi-Value</th>
+                                    <th width="30%">Simple</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="feature">Health Checks</td>
+                                    <td>✅ Hỗ trợ</td>
+                                    <td>❌ Không hỗ trợ</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Multiple Values</td>
+                                    <td>✅ Tối đa 8 healthy</td>
+                                    <td>✅ Tất cả values</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Record Structure</td>
+                                    <td>Multiple A Records</td>
+                                    <td>Single A Record</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Failover</td>
+                                    <td>✅ Automatic</td>
+                                    <td>❌ Manual</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Use Case</td>
+                                    <td>Client-side LB + HA</td>
+                                    <td>Basic routing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3 text-center">Multi-Value vs ELB</h4>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th width="40%">Tính năng</th>
+                                    <th width="30%">Multi-Value</th>
+                                    <th width="30%">ELB</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="feature">Load Balancing</td>
+                                    <td>Client-side</td>
+                                    <td>Server-side</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Health Checks</td>
+                                    <td>DNS level</td>
+                                    <td>Application level</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Failover Speed</td>
+                                    <td>Depends on TTL</td>
+                                    <td>Immediate</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Geographic Distribution</td>
+                                    <td>✅ Global DNS</td>
+                                    <td>❌ Regional only</td>
+                                </tr>
+                                <tr>
+                                    <td class="feature">Cost</td>
+                                    <td>Lower (DNS only)</td>
+                                    <td>Higher (Infrastructure)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Khi nào sử dụng Multi-Value:</h4>
+                    <ul class="feature-list info-list">
+                        <li>Cần distribute traffic đến multiple resources với health checking</li>
+                        <li>Client-side load balancing là đủ (không cần advanced LB features)</li>
+                        <li>Muốn giảm cost so với việc sử dụng ELB</li>
+                        <li>Resources được distribute globally</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Branch -->
+        <div class="branch branch-demo">
+            <h3 class="branch-title text-xl"><i class="fas fa-terminal mr-2"></i> Demo Setup và Testing</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Cấu hình Demo từ Script:</h4>
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-white p-3 rounded border">
+                        <h5 class="font-semibold text-center mb-2">Record 1 - US East</h5>
+                        <ul class="feature-list demo-list text-sm">
+                            <li>Name: multi.stephanetheteacher.com</li>
+                            <li>Value: us-east-1 IP</li>
+                            <li>Policy: Multivalue</li>
+                            <li>Health Check: us-east-1</li>
+                            <li>Record ID: US</li>
+                            <li>TTL: 60 seconds</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-3 rounded border">
+                        <h5 class="font-semibold text-center mb-2">Record 2 - Asia</h5>
+                        <ul class="feature-list demo-list text-sm">
+                            <li>Name: multi.stephanetheteacher.com</li>
+                            <li>Value: ap-southeast-1 IP</li>
+                            <li>Policy: Multivalue</li>
+                            <li>Health Check: ap-southeast-1</li>
+                            <li>Record ID: Asia</li>
+                            <li>TTL: 60 seconds</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-3 rounded border">
+                        <h5 class="font-semibold text-center mb-2">Record 3 - EU</h5>
+                        <ul class="feature-list demo-list text-sm">
+                            <li>Name: multi.stephanetheteacher.com</li>
+                            <li>Value: eu-central-1 IP</li>
+                            <li>Policy: Multivalue</li>
+                            <li>Health Check: eu-central-1</li>
+                            <li>Record ID: EU</li>
+                            <li>TTL: 60 seconds</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3">Testing Results:</h4>
+                <div class="bg-white p-4 rounded border">
+                    <h5 class="font-semibold mb-2">1. Tất cả Health Checks Healthy:</h5>
+                    <div class="code-block">
+$ dig multi.stephanetheteacher.com<br/>
+; ANSWER SECTION:<br/>
+multi.stephanetheteacher.com. 60 IN A 1.2.3.4<br/>
+multi.stephanetheteacher.com. 60 IN A 5.6.7.8<br/>
+multi.stephanetheteacher.com. 60 IN A 9.10.11.12
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">✅ Kết quả: 3 IP addresses được trả về (tất cả healthy)</p>
+                    
+                    <h5 class="font-semibold mb-2 mt-4">2. Một Health Check Unhealthy (EU-Central-1):</h5>
+                    <div class="flex items-center mb-2">
+                        <span class="health-status healthy mr-2">US-East-1: Healthy</span>
+                        <span class="health-status healthy mr-2">AP-Southeast-1: Healthy</span>
+                        <span class="health-status unhealthy">EU-Central-1: Unhealthy</span>
+                    </div>
+                    <div class="code-block">
+$ dig multi.stephanetheteacher.com<br/>
+; ANSWER SECTION:<br/>
+multi.stephanetheteacher.com. 60 IN A 1.2.3.4<br/>
+multi.stephanetheteacher.com. 60 IN A 5.6.7.8
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">✅ Kết quả: Chỉ 2 IP addresses được trả về (unhealthy resource bị loại)</p>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">Troubleshooting Method:</h4>
+                <ul class="feature-list info-list">
+                    <li>Sử dụng "Invert health status" để tạo unhealthy health check</li>
+                    <li>Verify bằng dig command để kiểm tra DNS response</li>
+                    <li>Monitor health check status trong Route 53 console</li>
+                    <li>Restore health check bằng cách untick "Invert health status"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Benefits and Considerations -->
+        <div class="branch branch-benefits">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Lợi ích và Cân nhắc</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Lợi ích:</h4>
+                        <ul class="feature-list">
+                            <li>Client-side load balancing với health checking</li>
+                            <li>Automatic failover khi resource unhealthy</li>
+                            <li>Cost-effective alternative cho basic load balancing</li>
+                            <li>Global distribution capability</li>
+                            <li>Simple setup and configuration</li>
+                            <li>Tích hợp tốt với AWS health check system</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Cân nhắc:</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Không thay thế được ELB cho advanced use cases</li>
+                            <li>Client phải support multiple DNS responses</li>
+                            <li>Failover speed phụ thuộc vào TTL setting</li>
+                            <li>Limited đến 8 records per query</li>
+                            <li>Không có session persistence</li>
+                            <li>Phụ thuộc vào client implementation để pick IP</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Use Cases phù hợp:</h4>
+                    <ul class="feature-list info-list">
+                        <li>Simple web applications cần basic load balancing</li>
+                        <li>Global services với multiple endpoints</li>
+                        <li>API endpoints cần high availability</li>
+                        <li>Cost-sensitive applications không cần advanced LB features</li>
+                        <li>Microservices architecture với service discovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 Multi-Value Routing Policy - Client-side Load Balancing với Health Check Integration</p>
+        </div>
+    </div>
+</body>
+</html>
