@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route 53 IP-based Routing Policy - Mind Map</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-concept { border-color: #FF9900; }
+        .branch-concept .branch-title { color: #FF9900; }
+        
+        .branch-cidr { border-color: #1E88E5; }
+        .branch-cidr .branch-title { color: #1E88E5; }
+        
+        .branch-mapping { border-color: #43A047; }
+        .branch-mapping .branch-title { color: #43A047; }
+        
+        .branch-usecases { border-color: #8E24AA; }
+        .branch-usecases .branch-title { color: #8E24AA; }
+        
+        .branch-example { border-color: #F4511E; }
+        .branch-example .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .user-box { background-color: #e1f5fe; border: 2px solid #0277bd; }
+        .route53-box { background-color: #fff3e0; border: 2px solid #ef6c00; }
+        .location-box { background-color: #f3e5f5; border: 2px solid #7b1fa2; }
+        .ec2-box { background-color: #e8f5e8; border: 2px solid #2e7d32; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-left {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-left:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #1E88E5;
+        }
+        .example-list li:before {
+            content: "\f0a4";
+            color: #F4511E;
+        }
+        .cidr-box {
+            background-color: #e3f2fd;
+            border: 2px solid #1976d2;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            text-align: center;
+            min-width: 180px;
+        }
+        .ip-example {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Route 53 IP-based Routing Policy - Mind Map</h1>
+            <span class="text-sm text-gray-500">AWS DNS Service - IP-based Routing</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-network-wired text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">Route 53<br/>IP-based Routing Policy</h2>
+            </div>
+        </div>
+
+        <!-- Concept Branch -->
+        <div class="branch branch-concept">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Khái niệm IP-based Routing</h3>
+            <div class="branch-content">
+                <p class="mb-3">IP-based Routing Policy cho phép định tuyến traffic dựa trên địa chỉ IP của client, rất trực quan và dễ hiểu.</p>
+                <ul class="feature-list info-list">
+                    <li>Định nghĩa routing dựa trên client IP addresses</li>
+                    <li>Tạo danh sách các CIDR blocks (IP ranges) cho clients</li>
+                    <li>Xác định location nào traffic sẽ được gửi đến dựa trên CIDR</li>
+                    <li>Kiểm soát traffic routing một cách chính xác và có thể dự đoán</li>
+                </ul>
+                <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                    <p class="text-sm"><strong>Lưu ý:</strong> Khác với Geolocation routing (dựa trên vị trí địa lý), IP-based routing dựa trên địa chỉ IP cụ thể của client.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CIDR Branch -->
+        <div class="branch branch-cidr">
+            <h3 class="branch-title text-xl"><i class="fas fa-list mr-2"></i> CIDR Blocks Definition</h3>
+            <div class="branch-content">
+                <p class="mb-3">Trong Route 53, bạn sẽ định nghĩa danh sách các CIDR blocks (Classless Inter-Domain Routing) để xác định các IP ranges cho clients.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                    <div class="cidr-box">
+                        <h4 class="font-semibold mb-2">CIDR Block 1</h4>
+                        <p class="ip-example">203.0.113.0/24</p>
+                        <p class="text-sm mt-2">IP range: 203.0.113.0 - 203.0.113.255</p>
+                    </div>
+                    <div class="cidr-box">
+                        <h4 class="font-semibold mb-2">CIDR Block 2</h4>
+                        <p class="ip-example">200.1.1.0/24</p>
+                        <p class="text-sm mt-2">IP range: 200.1.1.0 - 200.1.1.255</p>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Đặc điểm của CIDR Blocks:</h4>
+                    <ul class="feature-list">
+                        <li>Mỗi CIDR block đại diện cho một nhóm IP addresses liên tiếp</li>
+                        <li>Có thể định nghĩa nhiều CIDR blocks cho các nhóm client khác nhau</li>
+                        <li>Mỗi CIDR block sẽ được ánh xạ đến một location/endpoint cụ thể</li>
+                        <li>Hỗ trợ cả IPv4 và IPv6 addressing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Mapping Branch -->
+        <div class="branch branch-mapping">
+            <h3 class="branch-title text-xl"><i class="fas fa-map-marked-alt mr-2"></i> Location Mapping</h3>
+            <div class="branch-content">
+                <p class="mb-3">Sau khi định nghĩa CIDR blocks, bạn sẽ ánh xạ chúng đến các locations và endpoints cụ thể.</p>
+                
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-3 text-center">Route 53 Location Mapping</h4>
+                    
+                    <div class="diagram-row">
+                        <div class="location-box">
+                            <strong>Location 1</strong><br/>
+                            <span class="ip-example">203.0.113.0/24</span>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="route53-box">
+                            example.com<br/>
+                            <small>DNS Record</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="ec2-box">
+                            EC2 Instance<br/>
+                            <span class="ip-example">1.2.3.4</span>
+                        </div>
+                    </div>
+
+                    <div class="diagram-row">
+                        <div class="location-box">
+                            <strong>Location 2</strong><br/>
+                            <span class="ip-example">200.1.1.0/24</span>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="route53-box">
+                            example.com<br/>
+                            <small>DNS Record</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="ec2-box">
+                            EC2 Instance<br/>
+                            <span class="ip-example">5.6.7.8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Cách thức hoạt động:</h4>
+                    <ul class="feature-list">
+                        <li>Route 53 kiểm tra IP address của client trong DNS request</li>
+                        <li>So sánh IP với các CIDR blocks đã định nghĩa</li>
+                        <li>Tìm CIDR block chứa IP của client</li>
+                        <li>Trả về DNS response với IP của endpoint tương ứng</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title text-xl"><i class="fas fa-bullseye mr-2"></i> Use Cases</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Performance Optimization:</h4>
+                        <ul class="feature-list">
+                            <li>Biết trước IP addresses của clients</li>
+                            <li>Route clients đến endpoints gần nhất</li>
+                            <li>Tối ưu hóa network latency</li>
+                            <li>Cải thiện user experience</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Cost Reduction:</h4>
+                        <ul class="feature-list">
+                            <li>Biết nguồn gốc của IP ranges</li>
+                            <li>Route traffic đến regions có chi phí thấp hơn</li>
+                            <li>Tối ưu hóa data transfer costs</li>
+                            <li>Quản lý bandwidth hiệu quả</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Các trường hợp sử dụng thực tế:</h4>
+                    <ul class="feature-list">
+                        <li><strong>Internet Service Provider (ISP) specific routing:</strong> Route traffic từ ISP cụ thể đến endpoint chuyên biệt</li>
+                        <li><strong>Corporate network routing:</strong> Route traffic từ mạng doanh nghiệp đến dedicated resources</li>
+                        <li><strong>Geographic optimization:</strong> Khi biết IP ranges của specific regions</li>
+                        <li><strong>Content delivery:</strong> Route traffic đến CDN edges dựa trên IP ranges</li>
+                        <li><strong>Compliance requirements:</strong> Đảm bảo data sovereignty cho specific IP ranges</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practical Example Branch -->
+        <div class="branch branch-example">
+            <h3 class="branch-title text-xl"><i class="fas fa-code mr-2"></i> Practical Example</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Ví dụ thực tế từ bài giảng:</h4>
+                
+                <div class="diagram-container">
+                    <div class="text-center mb-4">
+                        <h5 class="font-semibold">Scenario: Two Locations with Different CIDR Blocks</h5>
+                    </div>
+
+                    <!-- User A Flow -->
+                    <div class="diagram-row">
+                        <div class="user-box">
+                            <strong>User A</strong><br/>
+                            IP: <span class="ip-example">203.0.113.50</span><br/>
+                            <small>(Thuộc Location 1 CIDR)</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="route53-box">
+                            Route 53<br/>
+                            <small>DNS Query: example.com</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="ec2-box">
+                            EC2 Instance 1<br/>
+                            <span class="ip-example">1.2.3.4</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-label">
+                        User A với IP thuộc CIDR block 203.0.113.0/24 → được route đến EC2 instance 1.2.3.4
+                    </div>
+
+                    <!-- User B Flow -->
+                    <div class="diagram-row mt-6">
+                        <div class="user-box">
+                            <strong>User B</strong><br/>
+                            IP: <span class="ip-example">200.1.1.100</span><br/>
+                            <small>(Thuộc Location 2 CIDR)</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="route53-box">
+                            Route 53<br/>
+                            <small>DNS Query: example.com</small>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="ec2-box">
+                            EC2 Instance 2<br/>
+                            <span class="ip-example">5.6.7.8</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-label">
+                        User B với IP thuộc CIDR block 200.1.1.0/24 → được route đến EC2 instance 5.6.7.8
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Configuration Steps:</h4>
+                    <ol class="list-decimal ml-6">
+                        <li class="mb-2">Trong Route 53, tạo hai locations với hai CIDR blocks khác nhau</li>
+                        <li class="mb-2">Link Location 1 (CIDR: 203.0.113.0/24) với record example.com → value 1.2.3.4</li>
+                        <li class="mb-2">Link Location 2 (CIDR: 200.1.1.0/24) với record example.com → value 5.6.7.8</li>
+                        <li class="mb-2">Route 53 sẽ automatically route based on client IP</li>
+                    </ol>
+                </div>
+
+                <div class="mt-4 p-3 bg-green-50 border-l-4 border-green-400">
+                    <p class="text-sm"><strong>Kết quả:</strong> Cùng một domain name (example.com) nhưng trả về different IP addresses dựa trên IP address của client making the DNS query.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Route 53 IP-based Routing Policy - Routing traffic dựa trên client IP addresses</p>
+        </div>
+    </div>
+</body>
+</html>
