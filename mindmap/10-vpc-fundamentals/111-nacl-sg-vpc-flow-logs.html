@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPC Network Security (NACL, Security Groups, Flow Logs) - Mind Map</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-nacl { border-color: #FF9900; }
+        .branch-nacl .branch-title { color: #FF9900; }
+        
+        .branch-security-groups { border-color: #1E88E5; }
+        .branch-security-groups .branch-title { color: #1E88E5; }
+        
+        .branch-comparison { border-color: #43A047; }
+        .branch-comparison .branch-title { color: #43A047; }
+        
+        .branch-flow-logs { border-color: #8E24AA; }
+        .branch-flow-logs .branch-title { color: #8E24AA; }
+        
+        .branch-architecture { border-color: #F4511E; }
+        .branch-architecture .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .security-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 140px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+        }
+        .internet-box { background-color: #e3f2fd; border: 2px solid #1976d2; }
+        .nacl-box { background-color: #fff3e0; border: 2px solid #ff9800; }
+        .sg-box { background-color: #e8f5e8; border: 2px solid #4caf50; }
+        .ec2-box { background-color: #fce4ec; border: 2px solid #e91e63; }
+        .subnet-box { background-color: #f3e5f5; border: 2px solid #9c27b0; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 18px solid #666;
+            margin: 8px 0;
+        }
+        .arrow-up {
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 18px solid #666;
+            margin: 8px 0;
+        }
+        .bidirectional-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .flow-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #1976d2;
+        }
+        .shield-list li:before {
+            content: "\f3ed";
+            color: #8e24aa;
+        }
+        .logs-list li:before {
+            content: "\f15c";
+            color: #f4511e;
+        }
+        .defense-layer {
+            background-color: #f5f5f5;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .defense-label {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background-color: white;
+            padding: 0 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #666;
+        }
+        .traffic-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">VPC Network Security</h1>
+            <span class="text-sm text-gray-500">NACL, Security Groups & VPC Flow Logs</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-shield-alt text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">VPC Network Security</h2>
+                <p class="text-sm mt-1">Multi-layer Protection</p>
+            </div>
+        </div>
+
+        <!-- Network ACL Branch -->
+        <div class="branch branch-nacl">
+            <h3 class="branch-title text-xl"><i class="fas fa-layer-group mr-2"></i> Network ACL (NACL)</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Định nghĩa và đặc điểm:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Firewall kiểm soát traffic từ và đến subnets</li>
+                        <li>Có thể có rules Allow và Deny (explicit)</li>
+                        <li>Attach ở subnet level</li>
+                        <li>Rules chỉ bao gồm IP addresses</li>
+                        <li>First mechanism of defense</li>
+                    </ul>
+                </div>
+
+                <div class="defense-layer">
+                    <div class="defense-label">Subnet Level Protection</div>
+                    <div class="diagram-container">
+                        <div class="diagram-box subnet-box">Public Subnet</div>
+                        <div class="arrow-down"></div>
+                        <div class="diagram-box nacl-box">Network ACL</div>
+                        <div class="flow-label">Allow/Deny based on IP addresses</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Hoạt động:</h4>
+                    <ul class="feature-list info-list">
+                        <li>Stateless: Cần rules cho cả inbound và outbound</li>
+                        <li>Traffic từ internet phải đi qua NACL trước</li>
+                        <li>Default NACL cho phép tất cả traffic (allow all in/out)</li>
+                        <li>Có thể tạo custom NACL với rules cụ thể</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Groups Branch -->
+        <div class="branch branch-security-groups">
+            <h3 class="branch-title text-xl"><i class="fas fa-user-shield mr-2"></i> Security Groups</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Định nghĩa và đặc điểm:</h4>
+                    <ul class="feature-list">
+                        <li>Firewall kiểm soát traffic đến/từ ENI hoặc EC2 instance</li>
+                        <li>Chỉ có Allow rules (không có Deny rules)</li>
+                        <li>Có thể reference IP addresses hoặc other security groups</li>
+                        <li>Attach ở instance level</li>
+                        <li>Second mechanism of defense</li>
+                    </ul>
+                </div>
+
+                <div class="defense-layer">
+                    <div class="defense-label">Instance Level Protection</div>
+                    <div class="diagram-container">
+                        <div class="diagram-box sg-box">Security Group</div>
+                        <div class="arrow-down"></div>
+                        <div class="diagram-box ec2-box">EC2 Instance</div>
+                        <div class="flow-label">Allow rules only - more granular control</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Hoạt động:</h4>
+                    <ul class="feature-list">
+                        <li>Stateful: Return traffic tự động được allow</li>
+                        <li>Đã được sử dụng trong khóa học này</li>
+                        <li>Có thể reference other security groups</li>
+                        <li>More flexible và powerful hơn NACL</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traffic Flow Architecture -->
+        <div class="branch branch-architecture">
+            <h3 class="branch-title text-xl"><i class="fas fa-route mr-2"></i> Multi-layer Security Architecture</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">Luồng traffic qua các lớp bảo mật:</h4>
+                <div class="security-diagram">
+                    <div class="diagram-container">
+                        <div class="diagram-row">
+                            <div class="diagram-box internet-box">
+                                <i class="fas fa-globe mr-2"></i>Internet
+                            </div>
+                        </div>
+                        
+                        <div class="bidirectional-arrow">
+                            <div class="arrow-down"></div>
+                            <div class="flow-label">Internet Traffic</div>
+                            <div class="arrow-up"></div>
+                        </div>
+                        
+                        <div class="diagram-row">
+                            <div class="diagram-box nacl-box">
+                                <i class="fas fa-layer-group mr-2"></i>Network ACL<br/>
+                                <small>(Subnet Level)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="bidirectional-arrow">
+                            <div class="arrow-down"></div>
+                            <div class="flow-label">First Defense Layer</div>
+                            <div class="arrow-up"></div>
+                        </div>
+                        
+                        <div class="diagram-row">
+                            <div class="diagram-box sg-box">
+                                <i class="fas fa-user-shield mr-2"></i>Security Group<br/>
+                                <small>(Instance Level)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="bidirectional-arrow">
+                            <div class="arrow-down"></div>
+                            <div class="flow-label">Second Defense Layer</div>
+                            <div class="arrow-up"></div>
+                        </div>
+                        
+                        <div class="diagram-row">
+                            <div class="diagram-box ec2-box">
+                                <i class="fas fa-server mr-2"></i>EC2 Instance
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Branch -->
+        <div class="branch branch-comparison">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> So sánh NACL vs Security Groups</h3>
+            <div class="branch-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Đặc điểm</th>
+                            <th width="37.5%">Network ACL (NACL)</th>
+                            <th width="37.5%">Security Groups</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">Scope</td>
+                            <td>Subnet level</td>
+                            <td>Instance/ENI level</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Rules Type</td>
+                            <td>Allow và Deny rules</td>
+                            <td>Allow rules only</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Stateful/Stateless</td>
+                            <td>Stateless (cần rules cho inbound/outbound)</td>
+                            <td>Stateful (return traffic tự động allow)</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Rule References</td>
+                            <td>Chỉ IP addresses</td>
+                            <td>IP addresses hoặc other security groups</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Defense Order</td>
+                            <td>First mechanism of defense</td>
+                            <td>Second mechanism of defense</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Default Behavior</td>
+                            <td>Default NACL: Allow all traffic</td>
+                            <td>Default SG: Deny all inbound, allow all outbound</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Exam Relevance</td>
+                            <td>Less focus (default allows everything)</td>
+                            <td>High focus (used throughout course)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Tại sao chúng ta chưa cần thay đổi NACL:</h4>
+                    <ul class="feature-list info-list">
+                        <li>Default VPC có default NACL allow tất cả traffic in/out</li>
+                        <li>Security Groups đã cung cấp đủ bảo mật cho course này</li>
+                        <li>NACL thường được sử dụng cho advanced security requirements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- VPC Flow Logs Branch -->
+        <div class="branch branch-flow-logs">
+            <h3 class="branch-title text-xl"><i class="fas fa-stream mr-2"></i> VPC Flow Logs</h3>
+            <div class="branch-content">
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Định nghĩa và chức năng:</h4>
+                    <ul class="feature-list logs-list">
+                        <li>Capture thông tin về IP traffic đi qua interfaces</li>
+                        <li>Monitor và troubleshoot connectivity issues</li>
+                        <li>Log allowed và denied traffic</li>
+                        <li>Capture từ VPC, Subnet, và ENI level</li>
+                    </ul>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Loại Flow Logs:</h4>
+                        <ul class="feature-list">
+                            <li>VPC Flow Logs: Toàn bộ VPC</li>
+                            <li>Subnet Flow Logs: Specific subnet</li>
+                            <li>ENI Flow Logs: Specific network interface</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">AWS Managed Services:</h4>
+                        <ul class="feature-list">
+                            <li>Elastic Load Balancers</li>
+                            <li>ElastiCache</li>
+                            <li>RDS, Aurora</li>
+                            <li>Tất cả services được quản lý bởi AWS</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Use Cases cho troubleshooting:</h4>
+                    <ul class="feature-list shield-list">
+                        <li>Subnet không thể access internet</li>
+                        <li>Subnet không thể giao tiếp với subnet khác</li>
+                        <li>Internet không thể access subnet</li>
+                        <li>Phân tích network security incidents</li>
+                        <li>Monitor traffic patterns và usage</li>
+                    </ul>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Destination options:</h4>
+                    <div class="diagram-container">
+                        <div class="diagram-row">
+                            <div class="diagram-box nacl-box">VPC Flow Logs</div>
+                        </div>
+                        <div class="arrow-down"></div>
+                        <div class="diagram-row" style="flex-wrap: wrap; gap: 10px;">
+                            <div class="diagram-box sg-box">Amazon S3</div>
+                            <div class="diagram-box ec2-box">CloudWatch Logs</div>
+                            <div class="diagram-box internet-box">Kinesis Data Firehose</div>
+                        </div>
+                        <div class="flow-label">Multiple destination options for analysis</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Khi nào sử dụng VPC Flow Logs:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Có connectivity issues cần troubleshoot</li>
+                        <li>Cần audit network access patterns</li>
+                        <li>Investigate security incidents</li>
+                        <li>Monitor compliance requirements</li>
+                        <li>Optimize network performance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>VPC Network Security - Multi-layer protection với NACL, Security Groups và VPC Flow Logs cho monitoring</p>
+        </div>
+    </div>
+</body>
+</html>
