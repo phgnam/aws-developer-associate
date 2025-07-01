@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: VPC Connectivity Options</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-peering { border-color: #FF9900; }
+        .branch-peering .branch-title { color: #FF9900; }
+        
+        .branch-endpoints { border-color: #1E88E5; }
+        .branch-endpoints .branch-title { color: #1E88E5; }
+        
+        .branch-vpn { border-color: #43A047; }
+        .branch-vpn .branch-title { color: #43A047; }
+        
+        .branch-directconnect { border-color: #8E24AA; }
+        .branch-directconnect .branch-title { color: #8E24AA; }
+        
+        .branch-comparison { border-color: #F4511E; }
+        .branch-comparison .branch-title { color: #F4511E; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .vpc-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .endpoint-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .service-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .onprem-box { background-color: #e1bee7; border: 2px solid #8e24aa; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-bidirectional {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-bidirectional:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-bidirectional:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .requirement-list li:before {
+            content: "\f0ad";
+            color: #1976d2;
+        }
+        .peering-color { color: #FF9900; }
+        .endpoint-color { color: #1E88E5; }
+        .vpn-color { color: #43A047; }
+        .directconnect-color { color: #8E24AA; }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: VPC Connectivity Options</h1>
+            <span class="text-sm text-gray-500">AWS VPC Networking & Connectivity</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-network-wired text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">VPC Connectivity</h2>
+            </div>
+        </div>
+
+        <!-- VPC Peering Branch -->
+        <div class="branch branch-peering">
+            <h3 class="branch-title text-xl"><i class="fas fa-link mr-2"></i> VPC Peering</h3>
+            <div class="branch-content">
+                <p class="mb-3"><strong>Mục đích:</strong> Kết nối hai VPC với nhau để chúng hoạt động như trong cùng một mạng riêng.</p>
+                
+                <h4 class="font-semibold mb-2">Đặc điểm chính:</h4>
+                <ul class="feature-list">
+                    <li>Kết nối VPC từ different accounts hoặc different regions</li>
+                    <li>Sử dụng mạng riêng của AWS (không qua internet)</li>
+                    <li>Giúp các VPC giao tiếp với nhau một cách an toàn</li>
+                </ul>
+
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box vpc-box">VPC A<br/>10.0.0.0/16</div>
+                        <div class="arrow-bidirectional"></div>
+                        <div class="diagram-box vpc-box">VPC B<br/>172.16.0.0/16</div>
+                    </div>
+                    <div class="flow-label">VPC Peering Connection</div>
+                </div>
+
+                <h4 class="font-semibold mb-2">Yêu cầu quan trọng:</h4>
+                <ul class="feature-list requirement-list">
+                    <li><strong>Non-overlapping IP ranges:</strong> CIDR blocks không được chồng lấp</li>
+                    <li>Ví dụ: VPC A (10.0.0.0/16) và VPC B (172.16.0.0/16) ✅</li>
+                    <li>Ví dụ sai: VPC A (10.0.0.0/16) và VPC B (10.0.1.0/24) ❌</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2">Tính chất không bắc cầu (Non-transitive):</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box vpc-box">VPC A</div>
+                        <div class="arrow-bidirectional"></div>
+                        <div class="diagram-box vpc-box">VPC B</div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="text-center">↕</div>
+                        <div class="text-center"></div>
+                    </div>
+                    <div class="diagram-row">
+                        <div class="diagram-box vpc-box">VPC C</div>
+                        <div class="text-center">❌ Không thể kết nối trực tiếp</div>
+                        <div class="diagram-box vpc-box">VPC B</div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-sm"><strong>Lưu ý:</strong> A-B có peering, A-C có peering, nhưng B-C KHÔNG thể giao tiếp. Cần tạo peering riêng B-C.</p>
+                    </div>
+                </div>
+
+                <ul class="feature-list warning-list">
+                    <li>Càng nhiều VPC, càng cần nhiều peering connections</li>
+                    <li>Cần quản lý route tables cho từng peering connection</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- VPC Endpoints Branch -->
+        <div class="branch branch-endpoints">
+            <h3 class="branch-title text-xl"><i class="fas fa-plug mr-2"></i> VPC Endpoints</h3>
+            <div class="branch-content">
+                <p class="mb-3"><strong>Mục đích:</strong> Kết nối riêng tư đến các AWS services mà không cần qua public internet.</p>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Tại sao cần VPC Endpoints?</h4>
+                    <ul class="feature-list">
+                        <li>Tất cả AWS services đều là public</li>
+                        <li>EC2 instances trong private subnets không thể truy cập internet</li>
+                        <li>VPC Endpoints cung cấp private access</li>
+                        <li>Tăng bảo mật và giảm độ trễ</li>
+                    </ul>
+                </div>
+
+                <h4 class="font-semibold mb-3">1. VPC Endpoint Gateway (Chỉ cho S3 và DynamoDB):</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box vpc-box">Private Subnet<br/>EC2 Instance</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box endpoint-box">VPC Endpoint<br/>Gateway</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box service-box">S3 / DynamoDB</div>
+                    </div>
+                    <div class="flow-label">Private connection (không qua internet)</div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-5">2. VPC Endpoint Interface (Cho các AWS services khác):</h4>
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box vpc-box">Private Subnet<br/>EC2 Instance</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box endpoint-box">VPC Endpoint<br/>Interface (ENI)</div>
+                        <div class="arrow-right"></div>
+                        <div class="diagram-box service-box">CloudWatch<br/>và các AWS services khác</div>
+                    </div>
+                    <div class="flow-label">Private access thông qua ENI trong subnet</div>
+                </div>
+
+                <h4 class="font-semibold mb-2">Lợi ích của VPC Endpoints:</h4>
+                <ul class="feature-list">
+                    <li>Bảo mật: Traffic không đi qua internet</li>
+                    <li>Hiệu năng: Độ trễ thấp hơn</li>
+                    <li>Compliance: Đáp ứng yêu cầu private connectivity</li>
+                    <li>Cost: Có thể giảm NAT Gateway costs</li>
+                </ul>
+
+                <div class="mt-4">
+                    <p class="text-sm bg-blue-50 p-3 rounded"><strong>Quan trọng cho kỳ thi:</strong> Khi câu hỏi yêu cầu "private connection to AWS service", hãy nghĩ đến VPC Endpoints.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Site-to-Site VPN Branch -->
+        <div class="branch branch-vpn">
+            <h3 class="branch-title text-xl"><i class="fas fa-shield-alt mr-2"></i> Site-to-Site VPN</h3>
+            <div class="branch-content">
+                <p class="mb-3"><strong>Mục đích:</strong> Kết nối mạng on-premises với AWS VPC qua kết nối được mã hóa trên public internet.</p>
+                
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box onprem-box">On-premises<br/>Data Center</div>
+                        <div class="arrow-bidirectional"></div>
+                        <div class="text-center">
+                            <i class="fas fa-globe text-2xl text-blue-500"></i><br/>
+                            <span class="text-sm">Public Internet<br/>(Encrypted)</span>
+                        </div>
+                        <div class="arrow-bidirectional"></div>
+                        <div class="diagram-box vpc-box">AWS VPC</div>
+                    </div>
+                    <div class="flow-label">VPN Connection - Encrypted tunnel over internet</div>
+                </div>
+
+                <h4 class="font-semibold mb-2">Đặc điểm chính:</h4>
+                <ul class="feature-list">
+                    <li><strong>Mã hóa tự động:</strong> Tất cả traffic được mã hóa</li>
+                    <li><strong>Qua public internet:</strong> Sử dụng kết nối internet hiện có</li>
+                    <li><strong>Thiết lập nhanh:</strong> Có thể setup trong vài phút</li>
+                    <li><strong>Cost-effective:</strong> Chi phí thấp cho kết nối cơ bản</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2">Use Cases:</h4>
+                <ul class="feature-list">
+                    <li>Kết nối office với AWS VPC</li>
+                    <li>Hybrid cloud architecture</li>
+                    <li>Development và testing environments</li>
+                    <li>Disaster recovery setup</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2">Hạn chế:</h4>
+                <ul class="feature-list warning-list">
+                    <li>Phụ thuộc vào chất lượng internet connection</li>
+                    <li>Bandwidth có thể bị giới hạn</li>
+                    <li>Độ trễ có thể thay đổi tùy thuộc vào internet</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Direct Connect Branch -->
+        <div class="branch branch-directconnect">
+            <h3 class="branch-title text-xl"><i class="fas fa-ethernet mr-2"></i> Direct Connect</h3>
+            <div class="branch-content">
+                <p class="mb-3"><strong>Mục đích:</strong> Thiết lập kết nối vật lý riêng tư giữa on-premises và AWS VPC.</p>
+                
+                <div class="diagram-container">
+                    <div class="diagram-row">
+                        <div class="diagram-box onprem-box">On-premises<br/>Data Center</div>
+                        <div class="arrow-bidirectional"></div>
+                        <div class="text-center">
+                            <i class="fas fa-server text-2xl text-purple-500"></i><br/>
+                            <span class="text-sm">Private Network<br/>(Dedicated Line)</span>
+                        </div>
+                        <div class="arrow-bidirectional"></div>
+                        <div class="diagram-box vpc-box">AWS VPC</div>
+                    </div>
+                    <div class="flow-label">Direct Connect - Physical private connection</div>
+                </div>
+
+                <h4 class="font-semibold mb-2">Đặc điểm chính:</h4>
+                <ul class="feature-list">
+                    <li><strong>Kết nối vật lý:</strong> Dedicated physical connection</li>
+                    <li><strong>Private network:</strong> Không đi qua public internet</li>
+                    <li><strong>Secure và fast:</strong> Bảo mật và tốc độ cao</li>
+                    <li><strong>Predictable performance:</strong> Bandwidth và latency ổn định</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2">Timeline và Setup:</h4>
+                <ul class="feature-list requirement-list">
+                    <li><strong>Thời gian thiết lập:</strong> Ít nhất 1 tháng</li>
+                    <li><strong>Physical work:</strong> Cần lắp đặt đường truyền vật lý</li>
+                    <li><strong>AWS coordination:</strong> Phối hợp với AWS để thiết lập</li>
+                    <li><strong>Higher cost:</strong> Chi phí cao hơn VPN</li>
+                </ul>
+
+                <h4 class="font-semibold mb-2">Use Cases:</h4>
+                <ul class="feature-list">
+                    <li>Enterprise workloads cần high bandwidth</li>
+                    <li>Mission-critical applications</li>
+                    <li>Large data transfers</li>
+                    <li>Compliance requirements cho private connectivity</li>
+                    <li>Production workloads cần consistent performance</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Comparison Branch -->
+        <div class="branch branch-comparison">
+            <h3 class="branch-title text-xl"><i class="fas fa-balance-scale mr-2"></i> So sánh các phương pháp kết nối</h3>
+            <div class="branch-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Phương pháp</th>
+                            <th width="25%">Mục đích</th>
+                            <th width="20%">Thời gian setup</th>
+                            <th width="15%">Chi phí</th>
+                            <th width="15%">Bảo mật</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">VPC Peering</td>
+                            <td>Kết nối VPC-to-VPC</td>
+                            <td>Vài phút</td>
+                            <td>Thấp</td>
+                            <td>Private AWS network</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">VPC Endpoints</td>
+                            <td>Private access to AWS services</td>
+                            <td>Vài phút</td>
+                            <td>Trung bình</td>
+                            <td>Private (không qua internet)</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Site-to-Site VPN</td>
+                            <td>On-premises to VPC</td>
+                            <td>Vài phút</td>
+                            <td>Thấp</td>
+                            <td>Encrypted over internet</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Direct Connect</td>
+                            <td>On-premises to VPC</td>
+                            <td>1+ tháng</td>
+                            <td>Cao</td>
+                            <td>Private dedicated line</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-5">
+                    <h4 class="font-semibold mb-3">VPN vs Direct Connect - Chi tiết so sánh:</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="font-semibold mb-2 vpn-color">Site-to-Site VPN</h5>
+                            <ul class="feature-list">
+                                <li>Setup nhanh (minutes)</li>
+                                <li>Chi phí thấp</li>
+                                <li>Sử dụng internet connection hiện có</li>
+                                <li>Bandwidth phụ thuộc vào internet</li>
+                                <li>Phù hợp cho dev/test environments</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-2 directconnect-color">Direct Connect</h5>
+                            <ul class="feature-list">
+                                <li>Setup chậm (1+ months)</li>
+                                <li>Chi phí cao</li>
+                                <li>Dedicated physical connection</li>
+                                <li>Guaranteed bandwidth và performance</li>
+                                <li>Phù hợp cho production workloads</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lựa chọn phù hợp:</h4>
+                    <ul class="feature-list">
+                        <li><strong>VPC Peering:</strong> Khi cần kết nối nhiều VPC với nhau</li>
+                        <li><strong>VPC Endpoints:</strong> Khi cần private access to AWS services</li>
+                        <li><strong>Site-to-Site VPN:</strong> Kết nối nhanh, cost-effective cho hybrid cloud</li>
+                        <li><strong>Direct Connect:</strong> Enterprise workloads, high bandwidth, mission-critical</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về VPC Connectivity Options - Các phương pháp kết nối mạng trong AWS</p>
+        </div>
+    </div>
+</body>
+</html>
