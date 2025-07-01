@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Solution Architecture Examples - Mind Map cho Người Mới Học</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1400px;
+        }
+        .central-topic {
+            background: linear-gradient(135deg, #232F3E, #FF9900);
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .progress-tracker {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .progress-bar {
+            background-color: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: white;
+            height: 100%;
+            width: 75%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 4px solid;
+            padding-left: 20px;
+            position: relative;
+        }
+        .branch::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: inherit;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .branch-threetier { border-color: #FF9900; }
+        .branch-threetier .branch-title { color: #FF9900; }
+        .branch-threetier::before { background-color: #FF9900; }
+        
+        .branch-lamp { border-color: #1E88E5; }
+        .branch-lamp .branch-title { color: #1E88E5; }
+        .branch-lamp::before { background-color: #1E88E5; }
+        
+        .branch-wordpress { border-color: #43A047; }
+        .branch-wordpress .branch-title { color: #43A047; }
+        .branch-wordpress::before { background-color: #43A047; }
+        
+        .branch-progress { border-color: #8E24AA; }
+        .branch-progress .branch-title { color: #8E24AA; }
+        .branch-progress::before { background-color: #8E24AA; }
+        
+        .architecture-diagram {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid #e0e6ed;
+        }
+        .tier-container {
+            display: flex;
+            flex-direction: column;
+            margin: 15px 0;
+            position: relative;
+        }
+        .tier-label {
+            background-color: #232F3E;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: inline-block;
+            align-self: center;
+        }
+        .tier-components {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .component-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            min-width: 140px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid;
+            transition: transform 0.2s ease;
+        }
+        .component-box:hover {
+            transform: translateY(-2px);
+        }
+        .public-component { border-color: #FF6B6B; background: linear-gradient(135deg, #fff, #ffe6e6); }
+        .private-component { border-color: #4ECDC4; background: linear-gradient(135deg, #fff, #e6fffe); }
+        .data-component { border-color: #45B7D1; background: linear-gradient(135deg, #fff, #e6f3ff); }
+        
+        .connection-arrow {
+            align-self: center;
+            margin: 10px 0;
+        }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #666;
+        }
+        .beginner-tip {
+            background: linear-gradient(135deg, #FFF3CD, #FFFACD);
+            border: 1px solid #FFE69C;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            position: relative;
+        }
+        .beginner-tip::before {
+            content: "\f0eb";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #856404;
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+        .lamp-stack {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .lamp-component {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 3px solid;
+            transition: all 0.3s ease;
+        }
+        .lamp-component:hover {
+            transform: scale(1.05);
+        }
+        .linux-comp { border-color: #E74C3C; background: linear-gradient(135deg, #fff, #ffeaea); }
+        .apache-comp { border-color: #3498DB; background: linear-gradient(135deg, #fff, #eaf4ff); }
+        .mysql-comp { border-color: #F39C12; background: linear-gradient(135deg, #fff, #fff8ea); }
+        .php-comp { border-color: #9B59B6; background: linear-gradient(135deg, #fff, #f4eaff); }
+        
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.5;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+            font-size: 1.1rem;
+        }
+        .learning-checkpoint {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .checkpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .checkpoint-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .wordpress-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .flow-step {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #43A047;
+            max-width: 300px;
+        }
+        .complexity-meter {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .complexity-bars {
+            display: flex;
+            gap: 3px;
+            margin-left: 10px;
+        }
+        .complexity-bar {
+            width: 20px;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 2px;
+        }
+        .complexity-bar.filled { background-color: #4CAF50; }
+        .complexity-bar.medium { background-color: #FF9800; }
+        .complexity-bar.hard { background-color: #F44336; }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">AWS Solution Architecture Examples</h1>
+            <p class="text-lg text-gray-600">Mind Map cho Người Mới Học AWS</p>
+        </div>
+
+        <div class="progress-tracker">
+            <h3 class="text-xl font-bold mb-2"><i class="fas fa-chart-line mr-2"></i>Tiến Độ Học Tập của Bạn</h3>
+            <p>Bạn đã hoàn thành: <strong>VPC Basics → EC2 → Load Balancers → Route 53 → Auto Scaling</strong></p>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p class="mt-2 text-sm">75% - Giờ bạn đã sẵn sàng để hiểu các kiến trúc thực tế!</p>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-building text-4xl mb-3"></i>
+                <h2 class="text-xl font-bold">AWS Solution</h2>
+                <h2 class="text-xl font-bold">Architecture</h2>
+                <p class="text-sm mt-2">Kiến trúc thực tế</p>
+            </div>
+        </div>
+
+        <!-- Three-Tier Architecture Branch -->
+        <div class="branch branch-threetier">
+            <h3 class="branch-title"><i class="fas fa-layer-group mr-3"></i>Kiến Trúc 3 Tầng (Three-Tier Architecture)</h3>
+            <div class="branch-content">
+                <div class="beginner-tip">
+                    <strong>Tại sao học VPC trước?</strong> Để hiểu được kiến trúc 3 tầng này! Tất cả những gì chúng ta đã học (VPC, subnets, security groups) đều để xây dựng kiến trúc này.
+                </div>
+
+                <div class="complexity-meter">
+                    <span class="font-semibold">Độ phức tạp:</span>
+                    <div class="complexity-bars">
+                        <div class="complexity-bar filled"></div>
+                        <div class="complexity-bar filled"></div>
+                        <div class="complexity-bar medium"></div>
+                        <div class="complexity-bar"></div>
+                        <div class="complexity-bar"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-600">Trung bình - Phù hợp sau khi học VPC</span>
+                </div>
+
+                <div class="architecture-diagram">
+                    <h4 class="text-center font-bold text-lg mb-4">Mô Hình Kiến Trúc 3 Tầng</h4>
+                    
+                    <!-- Tier 1: Presentation Layer -->
+                    <div class="tier-container">
+                        <div class="tier-label">🌐 Tầng 1: Presentation (Giao diện người dùng)</div>
+                        <div class="tier-components">
+                            <div class="component-box public-component">
+                                <i class="fas fa-users text-2xl mb-2 text-red-500"></i>
+                                <h5 class="font-bold">Users</h5>
+                                <p class="text-sm">Người dùng internet</p>
+                            </div>
+                            <div class="component-box public-component">
+                                <i class="fas fa-globe text-2xl mb-2 text-red-500"></i>
+                                <h5 class="font-bold">Route 53</h5>
+                                <p class="text-sm">DNS service</p>
+                            </div>
+                            <div class="component-box public-component">
+                                <i class="fas fa-balance-scale text-2xl mb-2 text-red-500"></i>
+                                <h5 class="font-bold">Elastic Load Balancer</h5>
+                                <p class="text-sm">Public Subnets (Multi-AZ)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connection-arrow">
+                        <div class="arrow-down"></div>
+                    </div>
+
+                    <!-- Tier 2: Application Layer -->
+                    <div class="tier-container">
+                        <div class="tier-label">⚙️ Tầng 2: Application (Logic ứng dụng)</div>
+                        <div class="tier-components">
+                            <div class="component-box private-component">
+                                <i class="fas fa-server text-2xl mb-2 text-teal-500"></i>
+                                <h5 class="font-bold">Auto Scaling Group</h5>
+                                <p class="text-sm">EC2 Instances</p>
+                                <p class="text-xs">Private Subnets (Multi-AZ)</p>
+                            </div>
+                            <div class="component-box private-component">
+                                <i class="fas fa-shield-alt text-2xl mb-2 text-teal-500"></i>
+                                <h5 class="font-bold">Security Groups</h5>
+                                <p class="text-sm">Chỉ nhận traffic từ ELB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connection-arrow">
+                        <div class="arrow-down"></div>
+                    </div>
+
+                    <!-- Tier 3: Data Layer -->
+                    <div class="tier-container">
+                        <div class="tier-label">🗄️ Tầng 3: Data (Lưu trữ dữ liệu)</div>
+                        <div class="tier-components">
+                            <div class="component-box data-component">
+                                <i class="fas fa-database text-2xl mb-2 text-blue-500"></i>
+                                <h5 class="font-bold">Amazon RDS</h5>
+                                <p class="text-sm">Database chính</p>
+                                <p class="text-xs">Data Subnets</p>
+                            </div>
+                            <div class="component-box data-component">
+                                <i class="fas fa-memory text-2xl mb-2 text-blue-500"></i>
+                                <h5 class="font-bold">ElastiCache</h5>
+                                <p class="text-sm">Cache & Session Store</p>
+                                <p class="text-xs">Data Subnets</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beginner-tip">
+                    <strong>Tại sao phải tách tầng?</strong>
+                    <ul class="feature-list mt-2">
+                        <li><strong>Bảo mật:</strong> Database không thể truy cập trực tiếp từ internet</li>
+                        <li><strong>Mở rộng:</strong> Mỗi tầng có thể scale độc lập</li>
+                        <li><strong>Bảo trì:</strong> Dễ dàng nâng cấp từng phần</li>
+                        <li><strong>Chi phí:</strong> Tối ưu chi phí cho từng tầng</li>
+                    </ul>
+                </div>
+
+                <div class="learning-checkpoint">
+                    <h4 class="text-lg font-bold mb-3">✅ Checkpoint: Bạn đã hiểu được gì?</h4>
+                    <div class="checkpoint-grid">
+                        <div class="checkpoint-item">
+                            <i class="fas fa-check-circle text-2xl mb-2"></i>
+                            <p>Tại sao cần Public Subnets cho ELB</p>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fas fa-check-circle text-2xl mb-2"></i>
+                            <p>Tại sao EC2 ở Private Subnets</p>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fas fa-check-circle text-2xl mb-2"></i>
+                            <p>Cách Route Tables hoạt động</p>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fas fa-check-circle text-2xl mb-2"></i>
+                            <p>Kiến trúc Multi-AZ cho HA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAMP Stack Branch -->
+        <div class="branch branch-lamp">
+            <h3 class="branch-title"><i class="fas fa-code mr-3"></i>LAMP Stack trên AWS</h3>
+            <div class="branch-content">
+                <div class="beginner-tip">
+                    <strong>LAMP là gì?</strong> Là một combo công nghệ phổ biến để xây dựng website. Hiểu LAMP sẽ giúp bạn biết cách deploy ứng dụng web lên AWS.
+                </div>
+
+                <div class="complexity-meter">
+                    <span class="font-semibold">Độ phức tạp:</span>
+                    <div class="complexity-bars">
+                        <div class="complexity-bar filled"></div>
+                        <div class="complexity-bar filled"></div>
+                        <div class="complexity-bar"></div>
+                        <div class="complexity-bar"></div>
+                        <div class="complexity-bar"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-600">Dễ - Khái niệm cơ bản</span>
+                </div>
+
+                <div class="lamp-stack">
+                    <div class="lamp-component linux-comp">
+                        <i class="fab fa-linux text-4xl mb-3 text-red-600"></i>
+                        <h4 class="font-bold text-lg">L - Linux</h4>
+                        <p class="text-sm mb-2">Hệ điều hành</p>
+                        <ul class="text-xs text-left">
+                            <li>• Chạy trên EC2 instances</li>
+                            <li>• Amazon Linux 2 recommended</li>
+                            <li>• Miễn phí và ổn định</li>
+                        </ul>
+                    </div>
+
+                    <div class="lamp-component apache-comp">
+                        <i class="fas fa-server text-4xl mb-3 text-blue-600"></i>
+                        <h4 class="font-bold text-lg">A - Apache</h4>
+                        <p class="text-sm mb-2">Web server</p>
+                        <ul class="text-xs text-left">
+                            <li>• Xử lý HTTP requests</li>
+                            <li>• Serve static files</li>
+                            <li>• Chạy trên EC2</li>
+                        </ul>
+                    </div>
+
+                    <div class="lamp-component mysql-comp">
+                        <i class="fas fa-database text-4xl mb-3 text-yellow-600"></i>
+                        <h4 class="font-bold text-lg">M - MySQL</h4>
+                        <p class="text-sm mb-2">Database</p>
+                        <ul class="text-xs text-left">
+                            <li>• Sử dụng Amazon RDS</li>
+                            <li>• Managed database service</li>
+                            <li>• Auto backup & scaling</li>
+                        </ul>
+                    </div>
+
+                    <div class="lamp-component php-comp">
+                        <i class="fab fa-php text-4xl mb-3 text-purple-600"></i>
+                        <h4 class="font-bold text-lg">P - PHP</h4>
+                        <p class="text-sm mb-2">Application logic</p>
+                        <ul class="text-xs text-left">
+                            <li>• Xử lý business logic</li>
+                            <li>• Render dynamic pages</li>
+                            <li>• Chạy trên EC2</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="architecture-diagram">
+                    <h4 class="text-center font-bold text-lg mb-4">LAMP Stack + AWS Services</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <h5 class="font-bold mb-3">Core LAMP</h5>
+                            <div class="component-box apache-comp mb-2">
+                                <strong>Linux + Apache + PHP</strong><br>
+                                <small>Chạy trên EC2 instances</small>
+                            </div>
+                            <div class="component-box mysql-comp">
+                                <strong>MySQL</strong><br>
+                                <small>Amazon RDS</small>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="font-bold mb-3">AWS Enhancements</h5>
+                            <div class="component-box private-component mb-2">
+                                <strong>ElastiCache</strong><br>
+                                <small>Redis/Memcached caching</small>
+                            </div>
+                            <div class="component-box data-component">
+                                <strong>EBS Volumes</strong><br>
+                                <small>Local storage cho EC2</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beginner-tip">
+                    <strong>Trong thực tế:</strong> LAMP stack rất phổ biến cho websites như WordPress, Drupal, và các ứng dụng web PHP. AWS giúp việc deploy và scale LAMP stack trở nên dễ dàng hơn nhiều so với on-premises.
+                </div>
+            </div>
+        </div>
+
+        <!-- WordPress on AWS Branch -->
+        <div class="branch branch-wordpress">
+            <h3 class="branch-title"><i class="fab fa-wordpress mr-3"></i>WordPress trên AWS</h3>
+            <div class="branch-content">
+                <div class="beginner-tip">
+                    <strong>WordPress là gì?</strong> Là công cụ tạo blog/website phổ biến nhất thế giới. Học cách deploy WordPress trên AWS sẽ giúp bạn hiểu cách áp dụng kiến trúc AWS vào dự án thực tế.
+                </div>
+
+                <div class="complexity-meter">
+                    <span class="font-semibold">Độ phức tạp:</span>
+                    <div class="complexity-bars">
+                        <div class="complexity-bar filled"></div>
+                        <div class="complexity-bar filled"></div>
+                        <div class="complexity-bar medium"></div>
+                        <div class="complexity-bar hard"></div>
+                        <div class="complexity-bar"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-600">Nâng cao - Cần hiểu nhiều AWS services</span>
+                </div>
+
+                <div class="wordpress-flow">
+                    <div class="flow-step">
+                        <i class="fas fa-users text-2xl mb-2"></i>
+                        <h5 class="font-bold">Users Upload Images</h5>
+                        <p class="text-sm">Người dùng tải ảnh lên website</p>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-step">
+                        <i class="fas fa-balance-scale text-2xl mb-2"></i>
+                        <h5 class="font-bold">Load Balancer</h5>
+                        <p class="text-sm">Phân phối request đến EC2 instances</p>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-step">
+                        <i class="fas fa-server text-2xl mb-2"></i>
+                        <h5 class="font-bold">EC2 Instances</h5>
+                        <p class="text-sm">WordPress chạy trên nhiều servers</p>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="flow-step">
+                        <i class="fas fa-folder-open text-2xl mb-2"></i>
+                        <h5 class="font-bold">EFS (Shared Storage)</h5>
+                        <p class="text-sm">Tất cả instances chia sẻ files/images</p>
+                    </div>
+                </div>
+
+                <div class="architecture-diagram">
+                    <h4 class="text-center font-bold text-lg mb-4">Vấn đề và Giải pháp</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <h5 class="font-bold text-red-600 mb-3">❌ Vấn đề</h5>
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <p class="text-sm">Khi user upload ảnh lên EC2 Instance A, nhưng request tiếp theo được gửi đến EC2 Instance B thì sẽ không thấy ảnh đó!</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="font-bold text-green-600 mb-3">✅ Giải pháp: EFS</h5>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <p class="text-sm">EFS (Elastic File System) cho phép tất cả EC2 instances chia sẻ cùng một storage, giải quyết vấn đề file sharing!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beginner-tip">
+                    <strong>EFS là gì?</strong>
+                    <ul class="feature-list mt-2">
+                        <li><strong>Network File System:</strong> Storage có thể truy cập từ nhiều EC2 instances</li>
+                        <li><strong>Multi-AZ:</strong> Tự động tạo ENI (network interfaces) ở mỗi AZ</li>
+                        <li><strong>Shared Storage:</strong> Perfect cho WordPress, web apps cần share files</li>
+                        <li><strong>Elastic:</strong> Tự động scale storage khi cần</li>
+                    </ul>
+                </div>
+
+                <div class="learning-checkpoint">
+                    <h4 class="text-lg font-bold mb-3">🎯 Thử thách: Kiến trúc WordPress hoàn chỉnh</h4>
+                    <p class="mb-3">AWS có một kiến trúc WordPress hoàn chỉnh. Với những gì đã học, bạn có thể hiểu được 90% diagram này!</p>
+                    <div class="checkpoint-grid">
+                        <div class="checkpoint-item">
+                            <i class="fas fa-cloud text-2xl mb-2"></i>
+                            <p>CloudFront & S3</p>
+                            <small>(Sẽ học sớm!)</small>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fas fa-database text-2xl mb-2"></i>
+                            <p>Aurora Database</p>
+                            <small>(Đã học)</small>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fas fa-folder-open text-2xl mb-2"></i>
+                            <p>EFS File System</p>
+                            <small>(Vừa học)</small>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fas fa-route text-2xl mb-2"></i>
+                            <p>NAT Gateway, IGW</p>
+                            <small>(Đã học)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress and Next Steps -->
+        <div class="branch branch-progress">
+            <h3 class="branch-title"><i class="fas fa-graduation-cap mr-3"></i>Bạn Đã Học Được Rất Nhiều!</h3>
+            <div class="branch-content">
+                <div class="learning-checkpoint">
+                    <h4 class="text-xl font-bold mb-4">🏆 Chúc mừng! Bạn đã hiểu được Solution Architecture</h4>
+                    <p class="mb-4">Mục tiêu của phần VPC là để đến được đây - hiểu cách xây dựng kiến trúc thực tế trên AWS!</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-4 text-left">
+                        <div class="checkpoint-item">
+                            <h5 class="font-bold mb-2">✅ Đã Học</h5>
+                            <ul class="text-sm space-y-1">
+                                <li>• VPC & Subnets</li>
+                                <li>• EC2 & Security Groups</li>
+                                <li>• Load Balancers</li>
+                                <li>• Auto Scaling</li>
+                                <li>• RDS & ElastiCache</li>
+                                <li>• Route 53</li>
+                            </ul>
+                        </div>
+                        <div class="checkpoint-item">
+                            <h5 class="font-bold mb-2">🎯 Hiện Tại</h5>
+                            <ul class="text-sm space-y-1">
+                                <li>• Three-Tier Architecture</li>
+                                <li>• LAMP Stack</li>
+                                <li>• WordPress deployment</li>
+                                <li>• EFS file sharing</li>
+                            </ul>
+                        </div>
+                        <div class="checkpoint-item">
+                            <h5 class="font-bold mb-2">🚀 Sắp Học</h5>
+                            <ul class="text-sm space-y-1">
+                                <li>• S3 Storage</li>
+                                <li>• CloudFront CDN</li>
+                                <li>• Lambda Functions</li>
+                                <li>• More Developer Tools</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beginner-tip">
+                    <strong>Lời khuyên cho Developer:</strong> Những kiến trúc này rất quan trọng trong thực tế. Khi bạn làm việc với AWS, 80% các project sẽ sử dụng những pattern này. Hiểu được foundation này sẽ giúp bạn tự tin hơn khi làm việc với AWS!
+                </div>
+
+                <div class="architecture-diagram">
+                    <h4 class="text-center font-bold text-lg mb-4">🎯 Next: Course trở nên "Developer-focused" hơn!</h4>
+                    <div class="text-center">
+                        <div class="component-box data-component" style="max-width: 400px; margin: 0 auto;">
+                            <i class="fas fa-code text-3xl mb-3"></i>
+                            <h5 class="font-bold">Upcoming Topics</h5>
+                            <p class="text-sm">S3, CloudFront, Lambda, APIs, và nhiều developer tools khác sẽ giúp bạn build các ứng dụng thực tế!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-2">🌟 Bạn đã sẵn sàng cho các chủ đề tiếp theo!</h3>
+                <p>Từ giờ course sẽ focus nhiều hơn vào development với AWS services cụ thể.</p>
+                <p class="text-sm mt-2 opacity-90">Mind map này tổng kết những kiến thức foundation quan trọng nhất cho AWS Developer.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
