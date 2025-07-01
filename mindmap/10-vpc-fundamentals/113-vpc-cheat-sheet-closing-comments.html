@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPC Summary & Key Concepts for Developer Exam - Mind Map</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-essential { border-color: #FF9900; }
+        .branch-essential .branch-title { color: #FF9900; }
+        
+        .branch-networking { border-color: #1E88E5; }
+        .branch-networking .branch-title { color: #1E88E5; }
+        
+        .branch-security { border-color: #43A047; }
+        .branch-security .branch-title { color: #43A047; }
+        
+        .branch-connectivity { border-color: #8E24AA; }
+        .branch-connectivity .branch-title { color: #8E24AA; }
+        
+        .branch-exam { border-color: #F4511E; }
+        .branch-exam .branch-title { color: #F4511E; }
+        
+        .branch-guidance { border-color: #795548; }
+        .branch-guidance .branch-title { color: #795548; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+        .comparison-table th {
+            background-color: #232F3E;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .comparison-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table .feature {
+            font-weight: 500;
+            background-color: #f1f1f1;
+        }
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+        }
+        .diagram-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .vpc-box { background-color: #e1f5fe; border: 2px solid #0277bd; }
+        .subnet-box { background-color: #f3e5f5; border: 2px solid #7b1fa2; }
+        .gateway-box { background-color: #e8f5e8; border: 2px solid #2e7d32; }
+        .security-box { background-color: #fff3e0; border: 2px solid #ef6c00; }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .important-list li:before {
+            content: "\f005";
+            color: #FF9900;
+        }
+        .exam-list li:before {
+            content: "\f19d";
+            color: #F4511E;
+        }
+        .guidance-list li:before {
+            content: "\f0eb";
+            color: #795548;
+        }
+        .highlight-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .stress-relief {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">VPC Summary & Key Concepts for Developer Exam</h1>
+            <span class="text-sm text-gray-500">Essential VPC Knowledge for AWS Certified Developer</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-network-wired text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">VPC Summary</h2>
+                <p class="text-sm">Developer Exam Focus</p>
+            </div>
+        </div>
+
+        <!-- Essential Concepts Branch -->
+        <div class="branch branch-essential">
+            <h3 class="branch-title text-xl"><i class="fas fa-star mr-2"></i> Essential VPC Concepts (Must Remember)</h3>
+            <div class="branch-content">
+                <div class="stress-relief">
+                    <h4 class="font-bold text-lg text-blue-700 mb-2">🎯 DON'T STRESS - You've Got This!</h4>
+                    <p class="text-blue-600">Chỉ cần nhớ các concepts cơ bản dưới đây. Tôi sẽ nhắc lại khi cần thiết trong khóa học!</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">1. VPC (Virtual Private Cloud):</h4>
+                        <ul class="feature-list important-list">
+                            <li>Một default VPC cho mỗi AWS region</li>
+                            <li>Chúng ta đã sử dụng default VPC suốt khóa học</li>
+                            <li>Nơi chúng ta tạo EC2 instances</li>
+                            <li>Private network trong AWS cloud</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">2. Subnets:</h4>
+                        <ul class="feature-list important-list">
+                            <li>Gắn liền với Availability Zone cụ thể</li>
+                            <li>Network partition của VPC</li>
+                            <li>Nơi chúng ta launch EC2 instances</li>
+                            <li>Public subnet: có thể truy cập từ internet</li>
+                            <li>Private subnet: không thể truy cập từ internet</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">3. Internet Gateway:</h4>
+                        <ul class="feature-list important-list">
+                            <li>Cung cấp internet access cho public subnets</li>
+                            <li>Defined ở VPC level</li>
+                            <li>Làm cho subnet trở thành "public"</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">4. NAT Gateway/Instance:</h4>
+                        <ul class="feature-list important-list">
+                            <li>Internet access cho private subnets</li>
+                            <li>EC2 trong private subnet có thể truy cập internet</li>
+                            <li>Nhưng internet không thể truy cập EC2</li>
+                            <li>NAT Gateway: AWS managed (recommended)</li>
+                            <li>NAT Instance: Self managed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Branch -->
+        <div class="branch branch-security">
+            <h3 class="branch-title text-xl"><i class="fas fa-shield-alt mr-2"></i> VPC Security Mechanisms</h3>
+            <div class="branch-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th width="25%">Feature</th>
+                            <th width="35%">Network ACL (NACL)</th>
+                            <th width="40%">Security Groups</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature">Level</td>
+                            <td>Subnet level (first defense)</td>
+                            <td>EC2 instance/ENI level (second defense)</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Rules</td>
+                            <td>Allow AND Deny rules</td>
+                            <td>Allow rules only</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">State</td>
+                            <td>Stateless (configure in & out)</td>
+                            <td>Stateful (return traffic auto-allowed)</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">References</td>
+                            <td>IP addresses only</td>
+                            <td>IP addresses OR other Security Groups</td>
+                        </tr>
+                        <tr>
+                            <td class="feature">Course Usage</td>
+                            <td>Default NACL allows everything (not modified)</td>
+                            <td>Used extensively throughout course</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">VPC Flow Logs:</h4>
+                    <ul class="feature-list">
+                        <li>Capture all IP traffic going into VPC interfaces</li>
+                        <li>Monitor và troubleshoot connectivity issues</li>
+                        <li>Shows allowed and denied traffic</li>
+                        <li>Includes AWS managed services (ELB, ElastiCache, RDS, Aurora)</li>
+                        <li>Send to S3, CloudWatch Logs, or Kinesis Data Firehose</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connectivity Branch -->
+        <div class="branch branch-connectivity">
+            <h3 class="branch-title text-xl"><i class="fas fa-link mr-2"></i> VPC Connectivity Options</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">VPC-to-VPC Connectivity:</h4>
+                        <ul class="feature-list">
+                            <li><strong>VPC Peering:</strong> Connect 2 VPCs together</li>
+                            <li>Must have non-overlapping IP ranges</li>
+                            <li>NOT transitive (must create peering for each VPC pair)</li>
+                            <li>Cross-account or cross-region support</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">VPC-to-AWS Services:</h4>
+                        <ul class="feature-list">
+                            <li><strong>VPC Endpoints:</strong> Private access to AWS services</li>
+                            <li>No internet required for AWS service access</li>
+                            <li>Important for exam - private connectivity</li>
+                            <li>Will see in future lectures</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">VPC-to-On-Premises:</h4>
+                        <ul class="feature-list">
+                            <li><strong>Site-to-Site VPN:</strong> VPN over public internet</li>
+                            <li>Quick setup (minutes)</li>
+                            <li>Lower cost option</li>
+                        </ul>
+                        <ul class="feature-list mt-2">
+                            <li><strong>Direct Connect:</strong> Direct private connection</li>
+                            <li>Takes 1+ month to establish</li>
+                            <li>Higher cost, better performance</li>
+                            <li>Private line to AWS</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Preparation Branch -->
+        <div class="branch branch-exam">
+            <h3 class="branch-title text-xl"><i class="fas fa-graduation-cap mr-2"></i> Exam Preparation Strategy</h3>
+            <div class="branch-content">
+                <div class="highlight-box">
+                    <h4 class="font-bold text-lg mb-2">🎯 Key Message: DON'T STRESS!</h4>
+                    <p class="text-gray-700">Đây là section khó mà không có hands-on. Bạn chỉ cần nhớ vài concepts cơ bản. Tôi cam kết bạn sẽ sẵn sàng cho mọi câu hỏi VPC trong kỳ thi!</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Exam Question Expectations:</h4>
+                        <ul class="feature-list exam-list">
+                            <li>1-2 questions, có thể 3 questions maximum</li>
+                            <li>High-level conceptual questions</li>
+                            <li>Basic VPC component understanding</li>
+                            <li>When to use which connectivity option</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">Focus Areas for Developer Exam:</h4>
+                        <ul class="feature-list exam-list">
+                            <li>VPC Endpoints (very important)</li>
+                            <li>Default VPC behavior</li>
+                            <li>Security Groups vs NACLs (basic differences)</li>
+                            <li>Public vs Private subnets</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">NOT Required for Developer Exam:</h4>
+                        <ul class="feature-list">
+                            <li>Detailed VPC configuration</li>
+                            <li>Complex routing scenarios</li>
+                            <li>Advanced networking concepts</li>
+                            <li>Hands-on VPC setup</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">Different from Other Exams:</h4>
+                        <ul class="feature-list">
+                            <li>Solutions Architect: In-depth VPC knowledge required</li>
+                            <li>SysOps: Detailed VPC configuration needed</li>
+                            <li>Developer: High-level understanding sufficient</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Guidance Branch -->
+        <div class="branch branch-guidance">
+            <h3 class="branch-title text-xl"><i class="fas fa-lightbulb mr-2"></i> Learning Approach & Guidance</h3>
+            <div class="branch-content">
+                <div class="stress-relief">
+                    <h4 class="font-bold text-lg text-green-700 mb-2">📚 Integrated Learning Strategy</h4>
+                    <p class="text-green-600">VPC concepts sẽ được nhắc lại khi chúng ta sử dụng trong các lectures tiếp theo. Không cần lo lắng!</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Course Integration Plan:</h4>
+                        <ul class="feature-list guidance-list">
+                            <li>VPC features được highlight khi cần thiết</li>
+                            <li>Contextual learning với các AWS services khác</li>
+                            <li>Lambda functions sẽ sử dụng VPC concepts</li>
+                            <li>VPC Endpoints sẽ xuất hiện trong future lectures</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">Don't Worry Strategy:</h4>
+                        <ul class="feature-list guidance-list">
+                            <li>Không cần master mọi thứ ngay bây giờ</li>
+                            <li>Come back to this section later nếu cần</li>
+                            <li>Focus vào development, không phải networking</li>
+                            <li>Course sẽ trở nên developer-focused hơn</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">When to Revisit This Section:</h4>
+                        <ul class="feature-list guidance-list">
+                            <li>Khi gặp VPC concepts trong later lectures</li>
+                            <li>Trước khi làm practice exam questions</li>
+                            <li>Khi cần troubleshoot connectivity issues</li>
+                            <li>Cuối khóa học để review</li>
+                        </ul>
+
+                        <h4 class="font-semibold mb-2 mt-4">Instructor's Promise:</h4>
+                        <ul class="feature-list guidance-list">
+                            <li>VPC concepts sẽ được remind khi relevant</li>
+                            <li>Highlight specific VPC features cần thiết</li>
+                            <li>More developed content coming soon</li>
+                            <li>Trust the process!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box mt-4">
+                    <p class="text-center font-semibold text-gray-700">
+                        💡 "Trust me, it's gonna get a lot more developer-focused very soon!"<br/>
+                        - Instructor's commitment to better content ahead
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Overview -->
+        <div class="branch branch-networking">
+            <h3 class="branch-title text-xl"><i class="fas fa-sitemap mr-2"></i> Typical VPC Architecture (What We've Been Using)</h3>
+            <div class="branch-content">
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-3 text-center">Default VPC Architecture</h4>
+                    <div class="diagram-row">
+                        <div class="diagram-box vpc-box" style="min-width: 200px;">VPC (Regional)</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box subnet-box">Public Subnet (AZ-A)</div>
+                        <div class="diagram-box subnet-box">Public Subnet (AZ-B)</div>
+                    </div>
+                    <div class="arrow-down"></div>
+                    <div class="diagram-row">
+                        <div class="diagram-box gateway-box">Internet Gateway</div>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <ul class="list-disc ml-4">
+                            <li>Default VPC has only public subnets (no private subnets)</li>
+                            <li>One public subnet per AZ</li>
+                            <li>Our EC2 instances have been launched in these public subnets</li>
+                            <li>Internet Gateway provides internet access</li>
+                            <li>This is what we've been using throughout the course!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>VPC Summary & Key Concepts - Essential knowledge for AWS Certified Developer Associate Exam</p>
+            <p class="mt-2 font-semibold text-blue-600">Remember: Don't stress, you've got this! 🚀</p>
+        </div>
+    </div>
+</body>
+</html>
