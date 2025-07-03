@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon S3 Security - Mind Map cho Người Mới Học</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1400px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 4px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .branch-overview { border-color: #FF9900; }
+        .branch-overview .branch-title { color: #FF9900; }
+        
+        .branch-userbased { border-color: #1E88E5; }
+        .branch-userbased .branch-title { color: #1E88E5; }
+        
+        .branch-resourcebased { border-color: #43A047; }
+        .branch-resourcebased .branch-title { color: #43A047; }
+        
+        .branch-scenarios { border-color: #8E24AA; }
+        .branch-scenarios .branch-title { color: #8E24AA; }
+        
+        .branch-security { border-color: #F4511E; }
+        .branch-security .branch-title { color: #F4511E; }
+        
+        .branch-tips { border-color: #795548; }
+        .branch-tips .branch-title { color: #795548; }
+        
+        .json-code {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .scenario-box {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .scenario-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .access-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .flow-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+        .user-box { background-color: #bbdefb; border: 2px solid #1976d2; }
+        .policy-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .s3-box { background-color: #c8e6c9; border: 2px solid #388e3c; }
+        .cross-account-box { background-color: #f8bbd9; border: 2px solid #e91e63; }
+        .arrow-right {
+            width: 40px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 5px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .security-list li:before {
+            content: "\f3ed";
+            color: #F4511E;
+        }
+        .tips-list li:before {
+            content: "\f0eb";
+            color: #795548;
+        }
+        .permission-box {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        .block-settings {
+            background-color: #ffebee;
+            border: 2px solid #f44336;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header">
+            <h1 class="text-3xl font-bold text-gray-800">🔐 Amazon S3 Security</h1>
+            <span class="text-sm text-gray-500">Mind Map cho Người Mới Học</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-shield-alt text-4xl mb-2"></i>
+                <h2 class="text-xl font-bold">Amazon S3 Security</h2>
+                <p class="text-sm mt-2">Bảo mật S3 Buckets & Objects</p>
+            </div>
+        </div>
+
+        <!-- Overview Branch -->
+        <div class="branch branch-overview">
+            <h3 class="branch-title"><i class="fas fa-eye mr-2"></i> 🎯 Tổng quan về S3 Security</h3>
+            <div class="branch-content">
+                <div class="highlight-box">
+                    <h4 class="font-semibold mb-2">💡 Tại sao S3 Security quan trọng?</h4>
+                    <p>S3 thường chứa dữ liệu nhạy cảm như files khách hàng, backup database, logs ứng dụng. Cấu hình sai có thể dẫn đến data leaks nghiêm trọng!</p>
+                </div>
+                
+                <h4 class="font-semibold mb-3">🔒 Hai loại bảo mật chính:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="scenario-box">
+                        <div class="scenario-title text-blue-600">
+                            <i class="fas fa-user mr-2"></i> User-Based Security
+                        </div>
+                        <ul class="feature-list">
+                            <li>IAM Policies gắn với users/roles</li>
+                            <li>Kiểm soát người nào được làm gì</li>
+                            <li>Quản lý tại user level</li>
+                        </ul>
+                    </div>
+                    <div class="scenario-box">
+                        <div class="scenario-title text-green-600">
+                            <i class="fas fa-database mr-2"></i> Resource-Based Security
+                        </div>
+                        <ul class="feature-list">
+                            <li>S3 Bucket Policies (phổ biến nhất)</li>
+                            <li>Object ACLs (ít dùng)</li>
+                            <li>Bucket ACLs (ít dùng)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="permission-box">
+                    <h4 class="font-semibold mb-2">🤔 Khi nào user có thể access S3 object?</h4>
+                    <p><strong>Điều kiện:</strong> (IAM permissions ALLOW <strong>HOẶC</strong> Resource policies ALLOW) <strong>VÀ</strong> KHÔNG có explicit DENY</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- User-Based Security -->
+        <div class="branch branch-userbased">
+            <h3 class="branch-title"><i class="fas fa-users mr-2"></i> 👤 User-Based Security (IAM)</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">📋 IAM Policies cho S3</h4>
+                <p class="mb-3">Gắn policies vào IAM users, groups, hoặc roles để kiểm soát quyền truy cập S3.</p>
+                
+                <div class="scenario-box">
+                    <div class="scenario-title">
+                        <i class="fas fa-user-cog mr-2"></i> Ví dụ IAM Policy
+                    </div>
+                    <div class="json-code">
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::my-bucket/*"
+    }
+  ]
+}
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Policy này cho phép user đọc và ghi objects trong bucket "my-bucket"</p>
+                </div>
+
+                <h4 class="font-semibold mb-2 mt-4">⚡ Khi nào dùng IAM Policies:</h4>
+                <ul class="feature-list">
+                    <li>Kiểm soát quyền của employees trong company</li>
+                    <li>Quản lý permissions cho applications</li>
+                    <li>Tạo different access levels (read-only, full access)</li>
+                    <li>Apply cho nhiều buckets cùng lúc</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Resource-Based Security -->
+        <div class="branch branch-resourcebased">
+            <h3 class="branch-title"><i class="fas fa-server mr-2"></i> 🗄️ Resource-Based Security</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">🪣 S3 Bucket Policies (Quan trọng nhất!)</h4>
+                <p class="mb-3">JSON-based policies gắn trực tiếp vào S3 bucket, kiểm soát ai có thể access bucket và objects.</p>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">
+                        <i class="fas fa-globe mr-2"></i> Ví dụ: Public Read Access
+                    </div>
+                    <div class="json-code">
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::example-bucket/*"
+    }
+  ]
+}
+                    </div>
+                    <div class="mt-3">
+                        <h5 class="font-semibold">🔍 Giải thích từng phần:</h5>
+                        <ul class="list-disc ml-6 mt-2 text-sm">
+                            <li><strong>Resource:</strong> "example-bucket/*" = áp dụng cho tất cả objects trong bucket</li>
+                            <li><strong>Effect:</strong> "Allow" = cho phép</li>
+                            <li><strong>Principal:</strong> "*" = bất kỳ ai (public)</li>
+                            <li><strong>Action:</strong> "s3:GetObject" = đọc/download objects</li>
+                        </ul>
+                        <p class="text-blue-600 font-semibold mt-2">➡️ Kết quả: Bucket trở thành public read (ai cũng có thể đọc files)</p>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-5">🎯 Khi nào dùng Bucket Policies:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <ul class="feature-list">
+                            <li>Tạo public access cho website static</li>
+                            <li>Cross-account access (cho users từ account khác)</li>
+                            <li>Force encryption khi upload</li>
+                            <li>Restrict access theo IP address</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul class="feature-list">
+                            <li>Grant access cho specific AWS services</li>
+                            <li>Time-based access restrictions</li>
+                            <li>Logging và auditing requirements</li>
+                            <li>Complex permission scenarios</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-5">📝 Access Control Lists (ACLs)</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="scenario-box">
+                        <div class="scenario-title">
+                            <i class="fas fa-file mr-2"></i> Object ACLs
+                        </div>
+                        <ul class="list-disc ml-6 text-sm">
+                            <li>Fine-grained control cho từng object</li>
+                            <li>Có thể disable được</li>
+                            <li>Ít sử dụng trong thực tế</li>
+                            <li>Thường dùng Bucket Policies thay thế</li>
+                        </ul>
+                    </div>
+                    <div class="scenario-box">
+                        <div class="scenario-title">
+                            <i class="fas fa-bucket mr-2"></i> Bucket ACLs
+                        </div>
+                        <ul class="list-disc ml-6 text-sm">
+                            <li>Control ở bucket level</li>
+                            <li>Ít common hơn Object ACLs</li>
+                            <li>Có thể disable được</li>
+                            <li>AWS recommend dùng Bucket Policies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Access Scenarios -->
+        <div class="branch branch-scenarios">
+            <h3 class="branch-title"><i class="fas fa-sitemap mr-2"></i> 🎬 Scenarios Access thực tế</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-4">🌍 Scenario 1: Public Website Access</h4>
+                <div class="scenario-box">
+                    <div class="access-flow">
+                        <div class="flow-box user-box">🌐 Website Visitor</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box policy-box">📋 Bucket Policy<br/>(Allow Public Read)</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box s3-box">🪣 S3 Bucket<br/>(Static Website)</div>
+                    </div>
+                    <p class="text-sm text-center text-gray-600">Sử dụng Bucket Policy để cho phép public access đến static website</p>
+                </div>
+
+                <h4 class="font-semibold mb-4 mt-6">👤 Scenario 2: IAM User Access</h4>
+                <div class="scenario-box">
+                    <div class="access-flow">
+                        <div class="flow-box user-box">👨‍💼 IAM User</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box policy-box">🔑 IAM Policy<br/>(Attached to User)</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box s3-box">🪣 S3 Bucket</div>
+                    </div>
+                    <p class="text-sm text-center text-gray-600">Gắn IAM policy cho user để access S3 bucket</p>
+                </div>
+
+                <h4 class="font-semibold mb-4 mt-6">🖥️ Scenario 3: EC2 Instance Access</h4>
+                <div class="scenario-box">
+                    <div class="access-flow">
+                        <div class="flow-box user-box">💻 EC2 Instance</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box policy-box">🎭 IAM Role<br/>(với S3 permissions)</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box s3-box">🪣 S3 Bucket</div>
+                    </div>
+                    <p class="text-sm text-center text-gray-600">Sử dụng IAM Role (KHÔNG phải IAM User) cho EC2 instances</p>
+                    <div class="warning-list mt-2">
+                        <ul class="feature-list warning-list">
+                            <li><strong>Lưu ý:</strong> KHÔNG bao giờ dùng IAM User cho EC2, luôn dùng IAM Role!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-4 mt-6">🔄 Scenario 4: Cross-Account Access</h4>
+                <div class="scenario-box">
+                    <div class="access-flow">
+                        <div class="flow-box cross-account-box">🏢 Account B<br/>IAM User</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box policy-box">📋 Bucket Policy<br/>(Allow Cross-Account)</div>
+                        <div class="arrow-right"></div>
+                        <div class="flow-box s3-box">🪣 Account A<br/>S3 Bucket</div>
+                    </div>
+                    <p class="text-sm text-center text-gray-600">Phải dùng Bucket Policy để cho phép access từ account khác</p>
+                    
+                    <div class="json-code mt-3">
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT-B-ID:user/specific-user"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/*"
+    }
+  ]
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="branch branch-security">
+            <h3 class="branch-title"><i class="fas fa-lock mr-2"></i> 🛡️ Block Public Access Settings</h3>
+            <div class="branch-content">
+                <div class="block-settings">
+                    <h4 class="font-semibold mb-3 text-red-700">
+                        <i class="fas fa-ban mr-2"></i> Bucket Settings for Block Public Access
+                    </h4>
+                    <p class="mb-3">Extra layer of security để ngăn company data leaks - được AWS tạo ra để bảo vệ khỏi các cấu hình sai!</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="font-semibold mb-2">🚫 Khi ENABLED:</h5>
+                            <ul class="feature-list security-list">
+                                <li>Bucket KHÔNG BAO GIỜ public</li>
+                                <li>Dù có Bucket Policy public</li>
+                                <li>Ngăn chặn data leaks</li>
+                                <li>Safety net cho mistakes</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-2">✅ Khi DISABLED:</h5>
+                            <ul class="feature-list">
+                                <li>Bucket có thể public</li>
+                                <li>Bucket Policy quyết định</li>
+                                <li>Cho phép website static</li>
+                                <li>Cần cẩn thận hơn</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">⚙️ Setting Levels:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="scenario-box">
+                        <div class="scenario-title">
+                            <i class="fas fa-bucket mr-2"></i> Bucket Level
+                        </div>
+                        <ul class="feature-list">
+                            <li>Apply cho specific bucket</li>
+                            <li>Override khi tạo bucket policy</li>
+                            <li>Good for specific use cases</li>
+                        </ul>
+                    </div>
+                    <div class="scenario-box">
+                        <div class="scenario-title">
+                            <i class="fas fa-user-shield mr-2"></i> Account Level
+                        </div>
+                        <ul class="feature-list">
+                            <li>Apply cho ALL buckets trong account</li>
+                            <li>Company-wide protection</li>
+                            <li>Recommend cho production accounts</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-5">🔐 Object Encryption</h4>
+                <div class="scenario-box">
+                    <p class="mb-3">Another way để bảo mật S3 là encrypt objects using encryption keys.</p>
+                    <ul class="feature-list">
+                        <li><strong>Server-Side Encryption:</strong> AWS encrypt khi store</li>
+                        <li><strong>Client-Side Encryption:</strong> Bạn encrypt trước khi upload</li>
+                        <li><strong>In-Transit Encryption:</strong> HTTPS khi transfer</li>
+                        <li><strong>KMS Integration:</strong> Sử dụng AWS Key Management Service</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips for Beginners -->
+        <div class="branch branch-tips">
+            <h3 class="branch-title"><i class="fas fa-lightbulb mr-2"></i> 💡 Tips cho Người Mới</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">🎯 Best Practices:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="font-semibold mb-2 text-green-600">✅ NÊN làm:</h5>
+                        <ul class="feature-list tips-list">
+                            <li>Bắt đầu với Block Public Access ENABLED</li>
+                            <li>Dùng IAM Roles cho EC2 (không phải Users)</li>
+                            <li>Prefer Bucket Policies over ACLs</li>
+                            <li>Test permissions trong dev environment trước</li>
+                            <li>Regular audit S3 permissions</li>
+                            <li>Enable CloudTrail để track S3 API calls</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold mb-2 text-red-600">❌ TRÁNH làm:</h5>
+                        <ul class="feature-list warning-list">
+                            <li>Tắt Block Public Access nếu không cần thiết</li>
+                            <li>Hardcode AWS credentials trong code</li>
+                            <li>Tạo overly permissive policies</li>
+                            <li>Quên review bucket policies định kỳ</li>
+                            <li>Mix IAM policies và Bucket policies phức tạp</li>
+                            <li>Ignore security alerts từ AWS</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box mt-5">
+                    <h4 class="font-semibold mb-2">🔥 Common Beginner Mistakes:</h4>
+                    <ol class="list-decimal ml-6">
+                        <li><strong>Data Leak:</strong> Tắt Block Public Access và set bucket policy public mà không biết</li>
+                        <li><strong>Over-permission:</strong> Cho quá nhiều quyền trong policy ("s3:*" cho tất cả actions)</li>
+                        <li><strong>Wrong Principal:</strong> Dùng sai Principal trong Bucket Policy</li>
+                        <li><strong>EC2 Credentials:</strong> Dùng IAM User thay vì IAM Role cho EC2</li>
+                        <li><strong>Cross-Account:</strong> Quên set up Bucket Policy cho cross-account access</li>
+                    </ol>
+                </div>
+
+                <div class="scenario-box mt-4">
+                    <div class="scenario-title">
+                        <i class="fas fa-graduation-cap mr-2"></i> Chuẩn bị Hands-on
+                    </div>
+                    <p class="mb-2">Bạn đã hiểu theory, giờ sẵn sàng practice! Trong hands-on bạn sẽ:</p>
+                    <ul class="feature-list">
+                        <li>Tạo S3 bucket và configure security settings</li>
+                        <li>Test different access scenarios</li>
+                        <li>Write và apply Bucket Policies</li>
+                        <li>Experience Block Public Access settings</li>
+                        <li>Understand IAM permissions trong thực tế</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>🔐 Amazon S3 Security Mind Map - Bảo mật S3 cho Người Mới Học AWS</p>
+            <p class="mt-1">Nhớ: Security là ưu tiên hàng đầu! Luôn test trong dev environment trước khi apply production.</p>
+        </div>
+    </div>
+</body>
+</html>
