@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon S3 Introduction - Mind Map cho Người Mới Học</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-overview { border-color: #FF9900; }
+        .branch-overview .branch-title { color: #FF9900; }
+        
+        .branch-usecases { border-color: #1E88E5; }
+        .branch-usecases .branch-title { color: #1E88E5; }
+        
+        .branch-buckets { border-color: #43A047; }
+        .branch-buckets .branch-title { color: #43A047; }
+        
+        .branch-objects { border-color: #8E24AA; }
+        .branch-objects .branch-title { color: #8E24AA; }
+        
+        .branch-naming { border-color: #F4511E; }
+        .branch-naming .branch-title { color: #F4511E; }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .beginner-list li:before {
+            content: "\f4ad";
+            color: #1E88E5;
+        }
+        .usecase-list li:before {
+            content: "\f0eb";
+            color: #FF9900;
+        }
+        .bucket-list li:before {
+            content: "\f07b";
+            color: #43A047;
+        }
+        .object-list li:before {
+            content: "\f15b";
+            color: #8E24AA;
+        }
+        .naming-list li:before {
+            content: "\f02b";
+            color: #F4511E;
+        }
+        .diagram-container {
+            background-color: #f1f8ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px dashed #1E88E5;
+        }
+        .bucket-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .bucket-box {
+            background-color: #43A047;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .object-box {
+            background-color: #8E24AA;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 3px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .path-example {
+            background-color: #f8f9fa;
+            border-left: 4px solid #8E24AA;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .tip-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .progress-indicator {
+            background: linear-gradient(90deg, #43A047 70%, #e0e0e0 70%);
+            height: 8px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .emoji-large {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        .simple-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .simple-table th {
+            background-color: #232F3E;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .simple-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .size-comparison {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .size-box {
+            background-color: #e3f2fd;
+            border: 2px solid #1E88E5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 5px;
+            text-align: center;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header">
+            <h1 class="text-3xl font-bold text-gray-800">🗂️ Amazon S3 Introduction</h1>
+            <span class="text-sm text-gray-500">Mind Map cho Người Mới Học AWS</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-cloud text-4xl mb-3"></i>
+                <h2 class="text-xl font-bold">Amazon S3</h2>
+                <p class="text-sm mt-2">Simple Storage Service</p>
+                <p class="text-xs mt-1">♾️ Infinitely Scaling Storage</p>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="text-center mb-6">
+            <p class="text-sm text-gray-600 mb-2">📚 Tiến độ học: S3 Foundations</p>
+            <div class="progress-indicator"></div>
+            <p class="text-xs text-gray-500">70% hoàn thành - Đang học S3 basics</p>
+        </div>
+
+        <!-- Overview Branch -->
+        <div class="branch branch-overview">
+            <h3 class="branch-title"><span class="emoji-large">🏗️</span> Tổng quan & Tầm quan trọng</h3>
+            <div class="branch-content">
+                <div class="tip-box">
+                    <h4 class="font-semibold mb-2">💡 Tại sao S3 quan trọng?</h4>
+                    <p class="mb-3">Amazon S3 là <strong>một trong những building block chính của AWS</strong> - tức là nền tảng cơ bản mà hầu hết các dịch vụ khác đều sử dụng!</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">🌐 Vai trò trong thế giới web:</h4>
+                        <ul class="feature-list beginner-list">
+                            <li><strong>Backbone of the web</strong> - Nhiều website lớn dùng S3 làm nền tảng</li>
+                            <li>Hầu hết AWS services đều tích hợp với S3</li>
+                            <li>Lưu trữ không giới hạn (infinitely scaling)</li>
+                            <li>Truy cập từ mọi nơi trên internet</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">🎯 Đặc điểm chính cho người mới:</h4>
+                        <ul class="feature-list beginner-list">
+                            <li>Giống như "ổ cứng trên cloud" khổng lồ</li>
+                            <li>Lưu trữ files, hình ảnh, video, documents</li>
+                            <li>Trả tiền theo dung lượng sử dụng</li>
+                            <li>Bảo mật và đáng tin cậy cao</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <p class="text-sm"><i class="fas fa-lightbulb text-yellow-600 mr-2"></i><strong>Ghi nhớ:</strong> S3 sẽ xuất hiện trong hầu hết các dịch vụ AWS khác mà bạn học sau này!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases Branch -->
+        <div class="branch branch-usecases">
+            <h3 class="branch-title"><span class="emoji-large">🚀</span> Use Cases - Dùng S3 để làm gì?</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">📱 Use Cases cơ bản (dễ hiểu):</h4>
+                        <ul class="feature-list usecase-list">
+                            <li><strong>Backup & Storage</strong> - Sao lưu files, documents</li>
+                            <li><strong>Photo/Video Storage</strong> - Lưu ảnh, video cho app/website</li>
+                            <li><strong>Website Hosting</strong> - Host website tĩnh</li>
+                            <li><strong>File Sharing</strong> - Chia sẻ files qua link</li>
+                            <li><strong>Content Delivery</strong> - Phân phối nội dung media</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">🏢 Use Cases nâng cao (cho doanh nghiệp):</h4>
+                        <ul class="feature-list usecase-list">
+                            <li><strong>Disaster Recovery</strong> - Sao lưu dữ liệu sang region khác</li>
+                            <li><strong>Data Archival</strong> - Lưu trữ dài hạn với chi phí thấp</li>
+                            <li><strong>Hybrid Cloud</strong> - Mở rộng storage on-premises</li>
+                            <li><strong>Data Lake</strong> - Lưu trữ big data để phân tích</li>
+                            <li><strong>Software Updates</strong> - Phân phối bản cập nhật</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-3 text-center">🏆 Ví dụ thực tế từ các công ty lớn:</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line text-3xl text-blue-600 mb-2"></i>
+                            <h5 class="font-semibold">NASDAQ</h5>
+                            <p class="text-sm">Lưu trữ <strong>7 năm dữ liệu</strong> trong S3 Glacier (dịch vụ archival của S3)</p>
+                        </div>
+                        <div class="text-center">
+                            <i class="fas fa-network-wired text-3xl text-green-600 mb-2"></i>
+                            <h5 class="font-semibold">Sysco</h5>
+                            <p class="text-sm">Chạy <strong>analytics trên dữ liệu</strong> và thu được business insights từ S3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buckets Branch -->
+        <div class="branch branch-buckets">
+            <h3 class="branch-title"><span class="emoji-large">🪣</span> Buckets - "Thùng chứa" trong S3</h3>
+            <div class="branch-content">
+                <div class="tip-box">
+                    <p class="mb-2"><strong>💡 Hiểu đơn giản:</strong> Bucket giống như "thư mục gốc" hoặc "ổ đĩa" để chứa files của bạn.</p>
+                </div>
+
+                <div class="bucket-diagram">
+                    <div class="bucket-box">🪣 my-awesome-bucket</div>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                        <div class="object-box">📄 document.pdf</div>
+                        <div class="object-box">🖼️ photo.jpg</div>
+                        <div class="object-box">🎥 video.mp4</div>
+                        <div class="object-box">📊 data.csv</div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2 text-center">Files trong bucket được gọi là "Objects"</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">📋 Đặc điểm của Buckets:</h4>
+                        <ul class="feature-list bucket-list">
+                            <li><strong>Top-level directories</strong> - Thư mục cấp cao nhất</li>
+                            <li><strong>Globally unique name</strong> - Tên phải duy nhất trên toàn thế giới</li>
+                            <li><strong>Region-specific</strong> - Tạo trong 1 region cụ thể</li>
+                            <li>Chứa "objects" (files) thay vì "files"</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">🌍 Global Uniqueness - Quan trọng!</h4>
+                        <div class="warning-box">
+                            <p class="text-sm mb-2"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i><strong>Chú ý:</strong></p>
+                            <ul class="text-sm">
+                                <li>• Tên bucket phải duy nhất trên <strong>toàn thế giới</strong></li>
+                                <li>• Không chỉ trong account của bạn</li>
+                                <li>• Không chỉ trong region của bạn</li>
+                                <li>• Mà phải duy nhất trong <strong>tất cả AWS accounts</strong>!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-2">🗺️ Bucket vs Region:</h4>
+                    <p class="text-sm mb-3">Mặc dù tên bucket là duy nhất toàn cầu, nhưng bucket được tạo trong 1 region cụ thể:</p>
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                        <div class="text-center">
+                            <div class="bucket-box" style="background-color: #1E88E5;">my-app-bucket</div>
+                            <p class="text-xs mt-2">us-east-1</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bucket-box" style="background-color: #43A047;">my-backup-bucket</div>
+                            <p class="text-xs mt-2">eu-west-1</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bucket-box" style="background-color: #8E24AA;">my-photos-bucket</div>
+                            <p class="text-xs mt-2">ap-southeast-1</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600 text-center mt-3">S3 trông như global service, nhưng buckets được tạo trong region cụ thể!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Objects Branch -->
+        <div class="branch branch-objects">
+            <h3 class="branch-title"><span class="emoji-large">📄</span> Objects - "Files" trong S3</h3>
+            <div class="branch-content">
+                <div class="tip-box">
+                    <p><strong>💡 Hiểu đơn giản:</strong> Objects = Files mà bạn upload vào S3. Nhưng trong S3, chúng được gọi là "objects" và có cấu trúc đặc biệt!</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">🔑 Object Key - "Địa chỉ" của file:</h4>
+                        <p class="text-sm mb-3">Object key = đường dẫn đầy đủ đến file của bạn</p>
+                        
+                        <div class="path-example">
+                            <strong>Ví dụ 1:</strong> File ở thư mục gốc<br>
+                            Key: <code>my-file.txt</code>
+                        </div>
+                        
+                        <div class="path-example">
+                            <strong>Ví dụ 2:</strong> File trong "thư mục"<br>
+                            Key: <code>my-folder1/another-folder/my-file.txt</code><br>
+                            <small class="text-gray-600">Prefix: my-folder1/another-folder/<br>
+                            Object name: my-file.txt</small>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">📂 Thư mục trong S3 - Lưu ý quan trọng!</h4>
+                        <div class="warning-box">
+                            <p class="text-sm mb-2"><i class="fas fa-info-circle text-blue-600 mr-2"></i><strong>Sự thật thú vị:</strong></p>
+                            <ul class="text-sm">
+                                <li>• S3 <strong>không có thư mục thật sự</strong>!</li>
+                                <li>• Những gì bạn thấy là "thư mục" chỉ là <strong>tên dài có chứa dấu "/"</strong></li>
+                                <li>• Mọi thứ đều là "key" với prefix và object name</li>
+                                <li>• UI console tạo ra illusion về thư mục</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-semibold mb-3 mt-4">📊 Đặc điểm của Objects:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="font-semibold mb-2">💾 Kích thước & Upload:</h5>
+                        <ul class="feature-list object-list">
+                            <li><strong>Max size:</strong> 5 terabytes (5,000 GB)</li>
+                            <li><strong>Files > 5GB:</strong> Phải dùng multi-part upload</li>
+                            <li><strong>Ví dụ:</strong> File 5TB = 1,000 parts × 5GB</li>
+                        </ul>
+                        
+                        <div class="size-comparison">
+                            <div class="size-box">
+                                <div class="text-xs">Normal Upload</div>
+                                <div class="font-bold">≤ 5GB</div>
+                            </div>
+                            <div class="text-2xl">vs</div>
+                            <div class="size-box">
+                                <div class="text-xs">Multi-part Upload</div>
+                                <div class="font-bold">> 5GB</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold mb-2">🏷️ Thông tin bổ sung:</h5>
+                        <ul class="feature-list object-list">
+                            <li><strong>Metadata:</strong> Key-value pairs (system hoặc user đặt)</li>
+                            <li><strong>Tags:</strong> Unicode key-value (tối đa 10) cho security/lifecycle</li>
+                            <li><strong>Version ID:</strong> Nếu bật versioning</li>
+                            <li><strong>Value:</strong> Nội dung thực tế của file</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Naming Branch -->
+        <div class="branch branch-naming">
+            <h3 class="branch-title"><span class="emoji-large">📝</span> Naming & Best Practices</h3>
+            <div class="branch-content">
+                <h4 class="font-semibold mb-3">✅ Quy tắc đặt tên Bucket (không cần nhớ hết, nhưng nên biết):</h4>
+                
+                <table class="simple-table">
+                    <thead>
+                        <tr>
+                            <th width="40%">Quy tắc</th>
+                            <th width="30%">✅ Đúng</th>
+                            <th width="30%">❌ Sai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Không uppercase, không underscore</td>
+                            <td><code>my-bucket</code></td>
+                            <td><code>My_Bucket</code></td>
+                        </tr>
+                        <tr>
+                            <td>3-63 ký tự</td>
+                            <td><code>my-app-bucket</code></td>
+                            <td><code>ab</code> (quá ngắn)</td>
+                        </tr>
+                        <tr>
+                            <td>Không phải IP address</td>
+                            <td><code>my-data-bucket</code></td>
+                            <td><code>192.168.1.1</code></td>
+                        </tr>
+                        <tr>
+                            <td>Bắt đầu bằng chữ thường hoặc số</td>
+                            <td><code>app-data-2024</code></td>
+                            <td><code>-my-bucket</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="tip-box">
+                    <h4 class="font-semibold mb-2">💡 Tips cho người mới bắt đầu:</h4>
+                    <ul class="feature-list naming-list">
+                        <li><strong>Dùng chữ thường + số + dấu gạch ngang</strong> → An toàn nhất!</li>
+                        <li><strong>Ví dụ tốt:</strong> <code>my-company-backup-2024</code></li>
+                        <li><strong>Thêm prefix cá nhân:</strong> <code>yourname-learning-bucket</code></li>
+                        <li><strong>Tránh tên quá chung:</strong> <code>data</code>, <code>files</code> (dễ bị trùng)</li>
+                    </ul>
+                </div>
+
+                <div class="diagram-container">
+                    <h4 class="font-semibold mb-2 text-center">🚀 Sẵn sàng cho Hands-on!</h4>
+                    <p class="text-center mb-3">Bây giờ bạn đã hiểu concepts cơ bản, hãy cùng thực hành tạo bucket và upload objects!</p>
+                    <div class="text-center">
+                        <div class="inline-flex items-center space-x-4">
+                            <div class="text-green-600"><i class="fas fa-check-circle"></i> Hiểu S3 là gì</div>
+                            <div class="text-green-600"><i class="fas fa-check-circle"></i> Biết Buckets & Objects</div>
+                            <div class="text-green-600"><i class="fas fa-check-circle"></i> Nắm Naming rules</div>
+                            <div class="text-blue-600"><i class="fas fa-arrow-right"></i> Ready for Console!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center space-x-2 text-sm text-gray-600 bg-gray-100 rounded-full px-4 py-2">
+                <i class="fas fa-graduation-cap text-blue-600"></i>
+                <span>Mind Map dành cho người mới học AWS S3 - Step by step approach</span>
+                <i class="fas fa-rocket text-orange-500"></i>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
