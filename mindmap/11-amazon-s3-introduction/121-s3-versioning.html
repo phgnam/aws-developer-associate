@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map: Amazon S3 Versioning</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .mindmap-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .central-topic {
+            background-color: #232F3E;
+            color: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .branch {
+            margin: 20px 0;
+            border-left: 3px solid;
+            padding-left: 20px;
+        }
+        .branch-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .branch-definition { border-color: #FF9900; }
+        .branch-definition .branch-title { color: #FF9900; }
+        
+        .branch-workflow { border-color: #1E88E5; }
+        .branch-workflow .branch-title { color: #1E88E5; }
+        
+        .branch-benefits { border-color: #43A047; }
+        .branch-benefits .branch-title { color: #43A047; }
+        
+        .branch-bestpractices { border-color: #8E24AA; }
+        .branch-bestpractices .branch-title { color: #8E24AA; }
+        
+        .branch-notes { border-color: #F4511E; }
+        .branch-notes .branch-title { color: #F4511E; }
+        
+        .version-workflow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .workflow-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .workflow-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .workflow-box {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .bucket-box { background-color: #ffecb3; border: 2px solid #ffa000; }
+        .version-box { background-color: #e1f5fe; border: 2px solid #0277bd; }
+        .upload-box { background-color: #f3e5f5; border: 2px solid #7b1fa2; }
+        .user-box { background-color: #e8f5e8; border: 2px solid #2e7d32; }
+        
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #666;
+            margin: 5px 0;
+        }
+        .arrow-right {
+            width: 50px;
+            height: 2px;
+            background-color: #666;
+            position: relative;
+            margin: 0 10px;
+        }
+        .arrow-right:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .flow-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "\f00c";
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #43A047;
+        }
+        .warning-list li:before {
+            content: "\f071";
+            color: #FF9900;
+        }
+        .info-list li:before {
+            content: "\f05a";
+            color: #0277bd;
+        }
+        .protection-list li:before {
+            content: "\f3ed";
+            color: #43A047;
+        }
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 12px;
+            padding-left: 35px;
+            position: relative;
+        }
+        .step-list li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: #1E88E5;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .version-example {
+            background-color: #fff3e0;
+            border: 1px solid #ffb74d;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        .delete-marker {
+            background-color: #ffebee;
+            border: 1px solid #ef5350;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="mindmap-container">
+        <div class="page-header mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Mind Map: Amazon S3 Versioning</h1>
+            <span class="text-sm text-gray-500">AWS S3 File Version Control System</span>
+        </div>
+
+        <div class="central-topic">
+            <div>
+                <i class="fas fa-code-branch text-3xl mb-2"></i>
+                <h2 class="text-xl font-bold">S3 Versioning</h2>
+            </div>
+        </div>
+
+        <!-- Definition Branch -->
+        <div class="branch branch-definition">
+            <h3 class="branch-title text-xl"><i class="fas fa-info-circle mr-2"></i> Định nghĩa & Khái niệm</h3>
+            <div class="branch-content">
+                <p class="mb-4">Amazon S3 Versioning cho phép bạn lưu trữ nhiều phiên bản của cùng một object trong bucket, giúp bảo vệ dữ liệu và dễ dàng khôi phục các thay đổi.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Đặc điểm chính:</h4>
+                        <ul class="feature-list">
+                            <li>Cài đặt ở cấp độ bucket (bucket level setting)</li>
+                            <li>Phải được kích hoạt thủ công</li>
+                            <li>Áp dụng cho tất cả objects trong bucket</li>
+                            <li>Mỗi phiên bản có Version ID riêng biệt</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Cách thức hoạt động:</h4>
+                        <ul class="feature-list info-list">
+                            <li>Upload cùng key tạo version mới thay vì ghi đè</li>
+                            <li>Version được đánh số tự động (v1, v2, v3...)</li>
+                            <li>Version mới nhất là "current version"</li>
+                            <li>Có thể truy cập bất kỳ version nào</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="version-example">
+                    <h5 class="font-semibold mb-2">Ví dụ Version Control:</h5>
+                    <div class="text-sm">
+                        <div><strong>my-file.jpg</strong> (Version 1) ← Upload lần đầu</div>
+                        <div><strong>my-file.jpg</strong> (Version 2) ← Upload lại cùng tên</div>
+                        <div><strong>my-file.jpg</strong> (Version 3) ← Upload lại cùng tên</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow Branch -->
+        <div class="branch branch-workflow">
+            <h3 class="branch-title text-xl"><i class="fas fa-project-diagram mr-2"></i> Quy trình Versioning</h3>
+            <div class="branch-content">
+                <div class="workflow-container">
+                    <h4 class="font-semibold mb-4 text-center">Workflow: Upload File với Versioning</h4>
+                    
+                    <div class="workflow-row">
+                        <div class="workflow-box user-box">
+                            <i class="fas fa-user mb-1"></i><br/>
+                            User
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="workflow-box bucket-box">
+                            <i class="fas fa-folder mb-1"></i><br/>
+                            S3 Bucket<br/>
+                            <small>(Versioning Enabled)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow-down"></div>
+                    
+                    <div class="workflow-row">
+                        <div class="workflow-box upload-box">
+                            <i class="fas fa-upload mb-1"></i><br/>
+                            Upload File<br/>
+                            <small>same key name</small>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow-down"></div>
+                    
+                    <div class="workflow-row">
+                        <div class="workflow-box version-box">Version 1</div>
+                        <div class="workflow-box version-box">Version 2</div>
+                        <div class="workflow-box version-box">Version 3</div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="font-semibold mb-2">Các bước trong quy trình:</h5>
+                        <ol class="step-list">
+                            <li>User upload file lần đầu → Tạo Version 1</li>
+                            <li>User upload lại cùng key name → Tạo Version 2 (không ghi đè Version 1)</li>
+                            <li>Tiếp tục upload → Tạo Version 3, 4, 5...</li>
+                            <li>Version mới nhất luôn là "current version" được trả về mặc định</li>
+                            <li>Có thể truy cập version cũ bằng cách chỉ định Version ID</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benefits Branch -->
+        <div class="branch branch-benefits">
+            <h3 class="branch-title text-xl"><i class="fas fa-shield-alt mr-2"></i> Lợi ích & Bảo vệ</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Bảo vệ khỏi xóa nhầm:</h4>
+                        <ul class="feature-list protection-list">
+                            <li>Delete operation chỉ thêm "Delete Marker"</li>
+                            <li>File không thực sự bị xóa</li>
+                            <li>Có thể khôi phục bằng cách xóa Delete Marker</li>
+                            <li>Tất cả versions vẫn còn nguyên vẹn</li>
+                        </ul>
+                        
+                        <div class="delete-marker">
+                            <i class="fas fa-trash-alt text-red-500 mr-2"></i>
+                            <strong>Delete Marker</strong><br/>
+                            <small>Đánh dấu file "đã xóa" nhưng versions vẫn tồn tại</small>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2">Rollback dễ dàng:</h4>
+                        <ul class="feature-list">
+                            <li>Quay lại version bất kỳ trong quá khứ</li>
+                            <li>Khôi phục trạng thái "2 ngày trước"</li>
+                            <li>So sánh giữa các versions</li>
+                            <li>Test với version mới, rollback nếu có vấn đề</li>
+                        </ul>
+                        
+                        <div class="version-example">
+                            <h5 class="font-semibold text-sm mb-1">Ví dụ Rollback:</h5>
+                            <div class="text-sm">
+                                Version 3 (hiện tại) → có lỗi<br/>
+                                → Rollback về Version 2 (ổn định)<br/>
+                                → Website hoạt động bình thường
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Các trường hợp sử dụng phổ biến:</h4>
+                    <ul class="feature-list">
+                        <li><strong>Website Hosting:</strong> Cập nhật website an toàn, rollback nếu có lỗi</li>
+                        <li><strong>Backup Important Files:</strong> Lưu trữ các phiên bản quan trọng của tài liệu</li>
+                        <li><strong>Development:</strong> Theo dõi các phiên bản code, config files</li>
+                        <li><strong>Compliance:</strong> Lưu giữ lịch sử thay đổi cho audit</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices Branch -->
+        <div class="branch branch-bestpractices">
+            <h3 class="branch-title text-xl"><i class="fas fa-star mr-2"></i> Best Practices</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Khuyến nghị sử dụng:</h4>
+                        <ul class="feature-list">
+                            <li>Luôn enable versioning cho buckets quan trọng</li>
+                            <li>Kết hợp với Lifecycle Policies để quản lý chi phí</li>
+                            <li>Sử dụng MFA Delete for additional security</li>
+                            <li>Monitor version count để tránh chi phí cao</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2">Quản lý chi phí:</h4>
+                        <ul class="feature-list warning-list">
+                            <li>Mỗi version được tính phí lưu trữ riêng</li>
+                            <li>Cài đặt Lifecycle để xóa old versions</li>
+                            <li>Archive old versions sang Glacier</li>
+                            <li>Theo dõi storage metrics thường xuyên</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Lifecycle Policy Example:</h4>
+                    <div class="version-example">
+                        <div class="text-sm">
+                            • Giữ 30 versions gần nhất<br/>
+                            • Versions > 30 ngày → chuyển sang IA<br/>
+                            • Versions > 90 ngày → chuyển sang Glacier<br/>
+                            • Versions > 1 năm → xóa vĩnh viễn
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes Branch -->
+        <div class="branch branch-notes">
+            <h3 class="branch-title text-xl"><i class="fas fa-exclamation-triangle mr-2"></i> Lưu ý quan trọng</h3>
+            <div class="branch-content">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">Version Null:</h4>
+                        <ul class="feature-list info-list">
+                            <li>Files tồn tại trước khi enable versioning</li>
+                            <li>Có Version ID = "null"</li>
+                            <li>Vẫn có thể truy cập và download bình thường</li>
+                            <li>Khi upload lại sẽ tạo Version ID mới</li>
+                        </ul>
+                        
+                        <div class="version-example">
+                            <h5 class="font-semibold text-sm mb-1">Trước khi enable versioning:</h5>
+                            <div class="text-sm">
+                                old-file.jpg → Version: null<br/>
+                                <small class="text-gray-600">Sau khi enable và upload lại:</small><br/>
+                                old-file.jpg → Version: xyz123 (mới)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-2">Suspend Versioning:</h4>
+                        <ul class="feature-list">
+                            <li>Tạm dừng tạo versions mới</li>
+                            <li><strong>KHÔNG</strong> xóa versions hiện có</li>
+                            <li>Là thao tác an toàn (safe operation)</li>
+                            <li>Có thể re-enable bất cứ lúc nào</li>
+                        </ul>
+                        
+                        <div class="version-example">
+                            <h5 class="font-semibold text-sm mb-1">Khi suspend:</h5>
+                            <div class="text-sm">
+                                • Versions cũ: v1, v2, v3 → <span class="text-green-600">Vẫn tồn tại</span><br/>
+                                • Upload mới → <span class="text-blue-600">Ghi đè current version</span><br/>
+                                • Không tạo version mới
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Các trường hợp cần chú ý:</h4>
+                    <ul class="feature-list warning-list">
+                        <li>Versioning không thể disable hoàn toàn, chỉ suspend</li>
+                        <li>Delete operations có thể tốn phí cho từng version</li>
+                        <li>Large files với nhiều versions có thể tốn nhiều storage</li>
+                        <li>Cross-region replication hoạt động với từng version riêng biệt</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-sm text-gray-500 text-center">
+            <p>Mind map về Amazon S3 Versioning - Hệ thống quản lý phiên bản file an toàn và linh hoạt</p>
+        </div>
+    </div>
+</body>
+</html>
